@@ -1,0 +1,683 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RoleName {
+  SISWA
+  ADMIN
+  KEPALA_SEKOLAH
+}
+
+enum GuardianType {
+  FATHER
+  MOTHER
+  OTHER
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  WAITING_DOCUMENT_VERIFICATION
+  DOCUMENT_REVISION_REQUIRED
+  DOCUMENT_VERIFIED
+  WAITING_PAYMENT
+  PAYMENT_VERIFIED
+  ELIGIBLE_FOR_TKA
+  TKA_STARTED
+  TKA_COMPLETED
+  WAITING_SELECTION
+  PASSED
+  WAITLISTED
+  FAILED
+  REJECTED
+  CANCELLED
+  WITHDRAWN
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  REVISION_REQUIRED
+}
+
+enum PaymentStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+  CANCELLED
+}
+
+enum AnnouncementStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+enum NotificationType {
+  INFO
+  SUCCESS
+  WARNING
+  ERROR
+}
+
+enum AuditAction {
+  CREATE
+  UPDATE
+  DELETE
+  LOGIN
+  LOGOUT
+  APPROVE
+  REJECT
+  VERIFY
+  GENERATE
+  PUBLISH
+  EXPORT
+  READ
+}
+
+enum TkaQuestionDifficulty {
+  MUDAH
+  SEDANG
+  SULIT
+}
+
+enum SelectionStatus {
+  PENDING
+  PASSED
+  WAITLISTED
+  FAILED
+}
+
+enum ReportFormat {
+  CSV
+  XLSX
+  JSON
+  PDF
+}
+
+enum ExportStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Role {
+  id          String   @id @default(uuid()) @db.Uuid
+  name        RoleName @unique
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  users User[]
+
+  @@map("roles")
+}
+
+model User {
+  id           String    @id @default(uuid()) @db.Uuid
+  roleId       String    @db.Uuid
+  email        String    @unique
+  passwordHash String?
+  isActive     Boolean   @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  role                     Role                       @relation(fields: [roleId], references: [id])
+  sessions                 UserSession[]
+  student                  Student?
+  createdAuditLogs         AuditLog[]                 @relation("AuditLogActor")
+  notifications            Notification[]
+  reportExports            ReportExport[]             @relation("ReportExportUser")
+  paymentVerifications     Payment[]                  @relation("PaymentVerifier")
+  paymentHistory           PaymentStatusHistory[]     @relation("PaymentStatusHistoryUser")
+  documentVerifications    DocumentVerification[]     @relation("DocumentVerificationUser")
+  applicationStatusHistory ApplicationStatusHistory[] @relation("ApplicationStatusHistoryUser")
+
+  @@index([roleId])
+  @@map("users")
+}
+
+model UserSession {
+  id        String   @id @default(uuid()) @db.Uuid
+  userId    String   @db.Uuid
+  tokenHash String   @unique
+  ipAddress String?
+  userAgent String?
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("user_sessions")
+}
+
+model Student {
+  id               String   @id @default(uuid()) @db.Uuid
+  userId           String   @unique @db.Uuid
+  registrationCode String?  @unique
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  user            User             @relation(fields: [userId], references: [id], onDelete: Restrict)
+  profile         StudentProfile?
+  parentGuardians ParentGuardian[]
+  applications    Application[]
+
+  @@map("students")
+}
+
+model StudentProfile {
+  id               String    @id @default(uuid()) @db.Uuid
+  studentId        String    @unique @db.Uuid
+  fullName         String?
+  nik              String?   @unique @db.VarChar(16)
+  nisn             String?   @unique @db.VarChar(10)
+  birthPlace       String?
+  birthDate        DateTime?
+  gender           String?
+  address          String?
+  phoneNumber      String?
+  schoolOrigin     String?
+  religion         String?
+  familyStatus     String?
+  citizenship      String?
+  familyCardNumber String?   @db.VarChar(16)
+  province         String?
+  city             String?
+  district         String?
+  village          String?
+  postalCode       String?   @db.VarChar(5)
+  schoolNpsn       String?   @db.VarChar(8)
+  schoolType       String?
+  schoolStatus     String?
+  graduationYear   String?   @db.VarChar(4)
+  parentWhatsapp   String?
+  createdAt        DateTime  @default(now())
+  updatedAt        DateTime  @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@map("student_profiles")
+}
+
+model ParentGuardian {
+  id            String       @id @default(uuid()) @db.Uuid
+  studentId     String       @db.Uuid
+  guardianType  GuardianType
+  guardianName  String?
+  relationship  String?
+  occupation    String?
+  incomeBracket String?
+  nik           String?      @db.VarChar(16)
+  phoneNumber   String?
+  email         String?
+  address       String?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, guardianType])
+  @@map("parent_guardians")
+}
+
+model StudyProgram {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  description String?
+  capacity    Int?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  programChoices ApplicationProgramChoice[]
+  tkaSchedules   TkaSchedule[]
+  selections     Selection[]
+
+  @@map("study_programs")
+}
+
+model AdmissionPeriod {
+  id        String    @id @default(uuid()) @db.Uuid
+  code      String    @unique
+  name      String
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  waves        AdmissionWave[]
+  applications Application[]
+
+  @@index([startsAt, endsAt])
+  @@map("admission_periods")
+}
+
+model AdmissionWave {
+  id        String    @id @default(uuid()) @db.Uuid
+  periodId  String    @db.Uuid
+  code      String
+  name      String
+  startsAt  DateTime?
+  endsAt    DateTime?
+  isActive  Boolean   @default(true)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+
+  period       AdmissionPeriod @relation(fields: [periodId], references: [id], onDelete: Restrict)
+  applications Application[]
+
+  @@unique([periodId, code])
+  @@index([periodId])
+  @@map("admission_waves")
+}
+
+model Application {
+  id                 String            @id @default(uuid()) @db.Uuid
+  studentId          String            @db.Uuid
+  admissionPeriodId  String?           @db.Uuid
+  admissionWaveId    String?           @db.Uuid
+  registrationNumber String?           @unique
+  status             ApplicationStatus @default(DRAFT)
+  isFinalized        Boolean           @default(false)
+  submittedAt        DateTime?
+  semester1Average   Decimal?          @db.Decimal(5, 2)
+  semester2Average   Decimal?          @db.Decimal(5, 2)
+  semester3Average   Decimal?          @db.Decimal(5, 2)
+  semester4Average   Decimal?          @db.Decimal(5, 2)
+  createdAt          DateTime          @default(now())
+  updatedAt          DateTime          @updatedAt
+
+  student         Student                    @relation(fields: [studentId], references: [id], onDelete: Restrict)
+  admissionPeriod AdmissionPeriod?           @relation(fields: [admissionPeriodId], references: [id], onDelete: SetNull)
+  admissionWave   AdmissionWave?             @relation(fields: [admissionWaveId], references: [id], onDelete: SetNull)
+  programChoices  ApplicationProgramChoice[]
+  statusHistory   ApplicationStatusHistory[]
+  documents       Document[]
+  payments        Payment[]
+  tkaAttempts     TkaAttempt[]
+  selections      Selection[]
+  notifications   Notification[]
+  tkaResults      TkaResult[]
+
+  @@unique([id, studentId])
+  @@index([studentId])
+  @@index([status])
+  @@index([admissionPeriodId, admissionWaveId])
+  @@map("applications")
+}
+
+model ApplicationProgramChoice {
+  id             String   @id @default(uuid()) @db.Uuid
+  applicationId  String   @db.Uuid
+  studyProgramId String   @db.Uuid
+  priority       Int
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  application  Application  @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Restrict)
+
+  @@unique([applicationId, priority])
+  @@unique([applicationId, studyProgramId])
+  @@index([studyProgramId])
+  @@map("application_program_choices")
+}
+
+model ApplicationStatusHistory {
+  id              String            @id @default(uuid()) @db.Uuid
+  applicationId   String            @db.Uuid
+  status          ApplicationStatus
+  changedByUserId String?           @db.Uuid
+  notes           String?
+  createdAt       DateTime          @default(now())
+
+  application   Application @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  changedByUser User?       @relation("ApplicationStatusHistoryUser", fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([applicationId, createdAt])
+  @@map("application_status_history")
+}
+
+model DocumentType {
+  id          String   @id @default(uuid()) @db.Uuid
+  code        String   @unique
+  name        String
+  required    Boolean  @default(false)
+  description String?
+  isActive    Boolean  @default(true)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  documents Document[]
+
+  @@map("document_types")
+}
+
+model Document {
+  id             String             @id @default(uuid()) @db.Uuid
+  applicationId  String             @db.Uuid
+  documentTypeId String             @db.Uuid
+  fileName       String
+  storagePath    String
+  mimeType       String?
+  fileSize       Int?
+  uploadedAt     DateTime           @default(now())
+  status         VerificationStatus @default(PENDING)
+  createdAt      DateTime           @default(now())
+  updatedAt      DateTime           @updatedAt
+
+  application   Application            @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  documentType  DocumentType           @relation(fields: [documentTypeId], references: [id], onDelete: Restrict)
+  verifications DocumentVerification[]
+
+  @@index([applicationId])
+  @@index([documentTypeId])
+  @@index([status])
+  @@map("documents")
+}
+
+model DocumentVerification {
+  id               String             @id @default(uuid()) @db.Uuid
+  documentId       String             @db.Uuid
+  verifiedByUserId String?            @db.Uuid
+  status           VerificationStatus @default(PENDING)
+  notes            String?
+  verifiedAt       DateTime?
+  createdAt        DateTime           @default(now())
+  updatedAt        DateTime           @updatedAt
+
+  document       Document @relation(fields: [documentId], references: [id], onDelete: Restrict)
+  verifiedByUser User?    @relation("DocumentVerificationUser", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([documentId])
+  @@index([status])
+  @@map("document_verifications")
+}
+
+model Payment {
+  id               String        @id @default(uuid()) @db.Uuid
+  applicationId    String        @db.Uuid
+  referenceNumber  String        @unique
+  amount           Decimal?      @db.Decimal(12, 2)
+  status           PaymentStatus @default(PENDING)
+  paymentProofPath String?
+  verifiedByUserId String?       @db.Uuid
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
+
+  application    Application            @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  verifiedByUser User?                  @relation("PaymentVerifier", fields: [verifiedByUserId], references: [id], onDelete: SetNull)
+  statusHistory  PaymentStatusHistory[]
+
+  @@unique([applicationId])
+  @@index([status])
+  @@map("payments")
+}
+
+model PaymentStatusHistory {
+  id              String        @id @default(uuid()) @db.Uuid
+  paymentId       String        @db.Uuid
+  status          PaymentStatus
+  changedByUserId String?       @db.Uuid
+  notes           String?
+  createdAt       DateTime      @default(now())
+
+  payment       Payment @relation(fields: [paymentId], references: [id], onDelete: Restrict)
+  changedByUser User?   @relation("PaymentStatusHistoryUser", fields: [changedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([paymentId, createdAt])
+  @@map("payment_status_history")
+}
+
+model TkaTest {
+  id          String    @id @default(uuid()) @db.Uuid
+  code        String    @unique
+  name        String
+  description String?
+  status      String    @default("DRAFT")
+  startsAt    DateTime?
+  endsAt      DateTime?
+  isActive    Boolean   @default(true)
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  questions TkaQuestion[]
+  schedules TkaSchedule[]
+
+  @@index([status])
+  @@map("tka_tests")
+}
+
+model TkaQuestion {
+  id           String                @id @default(uuid()) @db.Uuid
+  tkaTestId    String                @db.Uuid
+  questionText String
+  difficulty   TkaQuestionDifficulty @default(MUDAH)
+  points       Int?
+  isActive     Boolean               @default(true)
+  createdAt    DateTime              @default(now())
+  updatedAt    DateTime              @updatedAt
+
+  tkaTest TkaTest             @relation(fields: [tkaTestId], references: [id], onDelete: Restrict)
+  options TkaQuestionOption[]
+  answers TkaAnswer[]
+
+  @@index([tkaTestId])
+  @@map("tka_questions")
+}
+
+model TkaQuestionOption {
+  id         String   @id @default(uuid()) @db.Uuid
+  questionId String   @db.Uuid
+  optionText String
+  isCorrect  Boolean  @default(false)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  question TkaQuestion @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  answers  TkaAnswer[]
+
+  @@index([questionId])
+  @@map("tka_question_options")
+}
+
+model TkaSchedule {
+  id             String   @id @default(uuid()) @db.Uuid
+  tkaTestId      String   @db.Uuid
+  studyProgramId String?  @db.Uuid
+  scheduledAt    DateTime
+  location       String?
+  capacity       Int?
+  status         String   @default("SCHEDULED")
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
+  tkaTest      TkaTest       @relation(fields: [tkaTestId], references: [id], onDelete: Restrict)
+  studyProgram StudyProgram? @relation(fields: [studyProgramId], references: [id], onDelete: SetNull)
+  attempts     TkaAttempt[]
+
+  @@index([tkaTestId])
+  @@index([studyProgramId])
+  @@index([scheduledAt])
+  @@map("tka_schedules")
+}
+
+model TkaAttempt {
+  id            String    @id @default(uuid()) @db.Uuid
+  applicationId String    @db.Uuid
+  studentId     String    @db.Uuid
+  scheduleId    String    @db.Uuid
+  status        String    @default("ACTIVE")
+  startedAt     DateTime?
+  submittedAt   DateTime?
+  score         Int?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  application Application @relation(fields: [applicationId, studentId], references: [id, studentId], onDelete: Restrict)
+  schedule    TkaSchedule @relation(fields: [scheduleId], references: [id], onDelete: Restrict)
+  answers     TkaAnswer[]
+  result      TkaResult?
+
+  @@unique([applicationId, scheduleId])
+  @@unique([id, applicationId])
+  @@index([applicationId])
+  @@index([studentId])
+  @@index([scheduleId])
+  @@index([status])
+  @@map("tka_attempts")
+}
+
+model TkaAnswer {
+  id               String   @id @default(uuid()) @db.Uuid
+  attemptId        String   @db.Uuid
+  questionId       String   @db.Uuid
+  selectedOptionId String?  @db.Uuid
+  answerText       String?
+  isCorrect        Boolean?
+  createdAt        DateTime @default(now())
+  updatedAt        DateTime @updatedAt
+
+  attempt        TkaAttempt         @relation(fields: [attemptId], references: [id], onDelete: Restrict)
+  question       TkaQuestion        @relation(fields: [questionId], references: [id], onDelete: Restrict)
+  selectedOption TkaQuestionOption? @relation(fields: [selectedOptionId], references: [id], onDelete: Restrict)
+
+  @@unique([attemptId, questionId])
+  @@index([questionId])
+  @@map("tka_answers")
+}
+
+model TkaResult {
+  id            String    @id @default(uuid()) @db.Uuid
+  attemptId     String    @unique @db.Uuid
+  applicationId String    @db.Uuid
+  totalScore    Int?
+  passed        Boolean?
+  publishedAt   DateTime?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  attempt     TkaAttempt  @relation(fields: [attemptId, applicationId], references: [id, applicationId], onDelete: Restrict)
+  application Application @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+
+  @@unique([attemptId, applicationId])
+  @@index([applicationId])
+  @@map("tka_results")
+}
+
+model Selection {
+  id             String          @id @default(uuid()) @db.Uuid
+  applicationId  String          @db.Uuid
+  studyProgramId String          @db.Uuid
+  selectionRank  Int?
+  status         SelectionStatus @default(PENDING)
+  notes          String?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+
+  application  Application  @relation(fields: [applicationId], references: [id], onDelete: Restrict)
+  studyProgram StudyProgram @relation(fields: [studyProgramId], references: [id], onDelete: Restrict)
+
+  @@unique([applicationId, studyProgramId])
+  @@index([studyProgramId])
+  @@index([status])
+  @@map("selections")
+}
+
+model Announcement {
+  id          String             @id @default(uuid()) @db.Uuid
+  title       String
+  content     String
+  status      AnnouncementStatus @default(DRAFT)
+  publishedAt DateTime?
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
+
+  notifications Notification[]
+
+  @@index([status])
+  @@map("announcements")
+}
+
+model Notification {
+  id             String           @id @default(uuid()) @db.Uuid
+  userId         String           @db.Uuid
+  applicationId  String?          @db.Uuid
+  announcementId String?          @db.Uuid
+  title          String
+  message        String
+  type           NotificationType @default(INFO)
+  isRead         Boolean          @default(false)
+  readAt         DateTime?
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  user         User          @relation(fields: [userId], references: [id], onDelete: Restrict)
+  application  Application?  @relation(fields: [applicationId], references: [id], onDelete: SetNull)
+  announcement Announcement? @relation(fields: [announcementId], references: [id], onDelete: SetNull)
+
+  @@index([userId, isRead])
+  @@index([applicationId])
+  @@index([announcementId])
+  @@map("notifications")
+}
+
+model AuditLog {
+  id          String      @id @default(uuid()) @db.Uuid
+  actorUserId String?     @db.Uuid
+  entityType  String
+  entityId    String?     @db.VarChar(255)
+  action      AuditAction
+  details     Json?
+  ipAddress   String?
+  createdAt   DateTime    @default(now())
+
+  actorUser User? @relation("AuditLogActor", fields: [actorUserId], references: [id], onDelete: SetNull)
+
+  @@index([entityType, entityId])
+  @@index([actorUserId])
+  @@index([action])
+  @@map("audit_logs")
+}
+
+model SchoolSetting {
+  id          String   @id @default(uuid()) @db.Uuid
+  key         String   @unique
+  value       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@map("school_settings")
+}
+
+model ReportExport {
+  id                String       @id @default(uuid()) @db.Uuid
+  generatedByUserId String?      @db.Uuid
+  reportType        String
+  format            ReportFormat
+  status            ExportStatus @default(PENDING)
+  storagePath       String?
+  requestedAt       DateTime     @default(now())
+  generatedAt       DateTime?
+  createdAt         DateTime     @default(now())
+  updatedAt         DateTime     @updatedAt
+
+  generatedByUser User? @relation("ReportExportUser", fields: [generatedByUserId], references: [id], onDelete: SetNull)
+
+  @@index([status])
+  @@index([reportType])
+  @@map("report_exports")
+}

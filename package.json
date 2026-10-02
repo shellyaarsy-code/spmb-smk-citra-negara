@@ -1,0 +1,39 @@
+{
+  "name": "spmb-smk-citra-negara",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "prisma:validate": "prisma validate",
+    "prisma:generate": "prisma generate",
+    "prisma:seed": "prisma db seed",
+    "test:auth": "tsx --test tests/auth/credentials.test.ts tests/auth/authorization.test.ts",
+    "test:student": "tsx --test tests/student/ownership.test.ts",
+    "test:application": "tsx --test tests/application/draft.test.ts",
+    "test:documents": "tsx --test tests/student/documents.test.ts"
+  },
+  "dependencies": {
+    "@prisma/client": "^6.13.0",
+    "bcryptjs": "^3.0.3",
+    "dotenv": "^16.6.1",
+    "next": "16.3.6",
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
+  },
+  "devDependencies": {
+    "@tailwindcss/postcss": "^4",
+    "@types/node": "^20",
+    "@types/react": "^19",
+    "@types/react-dom": "^19",
+    "eslint": "^9",
+    "eslint-config-next": "16.3.6",
+    "prisma": "^6.13.0",
+    "tailwindcss": "^4",
+    "tsx": "^4.20.0",
+    "typescript": "^5"
+  }
+}
