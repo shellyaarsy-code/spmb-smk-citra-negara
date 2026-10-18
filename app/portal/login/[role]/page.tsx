@@ -4,6 +4,7 @@ import StudentRegistrationForm from "./registration-form";
 import StudentLoginForm from "./student-login-form";
 import AdminLoginForm from "./admin-login-form";
 import PrincipalLoginForm from "./principal-login-form";
+import BrandLogo from "../../../components/brand-logo";
 
 const roleDetails: Record<string, { title: string; name: string; identifier: string }> = {
   siswa: { title: "Masuk Portal Calon Siswa", name: "Calon Siswa", identifier: "Email atau Nomor Pendaftaran" },
@@ -28,7 +29,7 @@ export default async function PortalLoginPage({
         <div className="registration-shell">
           <aside className="registration-aside">
             <Link className="registration-brand" href="/" aria-label="SMK Citra Negara, beranda">
-              <span>CN</span> SPMB SMK CITRA NEGARA
+              <BrandLogo width={36} /> SPMB SMK CITRA NEGARA
             </Link>
             <div className="registration-aside-copy">
               <h1>Ayo Bergabung Bersama Kami!</h1>
@@ -62,7 +63,7 @@ export default async function PortalLoginPage({
         <div className="registration-shell login-shell">
           <aside className="registration-aside login-aside">
             <Link className="registration-brand" href="/" aria-label="SMK Citra Negara, beranda">
-              <span>CN</span> SPMB SMK CITRA NEGARA
+              <BrandLogo width={36} /> SPMB SMK CITRA NEGARA
             </Link>
             <div className="registration-aside-copy">
               <h1>Selamat Datang Kembali!</h1>
@@ -93,7 +94,7 @@ export default async function PortalLoginPage({
         <div className="admin-login-shell">
           <aside className="admin-login-aside">
             <Link className="admin-login-brand" href="/" aria-label="SMK Citra Negara, beranda">
-              <span>CN</span> SPMB SMK CITRA NEGARA
+              <BrandLogo width={36} /> SPMB SMK CITRA NEGARA
             </Link>
 
             <div className="admin-login-aside-copy">
@@ -107,7 +108,7 @@ export default async function PortalLoginPage({
               </span>
               <div>
                 <h2>Akses Khusus Staf Sekolah</h2>
-                <p>Autentikasi dan pengelolaan akses akan diaktifkan setelah backend disambungkan.</p>
+                <p>Masuk menggunakan akun panitia yang telah terdaftar. Akses portal dibatasi berdasarkan role akun.</p>
               </div>
             </section>
           </aside>
@@ -131,7 +132,7 @@ export default async function PortalLoginPage({
       <main className="principal-login-page">
         <div className="principal-login-shell">
           <aside className="principal-login-aside">
-            <Link className="principal-login-brand" href="/" aria-label="SPMB Citra Negara, kembali ke beranda"><span>CN</span><b>PPDB CITRA NEGARA</b></Link>
+            <Link className="principal-login-brand" href="/" aria-label="SPMB Citra Negara, kembali ke beranda"><BrandLogo width={30} /><b>PPDB CITRA NEGARA</b></Link>
             <div className="principal-login-quote"><h1>&ldquo;Pendidikan berkualitas melahirkan pemimpin masa depan berdaya saing global.&rdquo;</h1><p>Pantau seluruh perkembangan calon pendaftar, data administratif, dan hasil ujian masuk siswa secara real-time dari satu dashboard monitoring eksekutif.</p></div>
             <div className="principal-login-school"><strong>KEPALA SEKOLAH PORTAL</strong><span>SMK Citra Negara · Terakreditasi A Rujukan Nasional</span></div>
           </aside>
@@ -148,23 +149,5 @@ export default async function PortalLoginPage({
     );
   }
 
-  return (
-    <main className="login-page">
-      <Link className="login-back" href="/portal">← Kembali ke pilihan portal</Link>
-      <section className="login-card">
-        <span className="login-logo">CN</span>
-        <span className="kicker">SMK CITRA NEGARA</span>
-        <h1>{detail.title}</h1>
-        <p>Masukkan informasi akun {detail.name.toLowerCase()} untuk melanjutkan.</p>
-        <form>
-          <label>{detail.identifier}<input type="text" placeholder={detail.identifier} autoComplete="username" /></label>
-          <label>Kata Sandi<input type="password" placeholder="Masukkan kata sandi" autoComplete="current-password" /></label>
-          <a className="forgot-link" href="#lupa-kata-sandi">Lupa kata sandi?</a>
-          <button className="button login-submit" type="button">Masuk Portal</button>
-        </form>
-        {role === "siswa" && <div className="login-register">Belum memiliki akun? <Link href="/portal/login/siswa?mode=register">Registrasi calon siswa baru</Link></div>}
-        <small className="login-note">Tampilan awal portal · autentikasi akan disambungkan pada tahap berikutnya.</small>
-      </section>
-    </main>
-  );
+  notFound();
 }

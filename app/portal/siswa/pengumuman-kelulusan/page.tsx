@@ -2,10 +2,12 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "../../../components/brand-logo";
 import StudentSidebar from "../student-sidebar";
 import { deferStudentDraftHydration, readStudentDraft } from "../student-application-draft";
 import { toStudentFormValues, useCurrentStudentData } from "../student-profile-client";
 import { useCurrentDraftApplication } from "../student-application-client";
+import LiveSelectionResult from "../live-selection-result";
 
 type Outcome = "alternative";
 
@@ -27,7 +29,7 @@ export default function StudentGraduationAnnouncementPage() {
 
   const studentName = values.fullName?.trim() || (showSimulation ? "Rahman Aditya" : "Calon Siswa");
   const registrationNumber = application?.registrationNumber || (showSimulation ? "CN260012" : "Belum diterbitkan");
-  const hasSubmission = application?.status === "SUBMITTED";
+  const hasSubmission = Boolean(application && application.status !== "DRAFT");
   const primaryChoice = application?.programChoices.find((choice) => choice.priority === 1)?.studyProgram;
   const primaryProgram = primaryChoice ? `${primaryChoice.name} (${primaryChoice.code})` : showSimulation ? "Pengembangan Perangkat Lunak dan Gim (PPLG)" : "Belum dipilih";
 
@@ -38,7 +40,7 @@ export default function StudentGraduationAnnouncementPage() {
       <div className="verification-shell">
         <header className="verification-topbar">
           <Link className="verification-topbar-brand" href="/portal">
-            <span className="student-dashboard-brand-mark">CN</span>
+            <BrandLogo className="student-dashboard-brand-mark" />
             <span><strong>SPMB SMK CITRA NEGARA</strong><small>TAHUN AJARAN 2026/2027</small></span>
           </Link>
           <nav aria-label="Navigasi utama portal">
@@ -66,9 +68,11 @@ export default function StudentGraduationAnnouncementPage() {
 
             <section className="graduation-alert" aria-labelledby="graduation-alert-title">
               <h2 id="graduation-alert-title">{hasSubmission || showSimulation ? "Hasil Kelulusan Seleksi Belum Diumumkan" : "Belum Ada Pendaftaran"}</h2>
-              <p>{hasSubmission || showSimulation ? <>Panitia SPMB SMK Citra Negara sedang merampungkan rekapitulasi nilai rapor, nilai tes TKA, dan kuota daya tampung masing-masing program studi keahlian. Pengumuman resmi dijadwalkan pada <strong>15 Maret 2026</strong>.</> : "Isi dan kirim formulir pendaftaran untuk melihat informasi hasil seleksi akun Anda di sini."}</p>
+              <p>{hasSubmission || showSimulation ? "Hasil resmi akan ditampilkan setelah aturan seleksi disetujui dan sekolah memublikasikan keputusan." : "Isi dan kirim formulir pendaftaran untuk melihat informasi hasil seleksi akun Anda di sini."}</p>
               {!hasSubmission && !showSimulation && <Link className="graduation-registration-link" href="/portal/siswa/formulir">Mulai isi formulir →</Link>}
             </section>
+
+            {!showSimulation && <LiveSelectionResult />}
 
             <div className="graduation-simulation-toolbar">
               <h2 className="graduation-simulation-title">Hasil Seleksi Pendaftaran</h2>

@@ -46,29 +46,31 @@ function Metric({ icon, label, value, note, tone }: { icon: IconName; label: str
   return <article className="principal-metric"><div className="principal-metric-top"><span>{label}</span><i className={tone}><Icon name={icon} /></i></div><strong>{value}</strong><small className={tone}>{note}</small></article>;
 }
 
-export default function PrincipalDashboard({ demo }: { demo: boolean }) {
+type PrincipalSummary = Awaited<ReturnType<typeof import("../../../services/admin/dashboard-service").getPrincipalDashboardSummary>>;
+
+export default function PrincipalDashboard({ demo, summary }: { demo: boolean; summary: PrincipalSummary | null }) {
   return <main className="principal-dashboard-outer">
     <div className="principal-dashboard-app">
       <PrincipalSidebar active="dashboard" demo={demo} />
 
       <section className="principal-dashboard-main" id="overview" aria-label="Monitoring dashboard Kepala Sekolah">
-        <header className="principal-dashboard-header"><div><h1>Monitoring Dashboard</h1><p>Overview data pendaftaran, kelulusan, dan kapasitas kuota program studi secara real-time.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />GELOMBANG 1 ACTIVE</span><span className="principal-school-year"><Icon name="calendar" />Tahun Ajaran 2026/2027</span></div></header>
+        <header className="principal-dashboard-header"><div><h1>Monitoring Dashboard</h1><p>Ringkasan aplikasi pendaftaran dan dokumen dari data tersimpan.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />{demo ? "GELOMBANG 1 · SIMULASI" : "DATA TERKINI"}</span><span className="principal-school-year"><Icon name="calendar" />Tahun Ajaran 2026/2027</span></div></header>
         {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka dan notifikasi di halaman ini adalah data contoh, bukan data pendaftar sungguhan.</span><Link href="/portal/kepala-sekolah">Tampilan kosong</Link></div>}
 
         <section className="principal-metrics" aria-label="Ringkasan penerimaan">
-          <Metric icon="user" label="Total Pendaftar Akun" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : "—"} note={demo ? "Akun terdaftar" : "Data belum tersedia"} tone="green" />
-          <Metric icon="shield" label="Berkas Lengkap" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : "—"} note={demo ? "79,1% dari total pendaftar" : "Data belum tersedia"} tone="mint" />
-          <Metric icon="file" label="Lolos Verifikasi Admin" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : "—"} note={demo ? "65,1% dari berkas lengkap" : "Data belum tersedia"} tone="blue" />
-          <Metric icon="cap" label="Tingkat Kelulusan Sementara" value={demo ? demoPpdbMetrics.passRate : "—"} note={demo ? `${formatPpdbNumber(demoPpdbMetrics.admittedApplicants)} siswa lulus seleksi` : "Data belum tersedia"} tone="amber" />
+          <Metric icon="user" label="Total Aplikasi Terkirim" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : summary ? "Data aplikasi persisten" : "Data belum dapat dimuat"} tone="green" />
+          <Metric icon="shield" label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="mint" />
+          <Metric icon="file" label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="blue" />
+          <Metric icon="cap" label="Aplikasi Berstatus PASSED" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary?.passed.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Status saat ini; bukan hasil perhitungan seleksi"} tone="amber" />
         </section>
 
         <div className="principal-dashboard-content">
           <section className="principal-panel principal-quota-panel" id="pendaftar" aria-labelledby="principal-quota-title">
-            <div className="principal-panel-heading"><div><h2 id="principal-quota-title">Keterisian Kuota Program Keahlian</h2><p>Target daya tampung masing-masing kompetensi keahlian.</p></div><Icon name="trend" /></div>
+            <div className="principal-panel-heading"><div><h2 id="principal-quota-title">{demo ? "Keterisian Kuota Program Keahlian" : "Minat Pilihan Program Keahlian"}</h2><p>{demo ? "Target daya tampung masing-masing kompetensi keahlian." : "Jumlah pilihan dari aplikasi terkirim; bukan jumlah calon siswa yang diterima."}</p></div><Icon name="trend" /></div>
             {demo ? <div className="principal-quota-list">{programs.map((program) => {
               const percent = Math.round(program.students / program.quota * 100);
               return <article className="principal-quota-row" key={program.code}><div className="principal-quota-label"><strong>{program.name} ({program.code})</strong><span><b>{program.students}</b> / {program.quota} Kuota ({percent}%)</span></div><div className="principal-quota-track"><i className={program.color} style={{ width: `${percent}%` }} /></div></article>;
-            })}</div> : <div className="principal-dashboard-empty">Ringkasan kuota akan tampil setelah data pendaftar tersedia.</div>}
+            })}</div> : summary ? summary.programs.length ? <div className="principal-quota-list">{summary.programs.map((program) => <article className="principal-quota-row" key={program.code}><div className="principal-quota-label"><strong>{program.name} ({program.code})</strong><span><b>{program.count.toLocaleString("id-ID")}</b> pilihan · Daya tampung: {program.capacity ?? "Belum ditetapkan"}</span></div><div className="principal-quota-track"><i className="forest" style={{ width: `${summary.total ? Math.min(100, program.count / summary.total * 100) : 0}%` }} /></div></article>)}</div> : <div className="principal-dashboard-empty">Belum ada program aktif.</div> : <div className="principal-dashboard-empty">Ringkasan program belum dapat dimuat.</div>}
           </section>
 
           <section className="principal-panel principal-notifications-panel" id="seleksi" aria-labelledby="principal-notifications-title">

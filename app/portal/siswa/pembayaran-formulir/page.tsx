@@ -2,11 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "../../../components/brand-logo";
 import StudentSidebar from "../student-sidebar";
 import { deferStudentDraftHydration, readStudentDraft } from "../student-application-draft";
 import { useStudentDemoMode } from "../student-demo-mode";
 import { toStudentFormValues, useCurrentStudentData } from "../student-profile-client";
 import { useCurrentDraftApplication } from "../student-application-client";
+import LivePaymentSummary from "../live-payment-summary";
 
 const paymentSteps = [
   { number: "1", title: "Konfirmasi rincian", description: "Pastikan nominal, metode, dan tujuan pembayaran berasal dari sekolah." },
@@ -18,7 +20,7 @@ const paymentSteps = [
 const paymentStates = [
   { name: "Belum Dibayar", tone: "unpaid", description: "Pembayaran belum tercatat. Periksa informasi resmi sebelum melakukan pembayaran." },
   { name: "Menunggu Verifikasi", tone: "pending", description: "Bukti pembayaran telah dikirim dan sedang ditinjau oleh panitia." },
-  { name: "Lunas", tone: "paid", description: "Pembayaran telah terverifikasi dan akses ujian dapat dibuka." },
+  { name: "Terverifikasi", tone: "paid", description: "Pembayaran telah diperiksa. Kelayakan dan akses ujian mengikuti status yang ditetapkan sekolah." },
   { name: "Perlu Perbaikan", tone: "revision", description: "Data atau bukti pembayaran perlu diperbaiki sesuai catatan panitia." },
 ];
 
@@ -64,14 +66,14 @@ export default function StudentFormPaymentPage() {
   const nisn = values.nisn?.trim() || (isDemoMode ? "00987654321" : "Belum diisi");
   const program = getProgramCode(values.primaryProgram?.trim() || (isDemoMode ? "PPLG" : ""));
   const registrationNumber = application?.registrationNumber || (isDemoMode ? "CN260012" : "Belum diterbitkan");
-  const hasApplication = Boolean(application) || isDemoMode;
+  const hasApplication = Boolean(application && application.status !== "DRAFT") || isDemoMode;
 
   return (
     <main className="student-dashboard-outer verification-outer">
       <div className="verification-shell">
         <header className="verification-topbar payment-topbar">
           <Link className="verification-topbar-brand" href="/portal">
-            <span className="student-dashboard-brand-mark">CN</span>
+            <BrandLogo className="student-dashboard-brand-mark" />
             <span><strong>SPMB SMK CITRA NEGARA</strong><small>TAHUN AJARAN 2026/2027</small></span>
           </Link>
           <nav aria-label="Navigasi utama portal">
@@ -94,7 +96,7 @@ export default function StudentFormPaymentPage() {
                 <h1>Pembayaran Formulir</h1>
                 <p>{hasApplication || isDemoMode ? "Periksa rincian pembayaran dan status verifikasi formulir pendaftaran Anda." : "Lengkapi dan kirim formulir pendaftaran terlebih dahulu untuk melanjutkan ke tahap pembayaran."}</p>
               </div>
-              <span className={`payment-status-badge ${!hasApplication && !isDemoMode ? "payment-status-empty" : ""}`}>{isDemoMode ? "DEMO · Pembayaran" : hasApplication ? "Informasi Pembayaran Belum Tersedia" : "Belum Ada Pendaftaran"}</span>
+              <span className={`payment-status-badge ${!hasApplication && !isDemoMode ? "payment-status-empty" : ""}`}>{isDemoMode ? "DEMO · Pembayaran" : hasApplication ? "Status pembayaran dari server" : "Belum Ada Pendaftaran"}</span>
             </header>
             <div className="payment-preview-row">
               <span>{isDemoMode ? "MODE DEMO · Contoh tampilan dan data simulasi, bukan status pembayaran resmi." : "Rincian pembayaran akan muncul setelah dikonfirmasi sekolah."}</span>
@@ -104,12 +106,14 @@ export default function StudentFormPaymentPage() {
 
             <section className="payment-access-notice" aria-label="Informasi akses ujian">
               <span className="payment-notice-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><path d="M12 3 4.5 6v5.5c0 4.5 3.2 7.7 7.5 9.5 4.3-1.8 7.5-5 7.5-9.5V6L12 3Z" stroke="currentColor" strokeWidth="1.8"/><path d="m9 12 2 2 4-4" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"/></svg></span>
-              <div><h2>Akses ujian terbuka setelah pembayaran terverifikasi</h2><p>Panitia akan membuka akses ujian hanya setelah status pembayaran berubah menjadi Lunas. Jadwal ujian perlu dikonfirmasi sekolah.</p></div>
+              <div><h2>Kelayakan ujian mengikuti status pendaftaran</h2><p>Pembayaran terverifikasi tidak otomatis membuka ujian. Sekolah perlu menetapkan kelayakan dan jadwal ujian melalui alur resmi.</p></div>
             </section>
+
+            {!isDemoMode && <LivePaymentSummary />}
 
             <div className="payment-main-grid">
               <div className="payment-primary-column">
-                <section className="payment-unavailable-card" aria-labelledby="payment-info-title">
+                {isDemoMode && <section className="payment-unavailable-card" aria-labelledby="payment-info-title">
                   <div className="payment-unavailable-heading">
                     <span aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="3.5" y="5" width="17" height="14" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M3.5 9h17M8 14h3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg></span>
                     <h2 id="payment-info-title">{hasApplication ? "Informasi pembayaran belum tersedia" : "Belum ada pendaftaran"}</h2>
@@ -120,9 +124,9 @@ export default function StudentFormPaymentPage() {
                     {hasApplication ? <button type="button" disabled aria-disabled="true">⇧ &nbsp;Unggah Bukti Pembayaran</button> : <Link href="/portal/siswa/formulir">Mulai Isi Formulir →</Link>}
                     <a href="https://wa.me/6281277889900" target="_blank" rel="noreferrer">☎ &nbsp;Hubungi Panitia</a>
                   </div>
-                </section>
+                </section>}
 
-                <section className="payment-fee-card" aria-labelledby="payment-fee-title">
+                {isDemoMode && <section className="payment-fee-card" aria-labelledby="payment-fee-title">
                   <h2 id="payment-fee-title">Rincian Biaya</h2>
                   <p>Rincian berikut menunggu konfirmasi resmi dari sekolah.</p>
                   <dl>
@@ -132,7 +136,7 @@ export default function StudentFormPaymentPage() {
                     <div><dt>Batas pembayaran</dt><dd>Perlu dikonfirmasi sekolah</dd></div>
                     <div><dt>Total pembayaran</dt><dd>Perlu dikonfirmasi sekolah</dd></div>
                   </dl>
-                </section>
+                </section>}
               </div>
 
               <div className="payment-secondary-column">

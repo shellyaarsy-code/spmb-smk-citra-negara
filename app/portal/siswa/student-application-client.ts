@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 
 export type StudentApplicationDraft = {
-  status: "DRAFT" | "SUBMITTED";
+  status: "DRAFT" | "SUBMITTED" | "WAITING_DOCUMENT_VERIFICATION" | "DOCUMENT_REVISION_REQUIRED" | "DOCUMENT_VERIFIED" | "WAITING_PAYMENT" | "PAYMENT_VERIFIED" | "ELIGIBLE_FOR_TKA" | "TKA_STARTED" | "TKA_COMPLETED" | "WAITING_SELECTION" | "PASSED" | "WAITLISTED" | "FAILED" | "REJECTED" | "CANCELLED" | "WITHDRAWN";
   registrationNumber: string | null;
   submittedAt: string | null;
   semester1Average: string | null;
@@ -41,11 +41,11 @@ export async function saveCurrentDraftApplication(input: unknown) {
   return parseResponse<StudentApplicationDraft>(response);
 }
 
-export async function submitCurrentApplication() {
+export async function submitCurrentApplication(accepted: boolean) {
   const response = await fetch("/api/student/application/submit", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: "{}",
+    body: JSON.stringify({ accepted }),
   });
   return parseResponse<StudentApplicationDraft>(response);
 }

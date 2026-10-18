@@ -10,10 +10,13 @@ export type StudentDocumentType = {
 };
 
 export type StudentDocumentRecord = {
+  id: string;
   fileName: string;
   mimeType: string | null;
+  fileSize: number | null;
   uploadedAt: string;
   status: string;
+  canDelete: boolean;
   documentType: { code: string; name: string };
 };
 
@@ -29,6 +32,14 @@ export function useStudentDocuments() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  async function refresh() {
+    setLoading(true);
+    setError("");
+    try { setDocuments(await getResponse<StudentDocumentRecord[]>("/api/student/documents", "documents")); }
+    catch (reason: unknown) { setError(reason instanceof Error ? reason.message : "Data dokumen belum dapat dimuat."); }
+    finally { setLoading(false); }
+  }
+
   useEffect(() => {
     let cancelled = false;
     getResponse<StudentDocumentRecord[]>("/api/student/documents", "documents")
@@ -40,7 +51,7 @@ export function useStudentDocuments() {
     return () => { cancelled = true; };
   }, []);
 
-  return { documents, loading, error };
+  return { documents, loading, error, refresh };
 }
 
 export function useAvailableDocumentTypes() {

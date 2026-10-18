@@ -5,6 +5,7 @@ import Link from "next/link";
 import PrincipalSidebar from "./principal-sidebar";
 import { demoPpdbWaves, formatPpdbNumber } from "../demo-ppdb-data";
 import { downloadCsv } from "../csv-export";
+import BrandLogo from "../../components/brand-logo";
 
 const programs = [
   { name: "Pengembangan Perangkat Lunak dan Gim", code: "PPLG", capacity: 120, admitted: 120, percentage: "100%" },
@@ -52,7 +53,7 @@ export default function PrincipalReport({ demo }: { demo: boolean }) {
         </section>
 
         <article className="principal-report-document" aria-label="Pratinjau dokumen laporan eksekutif">
-          <header className="principal-report-document-header"><span>CN</span><div><strong>YAYASAN CITRA NEGARA</strong><h2>SMK CITRA NEGARA</h2><p>LAPORAN EKSEKUTIF PENERIMAAN PESERTA DIDIK BARU (PPDB)</p><b>TAHUN AJARAN 2026/2027</b></div></header>
+          <header className="principal-report-document-header"><BrandLogo width={72} /><div><strong>YAYASAN CITRA NEGARA</strong><h2>SMK CITRA NEGARA</h2><p>LAPORAN EKSEKUTIF PENERIMAAN PESERTA DIDIK BARU (PPDB)</p><b>TAHUN AJARAN 2026/2027</b></div></header>
           {demo ? <>
             <div className="principal-report-document-meta"><span>Periode laporan: <strong>{period}</strong></span><span>Status: <strong>Data simulasi</strong></span></div>
             <section className="principal-report-section"><h3>1. Ringkasan Eksekutif</h3><p>Proses Penerimaan Peserta Didik Baru (PPDB) SMK Citra Negara tahun ajaran 2026/2027 berjalan berdasarkan data pendaftaran, verifikasi administrasi, serta hasil seleksi calon peserta didik. Pada {period.toLocaleLowerCase("id-ID")}, tercatat {formatPpdbNumber(periodMetrics.applicants)} akun pendaftar, {formatPpdbNumber(periodMetrics.complete)} berkas lengkap, {formatPpdbNumber(periodMetrics.verified)} pendaftar lolos verifikasi, dan {formatPpdbNumber(periodMetrics.admitted)} calon peserta didik dinyatakan lulus seleksi. Data ini menjadi bahan pemantauan pimpinan terhadap keterisian daya tampung dan pemerataan penerimaan pada setiap program keahlian.</p></section>

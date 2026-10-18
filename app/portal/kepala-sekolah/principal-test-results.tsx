@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import PrincipalSidebar from "./principal-sidebar";
+import type { getPrincipalTkaOverview } from "../../../services/principal/principal-service";
 
 type ScoreRow = { name: string; nisn: string; program: string; math: number; indonesia: number; english: number; average: string; result: "Lolos" | "Rekondisi" | "Gagal" };
 
@@ -35,7 +36,9 @@ function ResultMetric({ icon, label, value, note, tone }: { icon: "star" | "chec
   return <article className={`principal-result-metric ${tone}`}><div><span>{label}</span><i><PrincipalIcon name={icon} /></i></div><strong>{value}</strong><small>{note}</small></article>;
 }
 
-export default function PrincipalResults({ demo }: { demo: boolean }) {
+type TkaOverview = Awaited<ReturnType<typeof getPrincipalTkaOverview>>;
+
+export default function PrincipalResults({ demo, overview }: { demo: boolean; overview: TkaOverview | null }) {
   const [query, setQuery] = useState("");
   const visibleRows = useMemo(() => scoreRows.filter((row) => `${row.name} ${row.nisn} ${row.program}`.toLocaleLowerCase("id-ID").includes(query.trim().toLocaleLowerCase("id-ID"))), [query]);
 
@@ -47,28 +50,28 @@ export default function PrincipalResults({ demo }: { demo: boolean }) {
         {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Nilai dan hasil di halaman ini adalah data contoh, bukan keputusan seleksi sungguhan.</span><Link href="/portal/kepala-sekolah/hasil-seleksi">Tampilan kosong</Link></div>}
 
         <section className="principal-result-metrics" aria-label="Ringkasan hasil seleksi">
-          <ResultMetric icon="star" label="Nilai Rata-Rata Tertinggi" value={demo ? "92.33" : "—"} note={demo ? "DKV · Siti Aminah" : "Data belum tersedia"} tone="green" />
-          <ResultMetric icon="check" label="Nilai Rata-Rata Nasional KKM" value={demo ? "78.00" : "—"} note={demo ? "Tetap Standar Kelulusan" : "Data belum tersedia"} tone="mint" />
-          <ResultMetric icon="people" label="Tuntas KKM Seleksi" value={demo ? "493" : "—"} note={demo ? "77,0% dari 640 terverifikasi" : "Data belum tersedia"} tone="blue" />
-          <ResultMetric icon="chart" label="Rata-Rata Gabungan" value={demo ? "81.25" : "—"} note={demo ? "+3,4% Seluruh Peserta" : "Data belum tersedia"} tone="amber" />
+          <ResultMetric icon="star" label="Nilai Tertinggi Terpublikasi" value={demo ? "92.33" : overview?.highestScore?.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : overview ? `${overview.publishedCount} nilai dipublikasikan` : "Data belum dapat dimuat"} tone="green" />
+          <ResultMetric icon="check" label="Nilai Terpublikasi" value={demo ? "78.00" : overview?.publishedCount.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : "Nilai TKA tanpa keputusan lulus"} tone="mint" />
+          <ResultMetric icon="people" label="Attempt Selesai" value={demo ? "493" : overview?.completedAttempts.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : "Seluruh attempt yang selesai"} tone="blue" />
+          <ResultMetric icon="chart" label="Rata-Rata Nilai Terpublikasi" value={demo ? "81.25" : overview?.averageScore?.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : "Tidak menetapkan kelulusan"} tone="amber" />
         </section>
 
         <div className="principal-results-analysis">
           <section className="principal-results-panel principal-subject-panel" aria-labelledby="principal-subject-title">
-            <h2 id="principal-subject-title">Rerata Skor Berdasarkan Materi Uji</h2>
-            {demo ? <div className="principal-subject-list">{subjectScores.map((subject) => <div className="principal-subject-row" key={subject.label}><div><strong>{subject.label}</strong><span>{subject.value.toFixed(1)} / 100</span></div><div className="principal-subject-track"><i className={subject.tone} style={{ width: `${subject.value}%` }} /></div></div>)}</div> : <div className="principal-results-empty">Ringkasan skor materi akan tampil setelah nilai tes tersedia.</div>}
+            <h2 id="principal-subject-title">Ringkasan Nilai TKA</h2>
+            {demo ? <div className="principal-subject-list">{subjectScores.map((subject) => <div className="principal-subject-row" key={subject.label}><div><strong>{subject.label}</strong><span>{subject.value.toFixed(1)} / 100</span></div><div className="principal-subject-track"><i className={subject.tone} style={{ width: `${subject.value}%` }} /></div></div>)}</div> : <div className="principal-results-empty">Perincian per materi belum tersedia pada model soal saat ini.</div>}
           </section>
 
           <section className="principal-results-panel principal-participation-panel" aria-labelledby="principal-participation-title">
             <h2 id="principal-participation-title">Status Partisipasi Tes Seleksi</h2>
-            {demo ? <div className="principal-participation-content"><div className="principal-participation-ring" role="img" aria-label="92 persen siswa terverifikasi telah menyelesaikan tes"><strong>92,0%</strong><small>SELESAI</small></div><ul><li><i className="done" /><span>Sudah Ujian (589 siswa)</span></li><li><i className="progress" /><span>Sedang Menempuh (24 siswa)</span></li><li><i className="waiting" /><span>Belum Memulai (27 siswa)</span></li></ul></div> : <div className="principal-results-empty">Status partisipasi tes akan tampil setelah jadwal ujian dimulai.</div>}
+            {demo ? <div className="principal-participation-content"><div className="principal-participation-ring" role="img" aria-label="92 persen siswa terverifikasi telah menyelesaikan tes"><strong>92,0%</strong><small>SELESAI</small></div><ul><li><i className="done" /><span>Sudah Ujian (589 siswa)</span></li><li><i className="progress" /><span>Sedang Menempuh (24 siswa)</span></li><li><i className="waiting" /><span>Belum Memulai (27 siswa)</span></li></ul></div> : overview ? <div className="principal-results-empty">{overview.completedAttempts} attempt selesai dan {overview.activeAttempts} attempt sedang berlangsung. Sistem belum memiliki daftar peserta terjadwal untuk menghitung yang belum memulai.</div> : <div className="principal-results-empty">Status partisipasi tes belum dapat dimuat.</div>}
           </section>
         </div>
 
         <section className="principal-results-table-panel" aria-labelledby="principal-results-table-title">
-          <div className="principal-results-table-heading"><h2 id="principal-results-table-title">Daftar Hasil Ujian Terkini <span>(Read-Only)</span></h2>{demo && <label className="principal-results-search"><PrincipalIcon name="search" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari nama peserta…" aria-label="Cari nama, NISN, atau program peserta" /></label>}</div>
-          <div className="principal-results-table-wrap"><table className="principal-results-table"><thead><tr><th scope="col">Nama Lengkap</th><th scope="col">NISN</th><th scope="col">Program</th><th scope="col">Matematika</th><th scope="col">B. Indo</th><th scope="col">B. Ing</th><th scope="col">Rerata</th><th scope="col">Keterangan</th></tr></thead><tbody>
-            {!demo ? <tr><td className="principal-results-table-empty" colSpan={8}>Hasil ujian akan tampil setelah nilai seleksi tersedia.</td></tr> : visibleRows.length ? visibleRows.map((row) => <tr key={row.nisn}><td><strong>{row.name}</strong></td><td>{row.nisn}</td><td>{row.program}</td><td className={row.math < 70 ? "low" : ""}>{row.math}</td><td className={row.indonesia < 70 ? "low" : ""}>{row.indonesia}</td><td className={row.english < 70 ? "low" : ""}>{row.english}</td><td><strong className={`principal-result-average ${row.result.toLowerCase()}`}>{row.average}</strong></td><td><span className={`principal-result-outcome ${row.result.toLowerCase()}`}>{row.result.toUpperCase()}</span></td></tr>) : <tr><td className="principal-results-table-empty" colSpan={8}>Tidak ada peserta yang cocok dengan pencarian.</td></tr>}
+          <div className="principal-results-table-heading"><h2 id="principal-results-table-title">Daftar Nilai TKA yang Dipublikasikan <span>(Read-Only)</span></h2>{demo && <label className="principal-results-search"><PrincipalIcon name="search" /><input type="search" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Cari nama peserta…" aria-label="Cari nama peserta" /></label>}</div>
+          <div className="principal-results-table-wrap"><table className="principal-results-table"><thead><tr><th scope="col">No. Pendaftaran</th><th scope="col">Nama</th><th scope="col">Tes</th><th scope="col">Nilai</th><th scope="col">Dipublikasikan</th></tr></thead><tbody>
+            {demo ? visibleRows.length ? visibleRows.map((row) => <tr key={row.nisn}><td>Simulasi</td><td><strong>{row.name}</strong></td><td>TKA</td><td>{row.average}</td><td>Data contoh</td></tr>) : <tr><td className="principal-results-table-empty" colSpan={5}>Tidak ada peserta yang cocok dengan pencarian.</td></tr> : overview?.results.length ? overview.results.map((row) => <tr key={row.id}><td>{row.registrationNumber ?? "—"}</td><td><strong>{row.name ?? "Nama belum tersedia"}</strong></td><td>{row.testName}</td><td>{row.score ?? "—"}</td><td>{row.publishedAt ? new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(row.publishedAt)) : "—"}</td></tr>) : <tr><td className="principal-results-table-empty" colSpan={5}>{overview ? "Belum ada nilai TKA yang dipublikasikan." : "Nilai belum dapat dimuat."}</td></tr>}
           </tbody></table></div>
         </section>
       </section>

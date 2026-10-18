@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "../../../components/brand-logo";
 import StudentSidebar from "../student-sidebar";
 import { deferStudentDraftHydration, readStudentDraft } from "../student-application-draft";
 import { useStudentDemoMode } from "../student-demo-mode";
@@ -34,7 +35,7 @@ export default function OfficialGraduationLetterPage() {
       <div className="verification-shell">
         <header className="verification-topbar official-letter-topbar">
           <Link className="verification-topbar-brand" href="/portal">
-            <span className="student-dashboard-brand-mark">CN</span>
+            <BrandLogo className="student-dashboard-brand-mark" />
             <span><strong>SPMB SMK CITRA NEGARA</strong><small>TAHUN AJARAN 2026/2027</small></span>
           </Link>
           <nav aria-label="Navigasi utama portal">

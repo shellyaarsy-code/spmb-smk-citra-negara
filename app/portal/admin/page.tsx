@@ -1,6 +1,7 @@
 import Link from "next/link";
 import AdminSidebar, { AdminIcon } from "./admin-sidebar";
 import { demoPpdbMetrics, demoPpdbPrograms, formatPpdbNumber } from "../demo-ppdb-data";
+import { getAdminDashboardSummary } from "../../../services/admin/dashboard-service";
 
 const programs = demoPpdbPrograms;
 
@@ -17,13 +18,10 @@ const demoAgenda = [
   { title: "Pengumuman Kelulusan", date: "25 Maret 2026", detail: "Integrasi sistem penandatangan SK.", tone: "blue" },
 ];
 
-function MetricCard({ label, value, note, tone, icon }: { label: string; value: string; note: string; tone: string; icon: "people" | "check" | "chart" }) {
+function MetricCard({ label, value, note, tone, icon, href }: { label: string; value: string; note: string; tone: string; icon: "people" | "check" | "chart"; href?: string }) {
+  const content = <><div className="admin-metric-top"><span>{label}</span><span className={`admin-metric-icon ${tone}`}><AdminIcon name={icon} /></span></div><div className="admin-metric-value">{value}</div><span className={`admin-metric-note ${tone}`}>{note}</span></>;
   return (
-    <article className="admin-metric-card">
-      <div className="admin-metric-top"><span>{label}</span><span className={`admin-metric-icon ${tone}`}><AdminIcon name={icon} /></span></div>
-      <div className="admin-metric-value">{value}</div>
-      <span className={`admin-metric-note ${tone}`}>{note}</span>
-    </article>
+    href ? <Link className="admin-metric-card" href={href}>{content}</Link> : <article className="admin-metric-card">{content}</article>
   );
 }
 
@@ -34,9 +32,14 @@ function EmptyPanel({ children }: { children: string }) {
 export default async function AdminDashboardPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
   const { mode } = await searchParams;
   const demo = mode === "demo";
+  let summary: Awaited<ReturnType<typeof getAdminDashboardSummary>> | null = null;
+  if (!demo) {
+    try { summary = await getAdminDashboardSummary(); }
+    catch { summary = null; }
+  }
   const funnel = demo
     ? [{ label: "Membuat Akun", count: formatPpdbNumber(demoPpdbMetrics.totalApplicants), percent: 100, color: "green" }, { label: "Berkas Lengkap", count: formatPpdbNumber(demoPpdbMetrics.completeDocuments), percent: 79.1, color: "green" }, { label: "Lolos Verifikasi Admin", count: formatPpdbNumber(demoPpdbMetrics.verifiedApplicants), percent: 51.6, color: "green" }, { label: "Lulus Seleksi Akhir", count: formatPpdbNumber(demoPpdbMetrics.admittedApplicants), percent: 39.8, color: "blue" }]
-    : [{ label: "Membuat Akun", count: "0", percent: 0, color: "green" }, { label: "Formulir Selesai", count: "0", percent: 0, color: "green" }, { label: "Berkas Lengkap", count: "0", percent: 0, color: "green" }, { label: "Lolos Seleksi Akhir", count: "0", percent: 0, color: "blue" }];
+    : [];
 
   return (
     <main className="admin-dashboard-outer">
@@ -47,7 +50,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
           <header className="admin-dashboard-header">
             <div className="admin-dashboard-heading"><h1>Dashboard Analitis</h1><p>Pantau kemajuan pendaftaran dan verifikasi SPMB.</p></div>
             <div className="admin-dashboard-header-actions">
-              <label className="admin-dashboard-search"><AdminIcon name="search" /><input type="search" placeholder="Cari No. Pendaftaran, Nama…" aria-label="Cari pendaftar (pratinjau tampilan)" disabled /></label>
+              <Link className="admin-dashboard-search" href={demo ? "/portal/admin/pendaftaran?mode=demo" : "/portal/admin/pendaftaran"} aria-label="Buka daftar dan pencarian pendaftar"><AdminIcon name="search" /><span>Cari pendaftar</span></Link>
               <div className="admin-dashboard-account"><span>AD</span><div><strong>Admin Admisi</strong><small>PANITIA PPDB</small></div></div>
             </div>
           </header>
@@ -55,29 +58,33 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
           {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Angka, agenda, dan daftar nama pada halaman ini hanya contoh visual, bukan data pendaftar sungguhan.</span><Link href="/portal/admin">Lihat tampilan kosong</Link></div>}
 
           <section className="admin-metrics-grid" aria-label="Ringkasan jumlah pendaftar">
-            <MetricCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : "0"} note={demo ? "Akun terdaftar" : "Belum ada data"} tone="green" icon="people" />
-            <MetricCard label="Berkas Lengkap" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : "0"} note={demo ? "79,1% dari total" : "Belum ada data"} tone="amber" icon="check" />
-            <MetricCard label="Lolos Verifikasi Admin" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : "0"} note={demo ? "65,1% dari berkas lengkap" : "Belum ada data"} tone="mint" icon="check" />
-            <MetricCard label="Lulus Seleksi" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : "0"} note={demo ? `Tingkat kelulusan ${demoPpdbMetrics.passRate}` : "Belum ada data"} tone="blue" icon="chart" />
+            <MetricCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Akun terdaftar (simulasi)" : summary ? "Aplikasi yang telah dikirim" : "Data belum dapat dimuat"} tone="green" icon="people" />
+            <MetricCard label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="amber" icon="check" />
+            <MetricCard label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="mint" icon="check" />
+            <MetricCard label="Status Lulus" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary?.passed.toLocaleString("id-ID") ?? "—"} note={demo ? `Simulasi ${demoPpdbMetrics.passRate}` : "Aplikasi berstatus PASSED"} tone="blue" icon="chart" />
+            {!demo && <>
+              <MetricCard label="Pembayaran Menunggu" value={summary?.pendingPayments.toLocaleString("id-ID") ?? "â€”"} note={summary ? "Menunggu pemeriksaan admin" : "Data belum dapat dimuat"} tone="amber" icon="check" href="/portal/admin/pembayaran" />
+              <MetricCard label="Tes TKA Terbit" value={summary?.publishedTests.toLocaleString("id-ID") ?? "â€”"} note={summary ? "Tes aktif yang dipublikasikan" : "Data belum dapat dimuat"} tone="green" icon="chart" href="/portal/admin/manajemen-tes" />
+              <MetricCard label="Keputusan Seleksi" value={summary?.selectionDecisions.toLocaleString("id-ID") ?? "â€”"} note={summary ? "Keputusan tersimpan" : "Data belum dapat dimuat"} tone="blue" icon="people" href="/portal/admin/manajemen-seleksi" />
+            </>}
           </section>
 
           <div className="admin-dashboard-grid admin-dashboard-grid-top">
             <section className="admin-dashboard-card admin-funnel-card" aria-labelledby="admin-funnel-title">
-              <h2 id="admin-funnel-title">Fase Konversi Alur SPMB</h2>
-              {demo ? <div className="admin-funnel-list">{funnel.map((item) => <div className="admin-funnel-item" key={item.label}><div className="admin-funnel-heading"><strong>{item.label}</strong><span>{item.count} Siswa ({item.percent}%)</span></div><div className="admin-funnel-track"><span className={item.color} style={{ width: `${item.percent}%` }} /></div></div>)}</div> : <EmptyPanel>Grafik alur akan terisi saat data pendaftaran tersedia.</EmptyPanel>}
+              <h2 id="admin-funnel-title">{demo ? "Fase Konversi Alur SPMB" : "Jumlah per Status Aplikasi"}</h2>
+              {demo ? <div className="admin-funnel-list">{funnel.map((item) => <div className="admin-funnel-item" key={item.label}><div className="admin-funnel-heading"><strong>{item.label}</strong><span>{item.count} Siswa ({item.percent}%)</span></div><div className="admin-funnel-track"><span className={item.color} style={{ width: `${item.percent}%` }} /></div></div>)}</div> : summary ? <div className="admin-funnel-list">{summary.statuses.map(({ status, count }) => <div className="admin-funnel-item" key={status}><div className="admin-funnel-heading"><strong>{status.replaceAll("_", " ")}</strong><span>{count.toLocaleString("id-ID")}</span></div><div className="admin-funnel-track"><span className="green" style={{ width: `${summary.total ? Math.min(100, count / summary.total * 100) : 0}%` }} /></div></div>)}</div> : <EmptyPanel>Ringkasan status belum dapat dimuat.</EmptyPanel>}
             </section>
 
             <section className="admin-dashboard-card admin-program-card" aria-labelledby="admin-program-title">
               <h2 id="admin-program-title">Peminat Berdasarkan Program Keahlian</h2>
-              <ul className="admin-program-list">{programs.map((program) => <li key={program.code}><span className={`admin-program-code ${program.tone}`}>{program.code}</span><span className="admin-program-name">{program.name}</span><strong>{demo ? program.count.toLocaleString("id-ID") : "0"} siswa</strong></li>)}</ul>
-              {!demo && <p className="admin-panel-caption">Jumlah peminat belum tersedia.</p>}
+              {demo ? <ul className="admin-program-list">{programs.map((program) => <li key={program.code}><span className={`admin-program-code ${program.tone}`}>{program.code}</span><span className="admin-program-name">{program.name}</span><strong>{program.count.toLocaleString("id-ID")} siswa</strong></li>)}</ul> : summary ? summary.programs.length ? <ul className="admin-program-list">{summary.programs.map((program) => <li key={program.code}><span className="admin-program-code green">{program.code}</span><span className="admin-program-name">{program.name}</span><strong>{program.count.toLocaleString("id-ID")} pilihan</strong></li>)}</ul> : <EmptyPanel>Belum ada program aktif.</EmptyPanel> : <EmptyPanel>Data program belum dapat dimuat.</EmptyPanel>}
             </section>
           </div>
 
           <div className="admin-dashboard-grid admin-dashboard-grid-bottom">
             <section className="admin-dashboard-card admin-queue-card" aria-labelledby="admin-queue-title">
-              <div className="admin-card-heading"><h2 id="admin-queue-title">Antrean Verifikasi Dokumen</h2>{demo && <span>Lihat Semua (24) <AdminIcon name="arrow" /></span>}</div>
-              {demo ? <ul className="admin-queue-list">{demoQueue.map((item) => <li className="admin-queue-row" key={item.name}><span className="admin-queue-avatar">{item.initial}</span><span className="admin-queue-person"><strong>{item.name}</strong><small>Program Pilihan: {item.program} <i aria-hidden="true">•</i> {item.detail}</small></span><span className={`admin-queue-status ${item.state}`}>{item.status}</span></li>)}</ul> : <EmptyPanel>Belum ada berkas yang menunggu verifikasi.</EmptyPanel>}
+              <div className="admin-card-heading"><h2 id="admin-queue-title">Antrean Verifikasi Dokumen</h2>{demo ? <Link href="/portal/admin/pendaftaran?mode=demo">Lihat Semua (24) <AdminIcon name="arrow" /></Link> : <Link href="/portal/admin/pendaftaran?documentStatus=PENDING">Tinjau antrean <AdminIcon name="arrow" /></Link>}</div>
+              {demo ? <ul className="admin-queue-list">{demoQueue.map((item) => <li className="admin-queue-row" key={item.name}><span className="admin-queue-avatar">{item.initial}</span><span className="admin-queue-person"><strong>{item.name}</strong><small>Program Pilihan: {item.program} <i aria-hidden="true">•</i> {item.detail}</small></span><span className={`admin-queue-status ${item.state}`}>{item.status}</span></li>)}</ul> : <EmptyPanel>{summary ? summary.pendingDocuments ? `${summary.pendingDocuments.toLocaleString("id-ID")} dokumen menunggu verifikasi. Buka daftar pendaftar untuk meninjau dokumen per siswa.` : "Tidak ada dokumen berstatus pending." : "Data antrean belum dapat dimuat."}</EmptyPanel>}
             </section>
 
             <section className="admin-dashboard-card admin-agenda-card" aria-labelledby="admin-agenda-title">

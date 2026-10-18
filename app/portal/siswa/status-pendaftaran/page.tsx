@@ -7,7 +7,7 @@ import { useCurrentDraftApplication } from "../student-application-client";
 export default function StudentRegistrationStatusPage() {
   const { application, loading, error } = useCurrentDraftApplication();
   const primaryProgram = application?.programChoices.find((choice) => choice.priority === 1)?.studyProgram;
-  const isSubmitted = application?.status === "SUBMITTED";
+  const isSubmitted = Boolean(application && application.status !== "DRAFT");
   const submittedAt = application?.submittedAt
     ? new Intl.DateTimeFormat("id-ID", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit", hour12: false }).format(new Date(application.submittedAt)) + " WIB"
     : null;
@@ -23,7 +23,7 @@ export default function StudentRegistrationStatusPage() {
               <h1>Status Pendaftaran</h1>
               <p>Periksa status dan ringkasan pengiriman formulir pendaftaran Anda.</p>
             </div>
-            <span className="student-status-badge">{loading ? "Memuat draft..." : `Status: ${application?.status ?? "Belum Ada Draft"}`}</span>
+            <span className="student-status-badge">{loading ? "Memuat status..." : `Status: ${application?.status ?? "Belum Ada Draft"}`}</span>
           </header>
           {error && <p className="student-biodata-feedback has-error" role="alert">{error}</p>}
 
@@ -46,7 +46,7 @@ export default function StudentRegistrationStatusPage() {
                 </dl>
 
                 <div className="student-submission-actions">
-                  <Link className="student-parent-back" href="/portal/siswa/formulir">Lanjutkan Draft</Link>
+                  {!isSubmitted && <Link className="student-parent-back" href="/portal/siswa/formulir">Lanjutkan Draft</Link>}
                   <Link className="student-parent-back" href="/portal/siswa">Kembali ke Dashboard</Link>
                 </div>
               </>

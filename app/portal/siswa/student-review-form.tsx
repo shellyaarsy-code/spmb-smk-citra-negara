@@ -86,8 +86,7 @@ export default function StudentReviewForm() {
   const incompleteDocumentTypes = documentTypes.filter((documentType) =>
     documentType.required && !documents.some((document) => document.documentType.code === documentType.code),
   );
-  const dataReady = !profileLoading && !applicationLoading && incompleteFields.length === 0;
-  const documentsReady = !documentsLoading && !documentTypesLoading && incompleteDocumentTypes.length === 0;
+  const documentsChecked = !documentsLoading && !documentTypesLoading;
 
   const primaryCode = values.primaryProgram ?? "";
   const backupCode = values.backupProgram ?? "";
@@ -99,6 +98,18 @@ export default function StudentReviewForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (profileError || applicationError) {
+      setNotice(profileError || applicationError);
+      return;
+    }
+    if (incompleteFields.length > 0) {
+      setNotice("Lengkapi semua kolom wajib yang masih bertanda ‘Belum diisi’ sebelum mengirim formulir.");
+      return;
+    }
+    if (!primaryCode || !backupCode || primaryCode === backupCode) {
+      setNotice("Pilih dua program keahlian yang berbeda untuk pilihan utama dan cadangan.");
+      return;
+    }
     if (!accepted) {
       setNotice("Centang pernyataan persetujuan sebelum melanjutkan.");
       return;
@@ -106,7 +117,7 @@ export default function StudentReviewForm() {
     setSubmitting(true);
     setNotice("");
     try {
-      const submittedApplication = await submitCurrentApplication();
+      const submittedApplication = await submitCurrentApplication(accepted);
       setApplication(submittedApplication);
       router.push("/portal/siswa/status-pendaftaran");
     } catch (error) {
@@ -125,14 +136,18 @@ export default function StudentReviewForm() {
       </section>
       {(profileError || applicationError || documentsError || documentTypesError) && <p className="student-biodata-feedback has-error" role="alert">{profileError || applicationError || documentsError || documentTypesError}</p>}
 
-      {(!dataReady || !documentsReady) && (
+      {!profileLoading && !applicationLoading && incompleteFields.length > 0 && (
         <div className="student-review-warning" role="status">
-          <strong>Data atau berkas masih belum lengkap.</strong>
-          <span>
-            {!dataReady && 'Isian kosong akan tampil sebagai “Belum diisi”. Pratinjau alur tetap bisa dilanjutkan. '}
-            {!documentsReady && `Dokumen yang ditandai wajib belum tercatat: ${incompleteDocumentTypes.map((documentType) => documentType.name).join(", ")}.`}
-          </span>
-          <Link href="/portal/siswa/formulir/unggah-berkas">Periksa unggah berkas</Link>
+          <strong>Data formulir belum lengkap.</strong>
+          <span>Lengkapi semua kolom wajib yang masih tampil sebagai “Belum diisi” sebelum mengirim formulir.</span>
+          <Link href="/portal/siswa/formulir">Periksa data formulir</Link>
+        </div>
+      )}
+      {documentsChecked && incompleteDocumentTypes.length > 0 && (
+        <div className="student-review-warning" role="note">
+          <strong>Dokumen belum tercatat.</strong>
+          <span>Unggah dokumen belum tersedia. Dokumen tidak memblokir pengiriman formulir saat ini.</span>
+          <Link href="/portal/siswa/formulir/unggah-berkas">Lihat status dokumen</Link>
         </div>
       )}
 

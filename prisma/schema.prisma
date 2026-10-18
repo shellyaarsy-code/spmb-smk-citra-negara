@@ -411,8 +411,13 @@ model Payment {
   applicationId    String        @db.Uuid
   referenceNumber  String        @unique
   amount           Decimal?      @db.Decimal(12, 2)
+  paymentMethod    String?
+  paymentDestination String?
   status           PaymentStatus @default(PENDING)
   paymentProofPath String?
+  paymentProofFileName String?
+  paymentProofMimeType String?
+  paymentProofSize Int?
   verifiedByUserId String?       @db.Uuid
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt

@@ -5,7 +5,7 @@ import { requireRole } from "../auth/authorization";
 import { resolveOwnedStudentId } from "../student/student-ownership";
 import { getCurrentStudentId, saveStudentDetailsInTransaction, StudentRecordMissingError } from "../student/student-service";
 import { getOrCreateDraftApplication } from "./draft-policy";
-import { ApplicationInputValidationError, parseApplicationDraftUpdate, StudyProgramUnavailableError } from "./application-validation";
+import { isCompletedSubmission, parseApplicationDraftUpdate, parseSubmissionConsent, StudyProgramUnavailableError, validateApplicationSubmission } from "./application-validation";
 import { assertApplicationTransition, InvalidApplicationTransitionError } from "./state-transition";
 import { generateRegistrationNumber, type RegistrationNumberGenerator } from "./registration-number";
 
@@ -230,24 +230,7 @@ function isRegistrationNumberCollision(error: unknown) {
   return error instanceof Prisma.PrismaClientKnownRequestError && error.code === "P2002";
 }
 
-function validateDraftForSubmission(
-  application: {
-    semester1Average: Prisma.Decimal | null;
-    semester2Average: Prisma.Decimal | null;
-    semester3Average: Prisma.Decimal | null;
-    semester4Average: Prisma.Decimal | null;
-  },
-  programs: { isActive: boolean }[],
-) {
-  for (const average of [application.semester1Average, application.semester2Average, application.semester3Average, application.semester4Average]) {
-    if (average !== null && (!average.isFinite() || average.lessThan(0) || average.greaterThan(100))) {
-      throw new ApplicationInputValidationError();
-    }
-  }
-  if (programs.some((program) => !program.isActive)) throw new StudyProgramUnavailableError();
-}
-
-export async function submitCurrentApplication(generator: RegistrationNumberGenerator = generateRegistrationNumber) {
+export async function submitCurrentApplication(input: unknown, generator: RegistrationNumberGenerator = generateRegistrationNumber) {
   const user = await requireRole(RoleName.SISWA);
   const studentId = await resolveOwnedStudentId(user.id, async (userId) =>
     prisma.student.findUnique({ where: { userId }, select: { id: true } }),
@@ -278,7 +261,7 @@ export async function submitCurrentApplication(generator: RegistrationNumberGene
               select: submittedSelect,
             });
             if (submitted) {
-              if (submitted.registrationNumber === null || submitted.submittedAt === null) {
+              if (!isCompletedSubmission(submitted)) {
                 throw new DraftRegistrationNumberConflictError();
               }
               return submitted;
@@ -291,9 +274,60 @@ export async function submitCurrentApplication(generator: RegistrationNumberGene
 
           const programChoices = await tx.applicationProgramChoice.findMany({
             where: { applicationId: draft.id },
-            select: { studyProgram: { select: { isActive: true } } },
+            select: {
+              priority: true,
+              studyProgramId: true,
+              studyProgram: { select: { isActive: true } },
+            },
           });
-          validateDraftForSubmission(draft, programChoices.map((choice) => choice.studyProgram));
+
+          const studentData = await tx.student.findUnique({
+            where: { id: studentId },
+            select: {
+              profile: {
+                select: {
+                  nik: true,
+                  nisn: true,
+                  fullName: true,
+                  gender: true,
+                  birthPlace: true,
+                  birthDate: true,
+                  religion: true,
+                  familyCardNumber: true,
+                  familyStatus: true,
+                  citizenship: true,
+                  address: true,
+                  province: true,
+                  city: true,
+                  district: true,
+                  village: true,
+                  postalCode: true,
+                  parentWhatsapp: true,
+                  schoolNpsn: true,
+                  schoolOrigin: true,
+                  schoolType: true,
+                  schoolStatus: true,
+                  graduationYear: true,
+                },
+              },
+              parentGuardians: {
+                select: { guardianType: true, guardianName: true, occupation: true, incomeBracket: true },
+              },
+            },
+          });
+          if (!studentData) throw new StudentRecordMissingError();
+
+          parseSubmissionConsent(input);
+          validateApplicationSubmission({
+            profile: studentData.profile,
+            guardians: studentData.parentGuardians,
+            semesterAverages: [draft.semester1Average, draft.semester2Average, draft.semester3Average, draft.semester4Average],
+            programChoices: programChoices.map((choice) => ({
+              priority: choice.priority,
+              studyProgramId: choice.studyProgramId,
+              isActive: choice.studyProgram.isActive,
+            })),
+          });
 
           const registrationNumber = generator();
           if (!registrationNumber || !registrationNumber.trim() || registrationNumber.length > 255) {

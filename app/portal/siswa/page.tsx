@@ -8,18 +8,9 @@ import { deferStudentDraftHydration, readStudentDraft } from "./student-applicat
 import { toStudentFormValues, useCurrentStudentData } from "./student-profile-client";
 import { useCurrentDraftApplication } from "./student-application-client";
 import { useAvailableDocumentTypes, useStudentDocuments } from "./student-documents-client";
+import StudentAnnouncements from "./student-announcements";
 
 const requiredFormFields = ["nik", "nisn", "fullName", "gender", "birthPlace", "birthDate", "religion", "familyCardNumber", "familyStatus", "citizenship", "streetAddress", "province", "city", "district", "village", "postalCode", "fatherName", "fatherOccupation", "fatherIncome", "motherName", "motherOccupation", "motherIncome", "parentWhatsapp", "schoolNpsn", "schoolName", "schoolType", "schoolStatus", "graduationYear", "semester1Average", "semester2Average", "semester3Average", "semester4Average", "primaryProgram", "backupProgram"];
-
-const announcements = [
-  {
-    title: "Pemberitahuan Ujian Saringan Masuk",
-    date: "05 Februari 2026",
-    description: "Ujian tulis seleksi potensi akademik pendaftar Gelombang 1 akan dijadwalkan secara daring pada tanggal 10 Maret 2026 mendatang.",
-  },
-  { title: "Tips Persiapan Berkas Dokumen", date: "01 Februari 2026" },
-];
-
 
 function Icon({ name }: { name: string }) {
   const paths: Record<string, ReactNode> = {
@@ -145,15 +136,7 @@ export default function StudentDashboardPage() {
                   <h2 id="student-announcements-title">Pengumuman Terbaru</h2>
                   <Icon name="bell" />
                 </div>
-                <div className="student-announcement-list">
-                  {announcements.map((announcement) => (
-                    <article className="student-announcement" key={announcement.title}>
-                      <h3>{announcement.title}</h3>
-                      <time>{announcement.date}</time>
-                      {announcement.description && <p>{announcement.description}</p>}
-                    </article>
-                  ))}
-                </div>
+                <StudentAnnouncements />
               </section>
 
               <section className="student-dashboard-card student-activity-card" aria-labelledby="student-activity-title">

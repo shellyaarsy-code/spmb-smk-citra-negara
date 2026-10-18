@@ -80,3 +80,73 @@ export function parseApplicationDraftUpdate(input: unknown) {
     studentData: hasStudentData ? { profile: input.profile, guardians: input.guardians } : undefined,
   };
 }
+
+export function isCompletedSubmission(submission: { registrationNumber: string | null; submittedAt: Date | null } | null) {
+  return submission !== null && submission.registrationNumber !== null && submission.submittedAt !== null;
+}
+
+export class ApplicationSubmissionRequirementsError extends Error {
+  constructor() {
+    super("Application submission requirements are incomplete");
+    this.name = "ApplicationSubmissionRequirementsError";
+  }
+}
+
+type SubmissionProfile = Record<string, unknown> | null;
+type SubmissionGuardian = {
+  guardianType: string;
+  guardianName: string | null;
+  occupation: string | null;
+  incomeBracket: string | null;
+};
+type SubmissionProgramChoice = {
+  priority: number;
+  studyProgramId: string;
+  isActive: boolean;
+};
+
+const requiredProfileFields = [
+  "nik", "nisn", "fullName", "gender", "birthPlace", "birthDate", "religion", "familyCardNumber",
+  "familyStatus", "citizenship", "address", "province", "city", "district", "village", "postalCode",
+  "parentWhatsapp", "schoolNpsn", "schoolOrigin", "schoolType", "schoolStatus", "graduationYear",
+] as const;
+
+function isPresent(value: unknown) {
+  return typeof value === "string" ? value.trim().length > 0 : value !== null && value !== undefined;
+}
+
+export function validateApplicationSubmission(input: {
+  profile: SubmissionProfile;
+  guardians: SubmissionGuardian[];
+  semesterAverages: (Prisma.Decimal | null)[];
+  programChoices: SubmissionProgramChoice[];
+}) {
+  if (!input.profile || requiredProfileFields.some((field) => !isPresent(input.profile?.[field]))) {
+    throw new ApplicationSubmissionRequirementsError();
+  }
+
+  const guardianByType = new Map(input.guardians.map((guardian) => [guardian.guardianType, guardian]));
+  for (const type of ["FATHER", "MOTHER"] as const) {
+    const guardian = guardianByType.get(type);
+    if (!guardian || !isPresent(guardian.guardianName) || !isPresent(guardian.occupation) || !isPresent(guardian.incomeBracket)) {
+      throw new ApplicationSubmissionRequirementsError();
+    }
+  }
+
+  if (input.semesterAverages.length !== 4 || input.semesterAverages.some((average) =>
+    average === null || !average.isFinite() || average.lessThan(0) || average.greaterThan(100),
+  )) {
+    throw new ApplicationSubmissionRequirementsError();
+  }
+
+  const primary = input.programChoices.find((choice) => choice.priority === 1);
+  const backup = input.programChoices.find((choice) => choice.priority === 2);
+  if (!primary || !backup || primary.studyProgramId === backup.studyProgramId) {
+    throw new ApplicationSubmissionRequirementsError();
+  }
+  if (input.programChoices.some((choice) => !choice.isActive)) throw new StudyProgramUnavailableError();
+}
+
+export function parseSubmissionConsent(input: unknown) {
+  if (!isRecord(input) || input.accepted !== true) throw new ApplicationSubmissionRequirementsError();
+}

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import AuthLogoutLink from "../../components/auth-logout-link";
+import BrandLogo from "../../components/brand-logo";
 
-type StudentSidebarProps = { active: "dashboard" | "formulir" | "upload" | "payment" | "exam" | "announcement" | "profile" };
+type StudentSidebarProps = { active: "dashboard" | "formulir" | "upload" | "payment" | "exam" | "announcement" | "notifications" | "profile" };
 
 const menu = [
   { label: "Dashboard", icon: "home", href: "/portal/siswa", key: "dashboard" },
@@ -10,6 +11,7 @@ const menu = [
   { label: "Pembayaran Formulir", icon: "payment", href: "/portal/siswa/pembayaran-formulir", key: "payment" },
   { label: "Hasil Ujian & Seleksi", icon: "clipboard", href: "/portal/siswa/ujian-tka", key: "exam" },
   { label: "Pengumuman", icon: "bell", href: "/portal/siswa/pengumuman-kelulusan", key: "announcement" },
+  { label: "Notifikasi", icon: "bell", href: "/portal/siswa/notifikasi", key: "notifications" },
   { label: "Profil Siswa", icon: "profile", href: "/portal/siswa/profil", key: "profile" },
 ] as const;
 
@@ -33,7 +35,7 @@ export default function StudentSidebar({ active }: StudentSidebarProps) {
   return (
     <aside className="student-sidebar">
       <Link className="student-dashboard-brand" href="/portal" aria-label="SPMB SMK Citra Negara, portal">
-        <span className="student-dashboard-brand-mark">CN</span>
+        <BrandLogo className="student-dashboard-brand-mark" />
         <span>SPMB SMK CITRA NEGARA</span>
       </Link>
       <nav className="student-sidebar-nav" aria-label="Menu calon siswa">

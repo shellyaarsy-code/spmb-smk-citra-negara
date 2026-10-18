@@ -2,7 +2,8 @@ import { applicationErrorResponse } from "../../../../../services/application/ap
 import { getCurrentDraftApplication, updateCurrentDraftApplication } from "../../../../../services/application/application-service";
 
 function publicDraft(application: Awaited<ReturnType<typeof getCurrentDraftApplication>>) {
-  const { id: _internalId, ...draft } = application;
+  const { id, ...draft } = application;
+  void id;
   return draft;
 }
 

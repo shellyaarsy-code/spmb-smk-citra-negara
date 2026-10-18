@@ -1,0 +1,48 @@
+"use client";
+
+import { useCallback, useEffect, useState, type FormEvent } from "react";
+import AdminSidebar from "./admin-sidebar";
+
+type Criterion = { name: string; weight: number };
+type Result = { id: string; status: string; selectionRank: number | null; studyProgram: { code: string; name: string }; application: { registrationNumber: string | null; student: { profile: { fullName: string | null } | null } } };
+type Candidate = { applicationId: string; registrationNumber: string | null; applicationStatus: string; student: { profile: { fullName: string | null } | null }; priority: number; studyProgram: { id: string; code: string; name: string }; selection: { id: string; status: string; notes: string | null; selectionRank: number | null } | null; lastAudit: { action: string; createdAt: string } | null };
+type Overview = { rulesApproved: boolean; published: boolean; policy: { criteria: Criterion[] } | null; policyUpdatedAt: string | null; finalDecisionCount: number; candidates: Candidate[]; candidatePagination: { page: number; pageSize: number; total: number; totalPages: number }; results: Result[] };
+export default function LiveSelectionManagement() {
+  const [overview, setOverview] = useState<Overview | null>(null); const [criteria, setCriteria] = useState<Criterion[]>([]); const [busy, setBusy] = useState(false); const [loading, setLoading] = useState(true); const [notice, setNotice] = useState(""); const [page, setPage] = useState(1);
+  const load = useCallback(async () => {
+    setLoading(true);
+    try { const response = await fetch(`/api/admin/selection?page=${page}`, { cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.error || "Data seleksi belum dapat dimuat."); setOverview(body); setCriteria(body.policy?.criteria ?? []); setNotice(""); }
+    catch (error) { setNotice(error instanceof Error ? error.message : "Data seleksi belum dapat dimuat."); }
+    finally { setLoading(false); }
+  }, [page]);
+  useEffect(() => { const timer = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(timer); }, [load]);
+  async function save(event: FormEvent<HTMLFormElement>) { event.preventDefault(); await action("/api/admin/selection", "PUT", { criteria }); }
+  async function action(url: string, method: string, body: unknown) {
+    setBusy(true); setNotice("");
+    try { const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const data = await response.json(); if (!response.ok) throw new Error(data.error || "Perubahan gagal disimpan."); await load(); setNotice("Perubahan tersimpan."); }
+    catch (error) { setNotice(error instanceof Error ? error.message : "Perubahan gagal disimpan."); }
+    finally { setBusy(false); }
+  }
+  async function saveDecision(candidate: Candidate, form: HTMLFormElement) {
+    const formData = new FormData(form); const status = String(formData.get("status") || ""); const notes = String(formData.get("notes") || "").trim();
+    if (!notes) { setNotice("Catatan alasan wajib diisi untuk setiap keputusan."); return; }
+    if (!window.confirm(`Simpan keputusan ${status} untuk ${candidate.student.profile?.fullName || candidate.registrationNumber || "pendaftar"} pada ${candidate.studyProgram.name}?`)) return;
+    await action("/api/admin/selection/decision", "PUT", { applicationId: candidate.applicationId, studyProgramId: candidate.studyProgram.id, status, notes });
+  }
+  const total = criteria.reduce((sum, item) => sum + (Number(item.weight) || 0), 0);
+  return <main className="admin-dashboard-outer"><div className="admin-dashboard-app"><AdminSidebar active="selectionManagement" demo={false} /><section className="admin-dashboard-main admin-selection-main">
+    <header className="admin-dashboard-header"><div><h1>Konfigurasi dan Publikasi Seleksi</h1><p>Kriteria yang disimpan di halaman ini diberi label provisional dan tidak menghitung keputusan kelulusan.</p></div></header>
+    {notice && <p role="status">{notice}</p>}{loading ? <p role="status">Memuat data seleksi…</p> : overview && <>
+      <section className="admin-selection-card"><h2>Gate keputusan resmi</h2><p>Aturan sekolah: {overview.rulesApproved ? "disetujui melalui konfigurasi server" : "belum disetujui"}. Hasil siswa: {overview.published ? "dipublikasikan" : "belum dipublikasikan"}. Keputusan tersimpan: {overview.finalDecisionCount}.</p><p>Mode operasional tidak menghasilkan status lulus, waiting list, atau gagal secara otomatis.</p></section>
+      <section className="admin-selection-card"><h2>Peninjauan dan keputusan manual</h2><p>{overview.rulesApproved ? "Keputusan dicatat manual oleh admin; tidak ada perhitungan otomatis." : "Kebijakan masih provisional. Keputusan manual yang dicatat tetap tersembunyi bagi siswa sampai aturan disetujui dan publikasi diaktifkan."}</p><p>Menampilkan {overview.candidatePagination.total ? ((overview.candidatePagination.page - 1) * overview.candidatePagination.pageSize + 1) : 0}–{Math.min(overview.candidatePagination.page * overview.candidatePagination.pageSize, overview.candidatePagination.total)} dari {overview.candidatePagination.total} pilihan program.</p>{overview.published && <p>Publikasi sedang aktif. Tarik publikasi sebelum mengubah keputusan agar daftar hasil tetap konsisten.</p>}{!overview.candidatePagination.total && <p>Belum ada aplikasi terkirim dengan pilihan program.</p>}
+        {overview.candidates.map((candidate) => <form className="admin-announcement-item" key={`${candidate.applicationId}-${candidate.studyProgram.id}`} onSubmit={(event) => { event.preventDefault(); void saveDecision(candidate, event.currentTarget); }}><strong>{candidate.student.profile?.fullName || "Nama belum tersedia"} · {candidate.registrationNumber || "Nomor belum tersedia"}</strong><p>{candidate.studyProgram.name} ({candidate.studyProgram.code}) · Pilihan {candidate.priority} · Aplikasi {candidate.applicationStatus} · Keputusan {candidate.selection?.status || "Belum dicatat"}</p>{candidate.lastAudit && <p>Audit terakhir: {candidate.lastAudit.action} · {new Date(candidate.lastAudit.createdAt).toLocaleString("id-ID")}</p>}<label>Keputusan<select name="status" defaultValue={candidate.selection?.status || "PENDING"}><option value="PENDING">Dalam peninjauan</option><option value="PASSED">Lulus</option><option value="WAITLISTED">Waiting list</option><option value="FAILED">Tidak lulus</option></select></label><label>Catatan / dasar keputusan<textarea name="notes" required maxLength={1000} defaultValue={candidate.selection?.notes || ""} /></label><button type="submit" disabled={busy || overview.published}>Simpan keputusan dan audit</button></form>)}
+        {overview.candidatePagination.totalPages > 1 && <nav aria-label="Halaman kandidat seleksi"><button type="button" disabled={loading || page <= 1} onClick={() => setPage((value) => value - 1)}>Sebelumnya</button><span> Halaman {page} dari {overview.candidatePagination.totalPages} </span><button type="button" disabled={loading || page >= overview.candidatePagination.totalPages} onClick={() => setPage((value) => value + 1)}>Berikutnya</button></nav>}
+      </section>
+      <form className="admin-selection-card" onSubmit={save}><h2>Draf kebijakan provisional</h2><p>Kriteria dan bobot di bawah hanya catatan rancangan. Sekolah harus menetapkan dan menyetujui aturan resmi secara terpisah.</p>{criteria.map((item, index) => <div className="admin-selection-weight-row" key={index}><label>Nama kriteria<input required maxLength={100} value={item.name} onChange={(event) => setCriteria((old) => old.map((row, rowIndex) => rowIndex === index ? { ...row, name: event.target.value } : row))} /></label><label>Bobot %<input type="number" min="0" max="100" value={item.weight} onChange={(event) => setCriteria((old) => old.map((row, rowIndex) => rowIndex === index ? { ...row, weight: Number(event.target.value) } : row))} /></label><button type="button" onClick={() => setCriteria((old) => old.filter((_, rowIndex) => rowIndex !== index))}>Hapus kriteria</button></div>)}<p>Total bobot draft: {total}%</p><button type="button" disabled={criteria.length >= 10} onClick={() => setCriteria((old) => [...old, { name: "", weight: 0 }])}>Tambah kriteria</button><button type="submit" disabled={busy || !criteria.length || total !== 100}>Simpan draf provisional</button></form>
+      <section className="admin-selection-card"><h2>Publikasi hasil tersimpan</h2><p>Publikasi hanya membuka baris keputusan yang sudah tersimpan. Halaman ini tidak menghasilkan keputusan.</p><button type="button" disabled={busy || (overview.published ? false : !overview.rulesApproved || !overview.policy || overview.finalDecisionCount === 0)} onClick={() => void action("/api/admin/selection/publication", "PATCH", { published: !overview.published })}>{overview.published ? "Tarik publikasi" : "Publikasikan hasil tersimpan"}</button>
+        {!overview.rulesApproved && <p>Publikasi terkunci sampai sekolah menyetujui aturan melalui `SPMB_OFFICIAL_RULES_APPROVED=true`.</p>}
+        {overview.rulesApproved && overview.results.map((item) => <article key={item.id} className="admin-announcement-item"><strong>{item.application.student.profile?.fullName || "Nama belum tersedia"} · {item.application.registrationNumber || "Tanpa nomor pendaftaran"}</strong><p>{item.studyProgram.name} ({item.studyProgram.code}) · Status tersimpan: {item.status}{item.selectionRank ? ` · Peringkat ${item.selectionRank}` : ""}</p></article>)}
+      </section>
+    </>}
+  </section></div></main>;
+}

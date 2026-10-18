@@ -1,15 +1,43 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { ApplicationStatus } from "@prisma/client";
+import { ApplicationStatus, Prisma, RoleName } from "@prisma/client";
+import { canAccessRolePortal } from "../../services/auth/authorization-policy";
 import { assertApplicationTransition, InvalidApplicationTransitionError } from "../../services/application/state-transition";
 import { generateRegistrationNumber } from "../../services/application/registration-number";
 import { getOrCreateDraftApplication } from "../../services/application/draft-policy";
 import {
   ApplicationInputValidationError,
+  ApplicationSubmissionRequirementsError,
+  isCompletedSubmission,
+  parseSubmissionConsent,
   parseApplicationDraftUpdate,
   parseProgramChoices,
   parseSemesterAverages,
+  StudyProgramUnavailableError,
+  validateApplicationSubmission,
 } from "../../services/application/application-validation";
+
+function completeSubmissionInput() {
+  return {
+    profile: {
+      nik: "1234567890123456", nisn: "1234567890", fullName: "Calon Siswa", gender: "male",
+      birthPlace: "Depok", birthDate: new Date("2008-01-01T00:00:00.000Z"), religion: "islam",
+      familyCardNumber: "1234567890123456", familyStatus: "anak-kandung", citizenship: "wni",
+      address: "Jalan Contoh", province: "Jawa Barat", city: "Depok", district: "Beji", village: "Beji",
+      postalCode: "16421", parentWhatsapp: "081234567890", schoolNpsn: "12345678", schoolOrigin: "SMP Contoh",
+      schoolType: "smp", schoolStatus: "swasta", graduationYear: "2026",
+    },
+    guardians: [
+      { guardianType: "FATHER", guardianName: "Ayah", occupation: "wiraswasta", incomeBracket: "1-to-2-5" },
+      { guardianType: "MOTHER", guardianName: "Ibu", occupation: "lainnya", incomeBracket: "none" },
+    ],
+    semesterAverages: ["80", "81", "82", "83"].map((value) => new Prisma.Decimal(value)),
+    programChoices: [
+      { priority: 1, studyProgramId: "program-primary", isActive: true },
+      { priority: 2, studyProgramId: "program-backup", isActive: true },
+    ],
+  };
+}
 
 test("draft get-or-create returns the existing draft without creating another", async () => {
   let stored: { id: string; status: string; registrationNumber: string | null } | null = null;
@@ -107,4 +135,57 @@ test("registration number generator returns independent opaque UUIDs", () => {
   assert.match(first, uuidPattern);
   assert.match(second, uuidPattern);
   assert.notEqual(first, second);
+});
+
+test("complete application data and consent satisfy the established submission requirements", () => {
+  assert.doesNotThrow(() => validateApplicationSubmission(completeSubmissionInput()));
+  assert.doesNotThrow(() => parseSubmissionConsent({ accepted: true }));
+});
+
+test("submission rejects missing required profile, guardian, and semester data", () => {
+  const missingProfile = completeSubmissionInput();
+  missingProfile.profile.schoolOrigin = " ";
+  assert.throws(() => validateApplicationSubmission(missingProfile), ApplicationSubmissionRequirementsError);
+
+  const missingGuardian = completeSubmissionInput();
+  missingGuardian.guardians = missingGuardian.guardians.filter((guardian) => guardian.guardianType !== "MOTHER");
+  assert.throws(() => validateApplicationSubmission(missingGuardian), ApplicationSubmissionRequirementsError);
+
+  const complete = completeSubmissionInput();
+  const missingSemester = {
+    ...complete,
+    semesterAverages: [complete.semesterAverages[0], complete.semesterAverages[1], null, complete.semesterAverages[3]],
+  };
+  assert.throws(() => validateApplicationSubmission(missingSemester), ApplicationSubmissionRequirementsError);
+});
+
+test("submission requires two distinct program priorities and active programs", () => {
+  const oneChoice = completeSubmissionInput();
+  oneChoice.programChoices = oneChoice.programChoices.slice(0, 1);
+  assert.throws(() => validateApplicationSubmission(oneChoice), ApplicationSubmissionRequirementsError);
+
+  const duplicateProgram = completeSubmissionInput();
+  duplicateProgram.programChoices[1].studyProgramId = duplicateProgram.programChoices[0].studyProgramId;
+  assert.throws(() => validateApplicationSubmission(duplicateProgram), ApplicationSubmissionRequirementsError);
+
+  const inactiveProgram = completeSubmissionInput();
+  inactiveProgram.programChoices[1].isActive = false;
+  assert.throws(() => validateApplicationSubmission(inactiveProgram), StudyProgramUnavailableError);
+});
+
+test("submission requires the user's consent but accepts complete form data without document records", () => {
+  assert.throws(() => parseSubmissionConsent({ accepted: false }), ApplicationSubmissionRequirementsError);
+  assert.throws(() => parseSubmissionConsent({}), ApplicationSubmissionRequirementsError);
+});
+
+test("completed submission can be returned on retry without starting a second transition", () => {
+  assert.equal(isCompletedSubmission({ registrationNumber: "SPMB-123", submittedAt: new Date() }), true);
+  assert.equal(isCompletedSubmission({ registrationNumber: null, submittedAt: new Date() }), false);
+  assert.equal(isCompletedSubmission(null), false);
+});
+
+test("a non-student role is denied access to the student application portal", () => {
+  assert.equal(canAccessRolePortal(RoleName.ADMIN, [RoleName.SISWA]), false);
+  assert.equal(canAccessRolePortal(RoleName.KEPALA_SEKOLAH, [RoleName.SISWA]), false);
+  assert.equal(canAccessRolePortal(RoleName.SISWA, [RoleName.SISWA]), true);
 });

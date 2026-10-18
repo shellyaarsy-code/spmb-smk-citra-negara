@@ -1,5 +1,6 @@
 import AdminSidebar from "../admin-sidebar";
 import RegistrationsTable from "../registrations-table";
+import LiveRegistrationsTable from "../live-registrations-table";
 
 export default async function AdminRegistrationsPage({ searchParams }: { searchParams: Promise<{ mode?: string }> }) {
   const { mode } = await searchParams;
@@ -10,7 +11,7 @@ export default async function AdminRegistrationsPage({ searchParams }: { searchP
       <div className="admin-dashboard-app">
         <AdminSidebar active="registrations" demo={demo} />
         <section className="admin-dashboard-main admin-registrations-main" aria-label="Daftar pendaftaran siswa">
-          <RegistrationsTable demo={demo} />
+          {demo ? <RegistrationsTable demo /> : <LiveRegistrationsTable />}
         </section>
       </div>
     </main>

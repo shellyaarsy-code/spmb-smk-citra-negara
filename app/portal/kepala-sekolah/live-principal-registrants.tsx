@@ -1,0 +1,30 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import PrincipalSidebar from "./principal-sidebar";
+
+type Applicant = { registrationNumber: string; status: string; submittedAt: string; name: string | null; school: string | null; programs: { priority: number; code: string; name: string }[] };
+type ResponseData = { applicants: Applicant[]; pagination: { page: number; pageSize: number; total: number; totalPages: number }; filters: { programs: { code: string; name: string }[] } };
+const labels: Record<string, string> = { SUBMITTED: "Dikirim", WAITING_DOCUMENT_VERIFICATION: "Menunggu verifikasi", DOCUMENT_REVISION_REQUIRED: "Perlu revisi", DOCUMENT_VERIFIED: "Dokumen terverifikasi", WAITING_PAYMENT: "Menunggu pembayaran", PAYMENT_VERIFIED: "Pembayaran terverifikasi", ELIGIBLE_FOR_TKA: "Memenuhi syarat TKA", TKA_STARTED: "TKA berlangsung", TKA_COMPLETED: "TKA selesai", WAITING_SELECTION: "Menunggu seleksi", PASSED: "Lulus", WAITLISTED: "Daftar tunggu", FAILED: "Tidak lulus", REJECTED: "Ditolak", CANCELLED: "Dibatalkan", WITHDRAWN: "Mengundurkan diri" };
+
+export default function LivePrincipalRegistrants() {
+  const [search, setSearch] = useState(""); const [program, setProgram] = useState(""); const [status, setStatus] = useState(""); const [page, setPage] = useState(1);
+  const [data, setData] = useState<ResponseData | null>(null); const [loading, setLoading] = useState(true); const [error, setError] = useState("");
+  useEffect(() => {
+    const controller = new AbortController(); const timer = window.setTimeout(async () => {
+      setLoading(true); setError(""); const query = new URLSearchParams({ page: String(page), pageSize: "10" });
+      if (search.trim()) query.set("search", search.trim()); if (program) query.set("program", program); if (status) query.set("status", status);
+      try { const response = await fetch(`/api/principal/applications?${query}`, { cache: "no-store", signal: controller.signal }); const body = await response.json().catch(() => null); if (!response.ok) throw new Error(body?.error || "Data pendaftar belum dapat dimuat."); setData(body); }
+      catch (reason) { if (!controller.signal.aborted) setError(reason instanceof Error ? reason.message : "Data pendaftar belum dapat dimuat."); }
+      finally { if (!controller.signal.aborted) setLoading(false); }
+    }, 200); return () => { clearTimeout(timer); controller.abort(); };
+  }, [page, search, program, status]);
+  const pageCount = Math.max(data?.pagination.totalPages ?? 0, 1);
+  return <main className="principal-dashboard-outer"><div className="principal-dashboard-app"><PrincipalSidebar active="registrants" demo={false} /><section className="principal-dashboard-main principal-registrants-main" aria-label="Data pendaftar siswa">
+    <header className="principal-dashboard-header"><div><h1>Data Pendaftar (Siswa)</h1><p>Data aplikasi yang sudah dikirim. Informasi identitas sensitif tidak ditampilkan pada ringkasan ini.</p></div></header>
+    <section className="principal-list-toolbar" aria-label="Cari dan filter pendaftar"><label className="principal-list-search"><input type="search" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); }} placeholder="Cari nomor pendaftaran atau nama" aria-label="Cari nomor pendaftaran atau nama" /></label>
+      <div className="principal-list-filter-group"><label className="principal-list-select"><span className="sr-only">Filter program</span><select value={program} onChange={(event) => { setProgram(event.target.value); setPage(1); }}><option value="">Semua program</option>{data?.filters.programs.map((item) => <option key={item.code} value={item.code}>{item.code} — {item.name}</option>)}</select></label><label className="principal-list-select"><span className="sr-only">Filter status</span><select value={status} onChange={(event) => { setStatus(event.target.value); setPage(1); }}><option value="">Semua status</option>{Object.entries(labels).map(([value, label]) => <option key={value} value={value}>{label}</option>)}</select></label></div>
+    </section>
+    <section className="principal-list-table-card" aria-label="Daftar calon siswa">{error && <p role="alert">{error}</p>}{loading ? <p role="status">Memuat data pendaftar…</p> : !error && <><div className="principal-list-table-wrap"><table className="principal-list-table"><thead><tr><th>No. Pendaftaran</th><th>Nama</th><th>Sekolah asal</th><th>Program pilihan</th><th>Status</th><th>Tanggal dikirim</th></tr></thead><tbody>{data?.applicants.map((row) => <tr key={row.registrationNumber}><td>{row.registrationNumber}</td><td>{row.name || "Nama belum tersedia"}</td><td>{row.school || "—"}</td><td>{row.programs.map((item) => `${item.priority}. ${item.code}`).join(" · ") || "—"}</td><td>{labels[row.status] || row.status}</td><td>{new Intl.DateTimeFormat("id-ID", { dateStyle: "medium" }).format(new Date(row.submittedAt))}</td></tr>)}{!data?.applicants.length && <tr><td colSpan={6}>Belum ada aplikasi yang dikirim atau tidak ada hasil yang cocok.</td></tr>}</tbody></table></div><nav className="principal-list-pagination" aria-label="Halaman daftar pendaftar"><span>{data?.pagination.total ?? 0} pendaftar · Halaman {page} dari {pageCount}</span><button type="button" onClick={() => setPage((value) => Math.max(1, value - 1))} disabled={page <= 1}>Sebelumnya</button><button type="button" onClick={() => setPage((value) => Math.min(pageCount, value + 1))} disabled={page >= pageCount}>Berikutnya</button></nav></>}</section>
+  </section></div></main>;
+}

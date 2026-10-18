@@ -1,5 +1,6 @@
 import Link from "next/link";
 import AuthLogoutLink from "../../components/auth-logout-link";
+import BrandLogo from "../../components/brand-logo";
 
 type PrincipalIconName = "grid" | "users" | "cap" | "chart" | "file" | "shield" | "logout";
 
@@ -24,8 +25,8 @@ export default function PrincipalSidebar({ active, demo }: { active: "dashboard"
   const statisticsHref = demo ? "/portal/kepala-sekolah/statistik?mode=demo" : "/portal/kepala-sekolah/statistik";
   const reportsHref = demo ? "/portal/kepala-sekolah/laporan?mode=demo" : "/portal/kepala-sekolah/laporan";
   return <aside className="principal-dashboard-sidebar">
-    <Link className="principal-dashboard-brand" href={dashboardHref}><b>CN</b><span>SMK CITRA NEGARA<small>PORTAL PPDB</small></span></Link>
-    <div className="principal-dashboard-profile"><i>M</i><span><strong>Drs. H. Mulyadi, M.Pd.</strong><small>KEPALA SEKOLAH</small></span></div>
+    <Link className="principal-dashboard-brand" href={dashboardHref}><BrandLogo width={32} /><span>SMK CITRA NEGARA<small>PORTAL PPDB</small></span></Link>
+    <div className="principal-dashboard-profile"><i>K</i><span><strong>Kepala Sekolah</strong><small>KEPALA SEKOLAH</small></span></div>
     <nav className="principal-dashboard-nav" aria-label="Menu Kepala Sekolah">
       <Link className={active === "dashboard" ? "active" : ""} href={dashboardHref} aria-current={active === "dashboard" ? "page" : undefined}><PrincipalIcon name="grid" />Monitoring Dashboard</Link>
       <Link className={active === "registrants" ? "active" : ""} href={registrantsHref} aria-current={active === "registrants" ? "page" : undefined}><PrincipalIcon name="users" />Data Pendaftar (Siswa)</Link>

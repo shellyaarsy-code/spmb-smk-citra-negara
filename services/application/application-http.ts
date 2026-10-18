@@ -3,7 +3,7 @@ import { AuthenticationRequiredError } from "../auth/sessions";
 import { AuthorizationDeniedError } from "../auth/authorization";
 import { StudentInputValidationError } from "../student/student-validation";
 import { StudentDataConflictError, StudentRecordMissingError } from "../student/student-service";
-import { ApplicationInputValidationError, StudyProgramUnavailableError } from "./application-validation";
+import { ApplicationInputValidationError, ApplicationSubmissionRequirementsError, StudyProgramUnavailableError } from "./application-validation";
 import {
   ApplicationSubmissionUnavailableError,
   DraftApplicationUnavailableError,
@@ -23,6 +23,9 @@ export function applicationErrorResponse(error: unknown) {
   }
   if (error instanceof StudentInputValidationError || error instanceof ApplicationInputValidationError) {
     return Response.json({ error: "Periksa kembali data yang dimasukkan." }, { status: 400, headers: noStore });
+  }
+  if (error instanceof ApplicationSubmissionRequirementsError) {
+    return Response.json({ error: "Lengkapi semua kolom wajib dan setujui pernyataan sebelum mengirim formulir." }, { status: 400, headers: noStore });
   }
   if (error instanceof StudyProgramUnavailableError) {
     return Response.json({ error: "Salah satu program yang dipilih tidak tersedia." }, { status: 400, headers: noStore });

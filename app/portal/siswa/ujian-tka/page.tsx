@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "../../../components/brand-logo";
 import StudentSidebar from "../student-sidebar";
 import StudentReviewProgress from "../student-review-progress";
 import { deferStudentDraftHydration, readStudentDraft } from "../student-application-draft";
 import { useStudentDemoMode } from "../student-demo-mode";
 import { toStudentFormValues, useCurrentStudentData } from "../student-profile-client";
 import { useCurrentDraftApplication } from "../student-application-client";
+import LiveTkaSession from "../live-tka-session";
 
 export default function StudentTkaPage() {
   const [draftValues, setDraftValues] = useState<Record<string, string>>({});
@@ -26,7 +28,8 @@ export default function StudentTkaPage() {
   } : {}), ...(data ? toStudentFormValues(data) : {}) };
 
   const studentName = values.fullName?.trim() || (isDemoMode ? "Rahman Aditya" : "Calon Siswa");
-  const hasSubmission = application?.status === "SUBMITTED";
+  const hasSubmission = Boolean(application && application.status !== "DRAFT");
+  const tkaEligible = application?.status === "ELIGIBLE_FOR_TKA" || application?.status === "TKA_STARTED";
   const initials = studentName === "Calon Siswa" ? "S" : studentName.charAt(0).toUpperCase();
   const nisn = values.nisn?.trim() || (isDemoMode ? "00987654321" : "Belum diisi");
   const program = values.primaryProgram?.trim() || (isDemoMode ? "PPLG (Pengembangan Perangkat Lunak)" : "Belum dipilih");
@@ -37,7 +40,7 @@ export default function StudentTkaPage() {
       <div className="verification-shell">
         <header className="verification-topbar">
           <Link className="verification-topbar-brand" href="/portal">
-            <span className="student-dashboard-brand-mark">CN</span>
+            <BrandLogo className="student-dashboard-brand-mark" />
             <span><strong>SPMB SMK CITRA NEGARA</strong><small>TAHUN AJARAN 2026/2027</small></span>
           </Link>
           <nav aria-label="Navigasi utama portal">
@@ -60,19 +63,14 @@ export default function StudentTkaPage() {
                 <h1>Pusat Ujian Seleksi (TKA)</h1>
                 <p>Nomor Peserta: TKA-{registrationNumber} <span aria-hidden="true">|</span> {program}</p>
               </div>
-              <span className={`tka-status-badge ${isDemoMode ? "" : "tka-status-locked"}`}>{isDemoMode ? "DEMO · Mengikuti Tes" : hasSubmission ? "Menunggu Verifikasi Berkas" : "Belum Ada Pendaftaran"}</span>
+              <span className={`tka-status-badge ${isDemoMode ? "" : tkaEligible ? "" : "tka-status-locked"}`}>{isDemoMode ? "DEMO · Mengikuti Tes" : tkaEligible ? "Akses TKA tersedia sesuai jadwal" : hasSubmission ? `Status aplikasi: ${application?.status.replaceAll("_", " ")}` : "Belum Ada Pendaftaran"}</span>
             </header>
 
             <section className="student-progress verification-progress" aria-label="Tahapan pendaftaran">
               <StudentReviewProgress currentStage={isDemoMode ? 5 : hasSubmission ? 3 : 1} completedThrough={isDemoMode ? 4 : undefined} labels={["Registrasi", "Formulir", "Unggah Berkas", "Verifikasi", "Pembayaran", "Ujian TKA", "Hasil Seleksi"]} />
             </section>
 
-            {!isDemoMode ? <section className="tka-locked-card">
-              <span className="tka-locked-icon" aria-hidden="true">⌑</span>
-              <h2>{hasSubmission ? "Berkas Anda Menunggu Verifikasi" : "Mulai dari Formulir Pendaftaran"}</h2>
-              <p>{hasSubmission ? "Akses TKA akan dibuka setelah berkas dinyatakan valid dan pembayaran dikonfirmasi sekolah." : "Kirim formulir pendaftaran terlebih dahulu. Setelah berkas diverifikasi dan pembayaran dikonfirmasi sekolah, akses TKA akan dibuka."}</p>
-              <div><Link className="student-dashboard-action" href={hasSubmission ? "/portal/siswa/verifikasi-berkas" : "/portal/siswa/formulir"}>{hasSubmission ? "Lihat Status Verifikasi →" : "Mulai Isi Formulir →"}</Link><Link className="verification-preview-link" href="/portal/siswa/ujian-tka?mode=demo">Buka demo · Pusat ujian</Link></div>
-            </section> : <div className="tka-layout">
+            {!isDemoMode ? <><LiveTkaSession /><p className="verification-preview-link"><Link href="/portal/siswa/ujian-tka?mode=demo">Buka demo · Pusat ujian</Link></p></> : <div className="tka-layout">
               <section className="tka-exam-card" aria-labelledby="tka-title">
                 <div className="tka-exam-title-row">
                   <span className="tka-exam-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none"><rect x="6" y="4" width="12" height="17" rx="2" stroke="currentColor" strokeWidth="1.8"/><path d="M9 4.5V3h6v1.5M9 10h6M9 14h6M9 18h3" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round"/></svg></span>
@@ -106,7 +104,7 @@ export default function StudentTkaPage() {
               <aside className="tka-card-panel" aria-labelledby="tka-card-title">
                 <h2 id="tka-card-title">Kartu Peserta Ujian</h2>
                 <div className="tka-candidate-card">
-                  <div className="tka-card-brand"><span className="tka-card-logo">CN</span><strong>SPMB SMK CITRA NEGARA</strong></div>
+                  <div className="tka-card-brand"><BrandLogo width={26} className="tka-card-logo" /><strong>SPMB SMK CITRA NEGARA</strong></div>
                   <div className="tka-card-student">
                     <span className="tka-student-photo" aria-hidden="true">{initials}</span>
                     <div><strong>{studentName}</strong><span>NISN: {nisn}</span></div>

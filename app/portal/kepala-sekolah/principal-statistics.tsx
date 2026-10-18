@@ -43,7 +43,9 @@ function DistrictMap() {
   </div>;
 }
 
-export default function PrincipalStatistics({ demo }: { demo: boolean }) {
+type PrincipalSummary = Awaited<ReturnType<typeof import("../../../services/admin/dashboard-service").getPrincipalDashboardSummary>>;
+
+export default function PrincipalStatistics({ demo, summary }: { demo: boolean; summary: PrincipalSummary | null }) {
   return <main className="principal-dashboard-outer"><div className="principal-dashboard-app">
     <PrincipalSidebar active="statistics" demo={demo} />
     <section className="principal-dashboard-main principal-statistics-main" aria-label="Grafik dan analisis statistik PPDB">
@@ -51,15 +53,15 @@ export default function PrincipalStatistics({ demo }: { demo: boolean }) {
       {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Statistik, tren, dan asal sekolah di halaman ini adalah data contoh.</span><Link href="/portal/kepala-sekolah/statistik">Tampilan kosong</Link></div>}
 
       <section className="principal-statistics-metrics" aria-label="Ringkasan statistik PPDB">
-        <StatsCard label="Total Pendaftar (Akun)" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : "—"} note={demo ? "Akun terdaftar pada tahun ajaran ini" : "Data belum tersedia"} tone="green" icon="♙" />
-        <StatsCard label="Konversi Berkas Lengkap" value={demo ? "79,1%" : "—"} note={demo ? `${formatPpdbNumber(demoPpdbMetrics.completeDocuments)} dari ${formatPpdbNumber(demoPpdbMetrics.totalApplicants)} akun` : "Data belum tersedia"} tone="mint" icon="✓" />
-        <StatsCard label="Lolos Verifikasi Admin" value={demo ? "65,1%" : "—"} note={demo ? `${formatPpdbNumber(demoPpdbMetrics.verifiedApplicants)} dari ${formatPpdbNumber(demoPpdbMetrics.completeDocuments)} berkas lengkap` : "Data belum tersedia"} tone="blue" icon="◎" />
-        <StatsCard label="Pendaftar Terverifikasi Harian" value={demo ? "+42" : "—"} note={demo ? "Perubahan dalam 24 jam" : "Data belum tersedia"} tone="teal" icon="↗" />
+        <StatsCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary ? summary.total.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : summary ? "Aplikasi yang telah dikirim" : "Data belum dapat dimuat"} tone="green" icon="♙" />
+        <StatsCard label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary ? summary.pendingDocuments.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="mint" icon="✓" />
+        <StatsCard label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary ? summary.verifiedDocuments.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="blue" icon="◎" />
+        <StatsCard label="Aplikasi Berstatus Lulus" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary ? summary.passed.toLocaleString("id-ID") : "—"} note={demo ? "Simulasi" : "Status saat ini, tanpa perhitungan seleksi"} tone="teal" icon="↗" />
       </section>
 
       <div className="principal-statistics-analysis">
         <section className="principal-statistics-panel principal-funnel-panel" aria-labelledby="principal-funnel-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-funnel-title">Corong Konversi Pendaftaran (Funnel)</h2><p>Perjalanan calon siswa dari pendaftaran akun hingga keputusan seleksi.</p></div></div>
-          {demo ? <div className="principal-funnel-list">{funnel.map((stage) => <article key={stage.step}><span className="principal-funnel-step">{stage.step}</span><strong>{stage.name}</strong><b>{stage.count}</b><small>{stage.note}<br />{stage.percent}% dari pendaftar awal</small><i className={stage.tone} style={{ width: `${stage.percent}%` }} /></article>)}</div> : <div className="principal-results-empty">Data per tahap pendaftaran akan tampil setelah ada pendaftar.</div>}
+          {demo ? <div className="principal-funnel-list">{funnel.map((stage) => <article key={stage.step}><span className="principal-funnel-step">{stage.step}</span><strong>{stage.name}</strong><b>{stage.count}</b><small>{stage.note}<br />{stage.percent}% dari pendaftar awal</small><i className={stage.tone} style={{ width: `${stage.percent}%` }} /></article>)}</div> : summary ? <div className="principal-funnel-list">{summary.statuses.map((item, index) => <article key={item.status}><span className="principal-funnel-step">{index + 1}</span><strong>{item.status.replaceAll("_", " ")}</strong><b>{item.count.toLocaleString("id-ID")}</b><small>Jumlah aplikasi saat ini</small><i className="forest" style={{ width: `${summary.total ? Math.min(100, item.count / summary.total * 100) : 0}%` }} /></article>)}</div> : <div className="principal-results-empty">Statistik belum dapat dimuat.</div>}
         </section>
 
         <section className="principal-statistics-panel principal-weekly-panel" aria-labelledby="principal-weekly-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-weekly-title">Tren Pendaftaran Mingguan (Akun)</h2><p>Jumlah akun terdaftar secara akumulatif.</p></div><span>7 MINGGU</span></div>

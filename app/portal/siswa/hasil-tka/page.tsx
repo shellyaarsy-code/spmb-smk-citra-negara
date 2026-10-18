@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import BrandLogo from "../../../components/brand-logo";
 import StudentSidebar from "../student-sidebar";
 import StudentReviewProgress from "../student-review-progress";
 import { deferStudentDraftHydration, readStudentDraft } from "../student-application-draft";
 import { useStudentDemoMode } from "../student-demo-mode";
 import { toStudentFormValues, useCurrentStudentData } from "../student-profile-client";
 import { useCurrentDraftApplication } from "../student-application-client";
+import LiveTkaResults from "../live-tka-results";
 
 const scores = [
   { label: "Matematika Logika & Algoritma Dasar", value: 90 },
@@ -31,7 +33,7 @@ export default function StudentTkaResultPage() {
   } : {}), ...(data ? toStudentFormValues(data) : {}) };
 
   const studentName = values.fullName?.trim() || (isDemoMode ? "Rahman Aditya" : "Calon Siswa");
-  const hasSubmission = application?.status === "SUBMITTED";
+  const hasSubmission = Boolean(application && application.status !== "DRAFT");
   const program = values.primaryProgram?.trim() || (isDemoMode ? "PPLG" : "Belum dipilih");
   const examNumber = `TKA-${application?.registrationNumber || (isDemoMode ? "CN260012" : "Belum diterbitkan")}`;
 
@@ -40,7 +42,7 @@ export default function StudentTkaResultPage() {
       <div className="verification-shell">
         <header className="verification-topbar">
           <Link className="verification-topbar-brand" href="/portal">
-            <span className="student-dashboard-brand-mark">CN</span>
+            <BrandLogo className="student-dashboard-brand-mark" />
             <span><strong>SPMB SMK CITRA NEGARA</strong><small>TAHUN AJARAN 2026/2027</small></span>
           </Link>
           <nav aria-label="Navigasi utama portal">
@@ -70,12 +72,7 @@ export default function StudentTkaResultPage() {
               <StudentReviewProgress currentStage={isDemoMode ? 6 : hasSubmission ? 3 : 1} completedThrough={isDemoMode ? 5 : undefined} labels={["Registrasi", "Formulir", "Unggah Berkas", "Verifikasi", "Pembayaran", "Ujian TKA", "Hasil Seleksi"]} />
             </section>
 
-            {!isDemoMode ? <section className="tka-result-empty">
-              <h2>{hasSubmission ? "Hasil Ujian Belum Tersedia" : "Belum Ada Pendaftaran"}</h2>
-              <p>{hasSubmission ? "Nilai TKA akan tampil setelah berkas diverifikasi, pembayaran dikonfirmasi, ujian selesai, dan hasil diterbitkan." : "Kirim formulir pendaftaran terlebih dahulu. Setelah verifikasi dan pembayaran selesai, Anda dapat mengikuti TKA dan melihat hasilnya di sini."}</p>
-              <Link className="student-dashboard-action" href={hasSubmission ? "/portal/siswa/verifikasi-berkas" : "/portal/siswa/formulir"}>{hasSubmission ? "Lihat Status Verifikasi →" : "Mulai Isi Formulir →"}</Link>
-              <Link className="verification-preview-link" href="/portal/siswa/hasil-tka?mode=demo">Buka demo · Hasil TKA</Link>
-            </section> : <div className="tka-results-layout">
+            {!isDemoMode ? <>{hasSubmission ? <LiveTkaResults /> : <section className="tka-result-empty"><h2>Belum Ada Pendaftaran</h2><p>Kirim formulir pendaftaran terlebih dahulu sebelum mengikuti ujian.</p><Link className="student-dashboard-action" href="/portal/siswa/formulir">Mulai Isi Formulir →</Link></section>}<Link className="verification-preview-link" href="/portal/siswa/hasil-tka?mode=demo">Buka demo · Hasil TKA</Link></> : <div className="tka-results-layout">
               <section className="tka-score-card" aria-labelledby="tka-score-title">
                 <div className="tka-score-card-header">
                   <h2 id="tka-score-title">Rincian Nilai Kompetensi Akademik</h2>

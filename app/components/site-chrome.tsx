@@ -1,10 +1,11 @@
 import Link from "next/link";
+import BrandLogo from "./brand-logo";
 
 export function SiteHeader() {
   return (
     <header className="site-header">
       <Link className="brand" href="/" aria-label="SMK Citra Negara, beranda">
-        <span className="brand-mark">CN</span>
+        <BrandLogo className="brand-mark" />
         <span className="brand-name">SMK CITRA NEGARA<small>DEPOK · JAWA BARAT</small></span>
       </Link>
       <nav className="main-nav" aria-label="Navigasi utama">
@@ -29,7 +30,7 @@ export function SiteFooter() {
       <div className="footer-main">
         <div className="footer-about">
           <Link className="brand brand-light" href="/">
-            <span className="brand-mark">CN</span>
+            <BrandLogo className="brand-mark" />
             <span className="brand-name">SMK CITRA NEGARA<small>DEPOK · JAWA BARAT</small></span>
           </Link>
           <p>Membentuk generasi terampil, berkarakter, dan siap melangkah menuju masa depan.</p>

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import AuthLogoutLink from "../../components/auth-logout-link";
+import BrandLogo from "../../components/brand-logo";
 
-export type AdminSection = "dashboard" | "registrations" | "verification" | "bankQuestions" | "testManagement" | "selectionManagement" | "announcements" | "analytics";
+export type AdminSection = "dashboard" | "registrations" | "verification" | "payments" | "bankQuestions" | "testManagement" | "tkaEligibility" | "selectionManagement" | "announcements" | "analytics";
 
 type AdminSidebarProps = { active: AdminSection; demo: boolean };
 
@@ -33,17 +34,19 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
   const dashboardHref = demo ? "/portal/admin?mode=demo" : "/portal/admin";
   const registrationHref = demo ? "/portal/admin/pendaftaran?mode=demo" : "/portal/admin/pendaftaran";
   const verificationHref = demo ? "/portal/admin/verifikasi-berkas/CN260012?mode=demo" : "/portal/admin/verifikasi-berkas";
+  const paymentHref = "/portal/admin/pembayaran";
   const bankHref = demo ? "/portal/admin/bank-soal-tka?mode=demo" : "/portal/admin/bank-soal-tka";
   const testHref = demo ? "/portal/admin/manajemen-tes?mode=demo" : "/portal/admin/manajemen-tes";
+  const tkaEligibilityHref = "/portal/admin/kelayakan-tka";
   const selectionHref = demo ? "/portal/admin/manajemen-seleksi?mode=demo" : "/portal/admin/manajemen-seleksi";
   const announcementsHref = demo ? "/portal/admin/pengumuman?mode=demo" : "/portal/admin/pengumuman";
-  const bankQuestions = active === "bankQuestions" || active === "testManagement" || active === "selectionManagement" || active === "announcements" || active === "analytics";
+  const bankQuestions = active === "payments" || active === "bankQuestions" || active === "testManagement" || active === "tkaEligibility" || active === "selectionManagement" || active === "announcements" || active === "analytics";
   const analyticsHref = demo ? "/portal/admin/laporan?mode=demo" : "/portal/admin/laporan";
 
   return (
     <aside className="admin-dashboard-sidebar">
       <Link className="admin-dashboard-brand" href="/portal/login/admin" aria-label="SPMB SMK Citra Negara, kembali ke login admin">
-        <span className="admin-dashboard-brand-mark">CN</span>
+        <BrandLogo className="admin-dashboard-brand-mark" />
         <span>SPMB CITRA NEGARA<small>{bankQuestions ? "PORTAL ADMIN" : "ADMIN PANEL 2026/2027"}</small></span>
       </Link>
 
@@ -52,9 +55,11 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
           <Link className="admin-dashboard-nav-link" href={dashboardHref}><AdminIcon name="home" /><span>Dashboard Overview</span></Link>
           <Link className={`admin-dashboard-nav-link ${active === "bankQuestions" ? "active" : ""}`} href={bankHref} aria-current={active === "bankQuestions" ? "page" : undefined}><AdminIcon name="book" /><span>Bank Soal TKA</span></Link>
           <Link className={`admin-dashboard-nav-link ${active === "testManagement" ? "active" : ""}`} href={testHref} aria-current={active === "testManagement" ? "page" : undefined}><AdminIcon name="test" /><span>Manajemen Tes</span></Link>
+          <Link className={`admin-dashboard-nav-link ${active === "tkaEligibility" ? "active" : ""}`} href={tkaEligibilityHref} aria-current={active === "tkaEligibility" ? "page" : undefined}><AdminIcon name="check" /><span>Kelayakan TKA</span></Link>
           <Link className={`admin-dashboard-nav-link ${active === "selectionManagement" ? "active" : ""}`} href={selectionHref} aria-current={active === "selectionManagement" ? "page" : undefined}><AdminIcon name="people" /><span>Manajemen Seleksi</span></Link>
           <Link className={`admin-dashboard-nav-link ${active === "announcements" ? "active" : ""}`} href={announcementsHref} aria-current={active === "announcements" ? "page" : undefined}><AdminIcon name="bell" /><span>Pengumuman</span></Link>
           <Link className={`admin-dashboard-nav-link ${active === "analytics" ? "active" : ""}`} href={analyticsHref} aria-current={active === "analytics" ? "page" : undefined}><AdminIcon name="analytics" /><span>Laporan &amp; Analitik</span></Link>
+          <Link className={`admin-dashboard-nav-link ${active === "payments" ? "active" : ""}`} href={paymentHref} aria-current={active === "payments" ? "page" : undefined}><AdminIcon name="check" /><span>Pembayaran</span></Link>
         </> : <>
           <Link className={`admin-dashboard-nav-link ${active === "dashboard" ? "active" : ""}`} href={dashboardHref} aria-current={active === "dashboard" ? "page" : undefined}><AdminIcon name="home" /><span>Dashboard</span></Link>
           <Link className={`admin-dashboard-nav-link ${active === "registrations" ? "active" : ""}`} href={registrationHref} aria-current={active === "registrations" ? "page" : undefined}><AdminIcon name="people" /><span>Pendaftaran</span>{demo && <b>342</b>}</Link>
