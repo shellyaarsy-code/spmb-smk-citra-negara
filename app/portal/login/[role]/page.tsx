@@ -17,9 +17,9 @@ export default async function PortalLoginPage({
   searchParams,
 }: {
   params: Promise<{ role: string }>;
-  searchParams: Promise<{ mode?: string }>;
+  searchParams: Promise<{ mode?: string; registered?: string }>;
 }) {
-  const [{ role }, { mode }] = await Promise.all([params, searchParams]);
+  const [{ role }, { mode, registered }] = await Promise.all([params, searchParams]);
   const detail = roleDetails[role];
   if (!detail) notFound();
 
@@ -80,6 +80,7 @@ export default async function PortalLoginPage({
               <h2 id="student-login-title">Masuk Portal Calon Siswa</h2>
               <p>Masuk menggunakan NISN atau email yang terdaftar.</p>
             </header>
+            {registered === "1" && <p className="registration-feedback" role="status">Permintaan pendaftaran sudah diterima. Coba masuk dengan NISN atau email dan kata sandi yang digunakan. Jika tidak berhasil, hubungi admin SPMB.</p>}
             <StudentLoginForm />
             <p className="login-register-inline">Belum memiliki akun? <Link href="/portal/login/siswa?mode=register">Registrasi calon siswa baru</Link></p>
           </section>

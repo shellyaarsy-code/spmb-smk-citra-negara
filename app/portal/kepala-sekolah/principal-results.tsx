@@ -31,7 +31,7 @@ export default function PrincipalResults({ demo, overview }: { demo: boolean; ov
   return <main className="principal-dashboard-outer"><div className="principal-dashboard-app">
     <PrincipalSidebar active="results" demo={demo} />
     <section className="principal-dashboard-main principal-grad-main" aria-label="Laporan hasil seleksi dan kelulusan">
-      <header className="principal-dashboard-header"><div><h1>Laporan Hasil Seleksi &amp; Kelulusan</h1><p>Keputusan penerimaan siswa berdasarkan hasil seleksi dan evaluasi administrasi.</p></div><span className="principal-live"><i />MONITORING AKTIF</span></header>
+      <header className="principal-dashboard-header"><div><h1>Laporan Hasil Seleksi &amp; Kelulusan</h1><p>{overview?.demoMode ? "Keputusan contoh untuk menunjukkan alur hasil seleksi; seluruh isi hanya simulasi." : "Keputusan penerimaan siswa berdasarkan hasil seleksi dan evaluasi administrasi."}</p></div><span className="principal-live"><i />MONITORING AKTIF</span></header>
       {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Ringkasan, status, dan hasil pada halaman ini merupakan data contoh.</span><Link href="/portal/kepala-sekolah/hasil-seleksi">Tampilan kosong</Link></div>}
 
       <section className="principal-grad-stats" aria-label="Ringkasan hasil penerimaan">
@@ -51,7 +51,7 @@ export default function PrincipalResults({ demo, overview }: { demo: boolean; ov
         </section>
       </div>
 
-      <section className="principal-grad-table-panel"><div className="principal-grad-table-heading"><div><h2>Daftar Hasil Keputusan Calon Siswa <span>(Read-Only)</span></h2><p>{demo ? "Contoh keputusan pada mode simulasi." : "Keputusan dari database hanya ditampilkan setelah publikasi resmi."}</p></div><span className="principal-grad-readonly">◉ Mode Pemantauan</span></div>
+      <section className="principal-grad-table-panel"><div className="principal-grad-table-heading"><div><h2>Daftar Hasil Keputusan Calon Siswa <span>(Read-Only)</span></h2><p>{demo ? "Contoh keputusan pada mode simulasi." : overview?.demoMode ? "Hasil contoh dari database demo; hanya simulasi." : "Keputusan dari database hanya ditampilkan setelah publikasi resmi."}</p></div><span className="principal-grad-readonly">◉ Mode Pemantauan</span></div>
         <div className="principal-grad-table-wrap"><table><thead><tr><th>No. Pendaftaran</th><th>Nama Lengkap</th><th>Program</th><th>Peringkat</th><th>Status Keputusan</th></tr></thead><tbody>{demo ? decisions.map((student) => <tr key={student.number}><td>{student.number}</td><td><strong>{student.name}</strong></td><td>{student.program}</td><td>—</td><td><span className={`principal-grad-outcome ${student.outcome === "Lulus" ? "passed" : student.outcome === "Cadangan" ? "waiting" : "failed"}`}>{student.outcome.toUpperCase()}</span></td></tr>) : overview?.published ? overview.results.map((row, index) => <tr key={`${row.registrationNumber}-${row.program}-${index}`}><td>{row.registrationNumber ?? "—"}</td><td><strong>{row.name ?? "Nama belum tersedia"}</strong></td><td>{row.program} · {row.programName}</td><td>{row.rank ?? "—"}</td><td>{row.status}</td></tr>) : <tr><td colSpan={5} className="principal-results-table-empty">{overview ? "Aturan belum disetujui atau hasil belum dipublikasikan." : "Data hasil seleksi belum dapat dimuat."}</td></tr>}</tbody></table></div>
       </section>
     </section>

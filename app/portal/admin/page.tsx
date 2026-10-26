@@ -1,7 +1,10 @@
 import Link from "next/link";
+import DemoDocumentTypesSetup from "./demo-document-types-setup";
+import { spmbPolicy } from "../../../config/spmb-policy";
 import AdminSidebar, { AdminIcon } from "./admin-sidebar";
 import { demoPpdbMetrics, demoPpdbPrograms, formatPpdbNumber } from "../demo-ppdb-data";
 import { getAdminDashboardSummary } from "../../../services/admin/dashboard-service";
+import { applicationStatusOrder, getApplicationStatusLabel, getApplicationStatusTone } from "./status-labels";
 
 const programs = demoPpdbPrograms;
 
@@ -40,6 +43,24 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
   const funnel = demo
     ? [{ label: "Membuat Akun", count: formatPpdbNumber(demoPpdbMetrics.totalApplicants), percent: 100, color: "green" }, { label: "Berkas Lengkap", count: formatPpdbNumber(demoPpdbMetrics.completeDocuments), percent: 79.1, color: "green" }, { label: "Lolos Verifikasi Admin", count: formatPpdbNumber(demoPpdbMetrics.verifiedApplicants), percent: 51.6, color: "green" }, { label: "Lulus Seleksi Akhir", count: formatPpdbNumber(demoPpdbMetrics.admittedApplicants), percent: 39.8, color: "blue" }]
     : [];
+  const liveStatuses = summary
+    ? [...summary.statuses].sort((a, b) => {
+      const aOrder = applicationStatusOrder.indexOf(a.status as (typeof applicationStatusOrder)[number]);
+      const bOrder = applicationStatusOrder.indexOf(b.status as (typeof applicationStatusOrder)[number]);
+      return (aOrder < 0 ? applicationStatusOrder.length : aOrder) - (bOrder < 0 ? applicationStatusOrder.length : bOrder) || a.status.localeCompare(b.status);
+    })
+    : [];
+  const visibleLiveStatuses = liveStatuses.filter(({ count }) => count > 0);
+  const zeroLiveStatuses = liveStatuses.filter(({ count }) => count === 0);
+  const liveStatusCounts = new Map(liveStatuses.map(({ status, count }) => [status, count]));
+  const renderLiveStatuses = (statuses: typeof liveStatuses) => statuses.map(({ status, count }) => {
+    const percent = summary?.total ? Math.min(100, count / summary.total * 100) : 0;
+    const tone = getApplicationStatusTone(status);
+    return <div className={`admin-funnel-item admin-status-tone-${tone}`} key={status}>
+      <div className="admin-funnel-heading"><strong>{getApplicationStatusLabel(status)}</strong><span className="admin-funnel-values"><b>{count.toLocaleString("id-ID")}</b><span>{percent.toLocaleString("id-ID", { maximumFractionDigits: 1 })}%</span></span></div>
+      <div className="admin-funnel-track"><span style={{ width: `${percent}%` }} /></div>
+    </div>;
+  });
 
   return (
     <main className="admin-dashboard-outer">
@@ -57,22 +78,24 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
 
           {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Angka, agenda, dan daftar nama pada halaman ini hanya contoh visual, bukan data pendaftar sungguhan.</span><Link href="/portal/admin">Lihat tampilan kosong</Link></div>}
 
+          {process.env.VERCEL_ENV === "preview" && spmbPolicy.demoMode && <DemoDocumentTypesSetup />}
+
           <section className="admin-metrics-grid" aria-label="Ringkasan jumlah pendaftar">
             <MetricCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Akun terdaftar (simulasi)" : summary ? "Aplikasi yang telah dikirim" : "Data belum dapat dimuat"} tone="green" icon="people" />
             <MetricCard label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="amber" icon="check" />
             <MetricCard label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="mint" icon="check" />
-            <MetricCard label="Status Lulus" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary?.passed.toLocaleString("id-ID") ?? "—"} note={demo ? `Simulasi ${demoPpdbMetrics.passRate}` : "Aplikasi berstatus PASSED"} tone="blue" icon="chart" />
+            <MetricCard label="Status Lulus" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary?.passed.toLocaleString("id-ID") ?? "—"} note={demo ? `Simulasi ${demoPpdbMetrics.passRate}` : `Aplikasi berstatus ${getApplicationStatusLabel("PASSED")}`} tone="blue" icon="chart" />
             {!demo && <>
-              <MetricCard label="Pembayaran Menunggu" value={summary?.pendingPayments.toLocaleString("id-ID") ?? "â€”"} note={summary ? "Menunggu pemeriksaan admin" : "Data belum dapat dimuat"} tone="amber" icon="check" href="/portal/admin/pembayaran" />
-              <MetricCard label="Tes TKA Terbit" value={summary?.publishedTests.toLocaleString("id-ID") ?? "â€”"} note={summary ? "Tes aktif yang dipublikasikan" : "Data belum dapat dimuat"} tone="green" icon="chart" href="/portal/admin/manajemen-tes" />
-              <MetricCard label="Keputusan Seleksi" value={summary?.selectionDecisions.toLocaleString("id-ID") ?? "â€”"} note={summary ? "Keputusan tersimpan" : "Data belum dapat dimuat"} tone="blue" icon="people" href="/portal/admin/manajemen-seleksi" />
+              <MetricCard label="Pembayaran Menunggu" value={summary?.pendingPayments.toLocaleString("id-ID") ?? "—"} note={summary ? "Menunggu pemeriksaan admin" : "Data belum dapat dimuat"} tone="amber" icon="check" href="/portal/admin/pembayaran" />
+              <MetricCard label="Tes TKA Terbit" value={summary?.publishedTests.toLocaleString("id-ID") ?? "—"} note={summary ? "Tes aktif yang dipublikasikan" : "Data belum dapat dimuat"} tone="green" icon="chart" href="/portal/admin/manajemen-tes" />
+              <MetricCard label="Keputusan Seleksi" value={summary?.selectionDecisions.toLocaleString("id-ID") ?? "—"} note={summary ? "Keputusan tersimpan" : "Data belum dapat dimuat"} tone="blue" icon="people" href="/portal/admin/manajemen-seleksi" />
             </>}
           </section>
 
           <div className="admin-dashboard-grid admin-dashboard-grid-top">
             <section className="admin-dashboard-card admin-funnel-card" aria-labelledby="admin-funnel-title">
               <h2 id="admin-funnel-title">{demo ? "Fase Konversi Alur SPMB" : "Jumlah per Status Aplikasi"}</h2>
-              {demo ? <div className="admin-funnel-list">{funnel.map((item) => <div className="admin-funnel-item" key={item.label}><div className="admin-funnel-heading"><strong>{item.label}</strong><span>{item.count} Siswa ({item.percent}%)</span></div><div className="admin-funnel-track"><span className={item.color} style={{ width: `${item.percent}%` }} /></div></div>)}</div> : summary ? <div className="admin-funnel-list">{summary.statuses.map(({ status, count }) => <div className="admin-funnel-item" key={status}><div className="admin-funnel-heading"><strong>{status.replaceAll("_", " ")}</strong><span>{count.toLocaleString("id-ID")}</span></div><div className="admin-funnel-track"><span className="green" style={{ width: `${summary.total ? Math.min(100, count / summary.total * 100) : 0}%` }} /></div></div>)}</div> : <EmptyPanel>Ringkasan status belum dapat dimuat.</EmptyPanel>}
+              {demo ? <div className="admin-funnel-list">{funnel.map((item) => <div className="admin-funnel-item" key={item.label}><div className="admin-funnel-heading"><strong>{item.label}</strong><span>{item.count} Siswa ({item.percent}%)</span></div><div className="admin-funnel-track"><span className={item.color} style={{ width: `${item.percent}%` }} /></div></div>)}</div> : summary ? <><div className="admin-funnel-list">{visibleLiveStatuses.length ? renderLiveStatuses(visibleLiveStatuses) : <EmptyPanel>Belum ada pendaftar pada status aplikasi.</EmptyPanel>}</div>{zeroLiveStatuses.length > 0 && <details className="admin-funnel-zero-statuses"><summary>Tampilkan semua status ({zeroLiveStatuses.length} status kosong)</summary><div className="admin-funnel-list">{renderLiveStatuses(zeroLiveStatuses)}</div></details>}</> : <EmptyPanel>Ringkasan status belum dapat dimuat.</EmptyPanel>}
             </section>
 
             <section className="admin-dashboard-card admin-program-card" aria-labelledby="admin-program-title">
@@ -87,10 +110,13 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
               {demo ? <ul className="admin-queue-list">{demoQueue.map((item) => <li className="admin-queue-row" key={item.name}><span className="admin-queue-avatar">{item.initial}</span><span className="admin-queue-person"><strong>{item.name}</strong><small>Program Pilihan: {item.program} <i aria-hidden="true">•</i> {item.detail}</small></span><span className={`admin-queue-status ${item.state}`}>{item.status}</span></li>)}</ul> : <EmptyPanel>{summary ? summary.pendingDocuments ? `${summary.pendingDocuments.toLocaleString("id-ID")} dokumen menunggu verifikasi. Buka daftar pendaftar untuk meninjau dokumen per siswa.` : "Tidak ada dokumen berstatus pending." : "Data antrean belum dapat dimuat."}</EmptyPanel>}
             </section>
 
-            <section className="admin-dashboard-card admin-agenda-card" aria-labelledby="admin-agenda-title">
+            {demo ? <section className="admin-dashboard-card admin-agenda-card" aria-labelledby="admin-agenda-title">
               <h2 id="admin-agenda-title">Target Agenda SPMB</h2>
-              {demo ? <ol className="admin-agenda-list">{demoAgenda.map((item) => <li className={`admin-agenda-item ${item.tone}`} key={item.title}><strong>{item.title}</strong><time>{item.date}</time><p>{item.detail}</p></li>)}</ol> : <EmptyPanel>Agenda akan tampil setelah jadwal ditambahkan.</EmptyPanel>}
-            </section>
+              <ol className="admin-agenda-list">{demoAgenda.map((item) => <li className={`admin-agenda-item ${item.tone}`} key={item.title}><strong>{item.title}</strong><time>{item.date}</time><p>{item.detail}</p></li>)}</ol>
+            </section> : <section className="admin-dashboard-card admin-outcome-card" aria-labelledby="admin-outcome-title">
+              <h2 id="admin-outcome-title">Ringkasan Hasil Seleksi</h2>
+              {summary ? <ul className="admin-outcome-list">{(["PASSED", "FAILED", "WAITING_SELECTION"] as const).map((status) => <li className={`admin-status-tone-${getApplicationStatusTone(status)}`} key={status}><span><i aria-hidden="true" />{getApplicationStatusLabel(status)}</span><strong>{(liveStatusCounts.get(status) ?? 0).toLocaleString("id-ID")}</strong></li>)}</ul> : <EmptyPanel>Ringkasan hasil seleksi belum dapat dimuat.</EmptyPanel>}
+            </section>}
           </div>
 
           <footer className="admin-dashboard-footer"><span>SPMB SMK Citra Negara</span><Link href="/portal/admin?mode=demo">Buka contoh tampilan</Link></footer>

@@ -13,3 +13,18 @@ export function isSafeLocalTestDatabaseUrl(value: string | undefined): boolean {
     return false;
   }
 }
+
+export function isSafeDemoSeedDatabaseUrl(value: string | undefined, expectedTarget: string | undefined): boolean {
+  if (!value || !expectedTarget?.trim()) return false;
+  try {
+    const url = new URL(value);
+    const databaseName = decodeURIComponent(url.pathname.replace(/^\//, ""));
+    const isPostgres = url.protocol === "postgresql:" || url.protocol === "postgres:";
+    const hasConnectionOverride = ["host", "hostaddr", "port"].some((key) => url.searchParams.has(key));
+    const clearlyDemoDatabase = /(?:^|[-_])(demo|test|sandbox|disposable)(?:[-_]|$)/i.test(databaseName);
+    const exactTarget = `${url.hostname}/${databaseName}`;
+    return isPostgres && !hasConnectionOverride && clearlyDemoDatabase && exactTarget.toLowerCase() === expectedTarget.trim().toLowerCase();
+  } catch {
+    return false;
+  }
+}

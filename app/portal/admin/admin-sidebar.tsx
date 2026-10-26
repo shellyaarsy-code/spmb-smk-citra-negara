@@ -34,45 +34,35 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
   const dashboardHref = demo ? "/portal/admin?mode=demo" : "/portal/admin";
   const registrationHref = demo ? "/portal/admin/pendaftaran?mode=demo" : "/portal/admin/pendaftaran";
   const verificationHref = demo ? "/portal/admin/verifikasi-berkas/CN260012?mode=demo" : "/portal/admin/verifikasi-berkas";
-  const paymentHref = "/portal/admin/pembayaran";
+  const paymentHref = demo ? "/portal/admin/pembayaran?mode=demo" : "/portal/admin/pembayaran";
   const bankHref = demo ? "/portal/admin/bank-soal-tka?mode=demo" : "/portal/admin/bank-soal-tka";
   const testHref = demo ? "/portal/admin/manajemen-tes?mode=demo" : "/portal/admin/manajemen-tes";
-  const tkaEligibilityHref = "/portal/admin/kelayakan-tka";
+  const tkaEligibilityHref = demo ? "/portal/admin/kelayakan-tka?mode=demo" : "/portal/admin/kelayakan-tka";
   const selectionHref = demo ? "/portal/admin/manajemen-seleksi?mode=demo" : "/portal/admin/manajemen-seleksi";
   const announcementsHref = demo ? "/portal/admin/pengumuman?mode=demo" : "/portal/admin/pengumuman";
-  const bankQuestions = active === "payments" || active === "bankQuestions" || active === "testManagement" || active === "tkaEligibility" || active === "selectionManagement" || active === "announcements" || active === "analytics";
   const analyticsHref = demo ? "/portal/admin/laporan?mode=demo" : "/portal/admin/laporan";
 
   return (
     <aside className="admin-dashboard-sidebar">
       <Link className="admin-dashboard-brand" href="/portal/login/admin" aria-label="SPMB SMK Citra Negara, kembali ke login admin">
         <BrandLogo className="admin-dashboard-brand-mark" />
-        <span>SPMB CITRA NEGARA<small>{bankQuestions ? "PORTAL ADMIN" : "ADMIN PANEL 2026/2027"}</small></span>
+        <span>SPMB CITRA NEGARA<small>PORTAL ADMIN</small></span>
       </Link>
 
       <nav className="admin-dashboard-nav" aria-label="Menu admin">
-        {bankQuestions ? <>
-          <Link className="admin-dashboard-nav-link" href={dashboardHref}><AdminIcon name="home" /><span>Dashboard Overview</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "bankQuestions" ? "active" : ""}`} href={bankHref} aria-current={active === "bankQuestions" ? "page" : undefined}><AdminIcon name="book" /><span>Bank Soal TKA</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "testManagement" ? "active" : ""}`} href={testHref} aria-current={active === "testManagement" ? "page" : undefined}><AdminIcon name="test" /><span>Manajemen Tes</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "tkaEligibility" ? "active" : ""}`} href={tkaEligibilityHref} aria-current={active === "tkaEligibility" ? "page" : undefined}><AdminIcon name="check" /><span>Kelayakan TKA</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "selectionManagement" ? "active" : ""}`} href={selectionHref} aria-current={active === "selectionManagement" ? "page" : undefined}><AdminIcon name="people" /><span>Manajemen Seleksi</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "announcements" ? "active" : ""}`} href={announcementsHref} aria-current={active === "announcements" ? "page" : undefined}><AdminIcon name="bell" /><span>Pengumuman</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "analytics" ? "active" : ""}`} href={analyticsHref} aria-current={active === "analytics" ? "page" : undefined}><AdminIcon name="analytics" /><span>Laporan &amp; Analitik</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "payments" ? "active" : ""}`} href={paymentHref} aria-current={active === "payments" ? "page" : undefined}><AdminIcon name="check" /><span>Pembayaran</span></Link>
-        </> : <>
-          <Link className={`admin-dashboard-nav-link ${active === "dashboard" ? "active" : ""}`} href={dashboardHref} aria-current={active === "dashboard" ? "page" : undefined}><AdminIcon name="home" /><span>Dashboard</span></Link>
-          <Link className={`admin-dashboard-nav-link ${active === "registrations" ? "active" : ""}`} href={registrationHref} aria-current={active === "registrations" ? "page" : undefined}><AdminIcon name="people" /><span>Pendaftaran</span>{demo && <b>342</b>}</Link>
-          <Link className={`admin-dashboard-nav-link ${active === "verification" ? "active" : ""}`} href={verificationHref} aria-current={active === "verification" ? "page" : undefined}><AdminIcon name="check" /><span>Verifikasi Berkas</span>{demo && <b>24</b>}</Link>
-          <span className="admin-dashboard-nav-link" aria-disabled="true"><AdminIcon name="chart" /><span>Seleksi Akademik</span></span>
-          <span className="admin-dashboard-nav-link" aria-disabled="true"><AdminIcon name="settings" /><span>Pengaturan Sistem</span></span>
-        </>}
+                <Link className={`admin-dashboard-nav-link ${active === "dashboard" ? "active" : ""}`} href={dashboardHref} aria-current={active === "dashboard" ? "page" : undefined}><AdminIcon name="home" /><span>Dashboard</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "registrations" ? "active" : ""}`} href={registrationHref} aria-current={active === "registrations" ? "page" : undefined}><AdminIcon name="people" /><span>Pendaftaran</span>{demo && <b>342</b>}</Link>
+        <Link className={`admin-dashboard-nav-link ${active === "verification" ? "active" : ""}`} href={verificationHref} aria-current={active === "verification" ? "page" : undefined}><AdminIcon name="check" /><span>Verifikasi Berkas</span>{demo && <b>24</b>}</Link>
+        <Link className={`admin-dashboard-nav-link ${active === "bankQuestions" ? "active" : ""}`} href={bankHref} aria-current={active === "bankQuestions" ? "page" : undefined}><AdminIcon name="book" /><span>Bank Soal TKA</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "testManagement" ? "active" : ""}`} href={testHref} aria-current={active === "testManagement" ? "page" : undefined}><AdminIcon name="test" /><span>Manajemen Tes</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "tkaEligibility" ? "active" : ""}`} href={tkaEligibilityHref} aria-current={active === "tkaEligibility" ? "page" : undefined}><AdminIcon name="check" /><span>Kelayakan TKA</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "selectionManagement" ? "active" : ""}`} href={selectionHref} aria-current={active === "selectionManagement" ? "page" : undefined}><AdminIcon name="chart" /><span>Manajemen Seleksi</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "announcements" ? "active" : ""}`} href={announcementsHref} aria-current={active === "announcements" ? "page" : undefined}><AdminIcon name="bell" /><span>Pengumuman</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "analytics" ? "active" : ""}`} href={analyticsHref} aria-current={active === "analytics" ? "page" : undefined}><AdminIcon name="analytics" /><span>Laporan &amp; Analitik</span></Link>
+        <Link className={`admin-dashboard-nav-link ${active === "payments" ? "active" : ""}`} href={paymentHref} aria-current={active === "payments" ? "page" : undefined}><AdminIcon name="settings" /><span>Pembayaran</span></Link>
       </nav>
 
-      {bankQuestions ? <section className="admin-bank-support" aria-label="Bantuan sistem"><strong>Butuh Bantuan Sistem?</strong><p>Hubungi tim developer PPDB Negara jika mengalami kendala server.</p><span>☎ &nbsp;Ext. 102 (IT Support)</span></section> : <section className="admin-wave-card" aria-label="Status gelombang pendaftaran">
-        <h2>Status Gelombang 1</h2>
-        {demo ? <><div className="admin-wave-summary"><span>Kuota Terisi 74%</span><strong>370/500</strong></div><div className="admin-wave-track"><span style={{ width: "74%" }} /></div><p>Berakhir: 15 Maret 2026</p></> : <p>Data kuota akan tampil setelah pendaftar tersambung.</p>}
-      </section>}
+      <section className="admin-bank-support" aria-label="Bantuan sistem"><strong>Butuh Bantuan Sistem?</strong><p>Hubungi tim developer PPDB Negara jika mengalami kendala server.</p><span>☎ &nbsp;Ext. 102 (IT Support)</span></section>
 
       <AuthLogoutLink className="admin-dashboard-logout" href="/portal/login/admin"><AdminIcon name="logout" /><span>Kembali ke Login</span></AuthLogoutLink>
     </aside>

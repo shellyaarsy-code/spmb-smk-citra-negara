@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import type { FormEvent } from "react";
+import { useRouter } from "next/navigation";
 
 function PasswordIcon({ hidden }: { hidden: boolean }) {
   return (
@@ -14,6 +15,7 @@ function PasswordIcon({ hidden }: { hidden: boolean }) {
 }
 
 export default function StudentRegistrationForm() {
+  const router = useRouter();
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmation, setShowConfirmation] = useState(false);
   const [password, setPassword] = useState("");
@@ -23,8 +25,6 @@ export default function StudentRegistrationForm() {
 
   async function handleSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    const form = event.currentTarget;
-
     if (password !== confirmation) {
       setFeedback("Konfirmasi kata sandi belum sama.");
       return;
@@ -55,10 +55,7 @@ export default function StudentRegistrationForm() {
         return;
       }
 
-      form.reset();
-      setPassword("");
-      setConfirmation("");
-      setFeedback(result?.message || "Jika pendaftaran dapat diproses, akun akan tersedia untuk masuk.");
+      router.replace("/portal/login/siswa?registered=1");
     } catch {
       setFeedback("Pendaftaran belum dapat diproses.");
     } finally {

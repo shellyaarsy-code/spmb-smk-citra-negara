@@ -1,15 +1,24 @@
 import { ApplicationStatus, VerificationStatus } from "@prisma/client";
+import { spmbPolicy } from "../../config/spmb-policy";
 
-export function currentStudentDocumentsWhere(studentId: string) {
-  return { application: { studentId } };
+export function canProvisionDemoDocumentTypes(env: Record<string, string | undefined> = process.env) {
+  return env.VERCEL_ENV === "preview" && env.SPMB_DEMO_MODE === "true";
 }
 
-export function activeDocumentTypesWhere() {
-  return { isActive: true } as const;
+export function visibleDocumentTypeWhere(demoMode = process.env.VERCEL_ENV === "preview" && spmbPolicy.demoMode) {
+  return { code: demoMode ? { startsWith: "DEMO-" } : { not: { startsWith: "DEMO-" } } } as const;
 }
 
-export function ownedDocumentWhere(studentId: string, documentId: string) {
-  return { id: documentId, application: { studentId } } as const;
+export function currentStudentDocumentsWhere(studentId: string, demoMode = spmbPolicy.demoMode) {
+  return { application: { studentId }, documentType: visibleDocumentTypeWhere(demoMode) };
+}
+
+export function activeDocumentTypesWhere(demoMode = spmbPolicy.demoMode) {
+  return { isActive: true, ...visibleDocumentTypeWhere(demoMode) } as const;
+}
+
+export function ownedDocumentWhere(studentId: string, documentId: string, demoMode = spmbPolicy.demoMode) {
+  return { id: documentId, application: { studentId }, documentType: visibleDocumentTypeWhere(demoMode) } as const;
 }
 
 export function canMutateDocumentsInStatus(status: string) {

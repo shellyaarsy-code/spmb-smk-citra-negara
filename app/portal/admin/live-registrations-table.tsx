@@ -83,7 +83,7 @@ export default function LiveRegistrationsTable() {
       {loading && <p className="admin-table-empty" role="status">Memuat daftar pendaftar…</p>}
       {!loading && !error && <>
         <div className="admin-table-toolbar"><span className="admin-table-count">{pagination?.total ? `Menampilkan ${(page - 1) * (pagination?.pageSize ?? 10) + 1}–${Math.min(page * (pagination?.pageSize ?? 10), pagination.total)} dari ${pagination.total} pendaftar` : "Belum ada aplikasi yang dikirim."}</span></div>
-        <div className="admin-table-scroll"><table className="admin-registrations-table">
+        <div className="admin-table-scroll"><table className="admin-registrations-table admin-live-registrations-table">
           <thead><tr><th>No. Pendaftaran</th><th>Nama Calon Siswa</th><th>NISN</th><th>Program Pilihan</th><th>Tgl Dikirim</th><th>Status Aplikasi</th><th>Aksi</th></tr></thead>
           <tbody>{rows.map((applicant) => <tr key={applicant.registrationNumber}>
             <td className="admin-registration-number">{applicant.registrationNumber}</td><td className="admin-applicant-name">{applicant.name || "Nama belum diisi"}</td><td className="admin-applicant-nisn">{applicant.nisn || "—"}</td>

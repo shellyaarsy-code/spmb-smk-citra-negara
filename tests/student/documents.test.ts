@@ -1,26 +1,54 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { activeDocumentTypesWhere, canMutateDocumentsInStatus, currentStudentDocumentsWhere, editableDocumentApplicationWhere, ownedDocumentWhere, resolveApplicationStatusAfterDocumentReview } from "../../services/documents/document-policy";
+import { activeDocumentTypesWhere, canMutateDocumentsInStatus, canProvisionDemoDocumentTypes, currentStudentDocumentsWhere, editableDocumentApplicationWhere, ownedDocumentWhere, resolveApplicationStatusAfterDocumentReview, visibleDocumentTypeWhere } from "../../services/documents/document-policy";
 import { DocumentInputError, parseDocumentVerification, validateDocumentUpload } from "../../services/documents/document-validation";
+import { documentUploadConfigurationStatus, getDocumentConfiguration } from "../../services/documents/document-config";
 import { deleteWithCompensation, uploadWithCompensation } from "../../services/documents/document-consistency";
 import { applyDocumentVerification } from "../../services/documents/document-verification";
 import { documentErrorDetails } from "../../services/documents/document-error-policy";
 
-const uploadConfig = { supabaseUrl: "https://storage.example.test", serviceRoleKey: "test-only", bucket: "private-test", allowedMimeTypes: ["application/pdf"], maxFileSizeBytes: 12 };
+const uploadConfig = { allowedMimeTypes: ["application/pdf"], maxFileSizeBytes: 12 };
 const pdfBytes = new TextEncoder().encode("%PDF-1.7\n");
 
-test("document query ownership is scoped through the owning application", () => {
-  assert.deepEqual(currentStudentDocumentsWhere("session-owned-student"), {
-    application: { studentId: "session-owned-student" },
+test("demo document setup is restricted to Preview with demo mode enabled", () => {
+  assert.equal(canProvisionDemoDocumentTypes({ VERCEL_ENV: "preview", SPMB_DEMO_MODE: "true" }), true);
+  assert.equal(canProvisionDemoDocumentTypes({ VERCEL_ENV: "production", SPMB_DEMO_MODE: "true" }), false);
+  assert.equal(canProvisionDemoDocumentTypes({ VERCEL_ENV: "preview", SPMB_DEMO_MODE: "false" }), false);
+});
+
+test("document storage stays disabled until a Blob store is connected", () => {
+  assert.equal(getDocumentConfiguration({ NODE_ENV: "test", SPMB_DOCUMENT_ALLOWED_MIME_TYPES: "application/pdf" }), null);
+  assert.deepEqual(documentUploadConfigurationStatus({ NODE_ENV: "test", SPMB_DOCUMENT_ALLOWED_MIME_TYPES: "application/pdf" }), { enabled: false, allowedMimeTypes: [], maxFileSizeBytes: null });
+});
+
+test("connected Vercel Preview gets safe document upload defaults", () => {
+  assert.deepEqual(getDocumentConfiguration({ NODE_ENV: "test", VERCEL: "1", BLOB_STORE_ID: "demo-store" }), {
+    allowedMimeTypes: ["application/pdf", "image/jpeg", "image/png"],
+    maxFileSizeBytes: 4 * 1024 * 1024,
   });
 });
 
+test("document upload configuration rejects unsupported types and unsafe size values", () => {
+  assert.equal(getDocumentConfiguration({ NODE_ENV: "test", VERCEL: "1", BLOB_STORE_ID: "demo-store", SPMB_DOCUMENT_ALLOWED_MIME_TYPES: "application/x-msdownload" }), null);
+  assert.equal(getDocumentConfiguration({ NODE_ENV: "test", VERCEL: "1", BLOB_STORE_ID: "demo-store", SPMB_DOCUMENT_MAX_FILE_SIZE_BYTES: "-1" }), null);
+});
+
+test("document query ownership is scoped through the owning application", () => {
+  assert.deepEqual(currentStudentDocumentsWhere("session-owned-student", false), {
+    application: { studentId: "session-owned-student" },
+    documentType: { code: { not: { startsWith: "DEMO-" } } },
+  });
+  assert.deepEqual(currentStudentDocumentsWhere("session-owned-student", true).documentType, { code: { startsWith: "DEMO-" } });
+});
+
 test("student document types query only active records and never grants mutations", () => {
-  assert.deepEqual(activeDocumentTypesWhere(), { isActive: true });
+  assert.deepEqual(activeDocumentTypesWhere(false), { isActive: true, code: { not: { startsWith: "DEMO-" } } });
+  assert.deepEqual(activeDocumentTypesWhere(true), { isActive: true, code: { startsWith: "DEMO-" } });
+  assert.deepEqual(visibleDocumentTypeWhere(false), { code: { not: { startsWith: "DEMO-" } } });
 });
 
 test("document ownership query scopes lookup to the authenticated student", () => {
-  assert.deepEqual(ownedDocumentWhere("student-a", "doc-a"), { id: "doc-a", application: { studentId: "student-a" } });
+  assert.deepEqual(ownedDocumentWhere("student-a", "doc-a", false), { id: "doc-a", application: { studentId: "student-a" }, documentType: { code: { not: { startsWith: "DEMO-" } } } });
   assert.notDeepEqual(ownedDocumentWhere("student-a", "doc-a"), ownedDocumentWhere("student-b", "doc-a"));
 });
 

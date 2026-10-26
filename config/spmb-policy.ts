@@ -3,6 +3,7 @@
  * approved the corresponding rule and configured it explicitly.
  */
 export const spmbPolicy = {
+  demoMode: process.env.SPMB_DEMO_MODE === "true",
   officialRulesApproved: process.env.SPMB_OFFICIAL_RULES_APPROVED === "true",
   paymentAmountSettingKey: "SPMB_FORM_PAYMENT_AMOUNT",
   paymentMethodSettingKey: "SPMB_PAYMENT_METHOD",

@@ -33,9 +33,10 @@ export async function listPrincipalApplicants(params: URLSearchParams) {
 
 export async function getPrincipalSelectionOverview() {
   await requireRole(RoleName.KEPALA_SEKOLAH);
-  if (!spmbPolicy.officialRulesApproved) return { published: false, results: [], counts: { passed: 0, waitlisted: 0, failed: 0 }, programs: [] };
+  const releaseAllowed = spmbPolicy.officialRulesApproved;
+  if (!releaseAllowed) return { published: false, demoMode: spmbPolicy.demoMode, results: [], counts: { passed: 0, waitlisted: 0, failed: 0 }, programs: [] };
   const release = await prisma.schoolSetting.findUnique({ where: { key: spmbPolicy.selectionResultsPublishedSettingKey }, select: { value: true } });
-  if (!isSelectionReleaseEnabled(spmbPolicy.officialRulesApproved, release?.value)) return { published: false, results: [], counts: { passed: 0, waitlisted: 0, failed: 0 }, programs: [] };
+  if (!isSelectionReleaseEnabled(releaseAllowed, release?.value)) return { published: false, demoMode: spmbPolicy.demoMode, results: [], counts: { passed: 0, waitlisted: 0, failed: 0 }, programs: [] };
   const [groups, results, programs] = await Promise.all([
     prisma.selection.groupBy({ by: ["status"], _count: { _all: true } }),
     prisma.selection.findMany({ where: { status: { not: "PENDING" } }, orderBy: [{ studyProgramId: "asc" }, { selectionRank: "asc" }], take: 500, select: { status: true, selectionRank: true, application: { select: { registrationNumber: true, student: { select: { profile: { select: { fullName: true } } } } } }, studyProgram: { select: { code: true, name: true } } } }),
@@ -44,6 +45,7 @@ export async function getPrincipalSelectionOverview() {
   const byStatus = new Map(groups.map((group) => [group.status, group._count._all]));
   return {
     published: true,
+    demoMode: spmbPolicy.demoMode,
     counts: { passed: byStatus.get("PASSED") ?? 0, waitlisted: byStatus.get("WAITLISTED") ?? 0, failed: byStatus.get("FAILED") ?? 0 },
     programs: programs.map((program) => ({ code: program.code, name: program.name, capacity: program.capacity, passed: program.selections.length })),
     results: results.map((result) => ({ registrationNumber: result.application.registrationNumber, name: result.application.student.profile?.fullName ?? null, program: result.studyProgram.code, programName: result.studyProgram.name, rank: result.selectionRank, status: result.status })),

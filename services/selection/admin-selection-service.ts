@@ -36,7 +36,8 @@ export async function getAdminSelectionOverview(rawPage?: unknown) {
   const latestAudit = new Map<string, (typeof audits)[number]>();
   for (const entry of audits) if (entry.entityId && !latestAudit.has(entry.entityId)) latestAudit.set(entry.entityId, entry);
   const candidatesWithAudit = candidates.map((candidate) => ({ ...candidate, lastAudit: candidate.selection ? latestAudit.get(candidate.selection.id) ?? null : null }));
-  return { rulesApproved: spmbPolicy.officialRulesApproved, published: isSelectionReleaseEnabled(spmbPolicy.officialRulesApproved, releaseSetting?.value), policy, policyUpdatedAt: policySetting?.updatedAt ?? null, finalDecisionCount: finalCount, candidates: candidatesWithAudit, candidatePagination: { page, pageSize: ADMIN_CANDIDATE_PAGE_SIZE, total: candidateTotal, totalPages: Math.ceil(candidateTotal / ADMIN_CANDIDATE_PAGE_SIZE) }, results: spmbPolicy.officialRulesApproved ? rows : [] };
+  const releaseAllowed = spmbPolicy.officialRulesApproved;
+  return { rulesApproved: spmbPolicy.officialRulesApproved, demoMode: spmbPolicy.demoMode, published: isSelectionReleaseEnabled(releaseAllowed, releaseSetting?.value), policy, policyUpdatedAt: policySetting?.updatedAt ?? null, finalDecisionCount: finalCount, candidates: candidatesWithAudit, candidatePagination: { page, pageSize: ADMIN_CANDIDATE_PAGE_SIZE, total: candidateTotal, totalPages: Math.ceil(candidateTotal / ADMIN_CANDIDATE_PAGE_SIZE) }, results: releaseAllowed ? rows : [] };
 }
 
 export async function saveAdminSelectionDecision(applicationId: string, studyProgramId: string, raw: unknown) {
@@ -77,7 +78,7 @@ export async function setAdminSelectionPublication(raw: unknown) {
       if (!policySetting || !finalCount) throw new SelectionPolicyInputError();
       try { parseSelectionPolicyDraft(JSON.parse(policySetting.value)); } catch { throw new SelectionPolicyInputError(); }
     }
-    await tx.schoolSetting.upsert({ where: { key: spmbPolicy.selectionResultsPublishedSettingKey }, create: { key: spmbPolicy.selectionResultsPublishedSettingKey, value: String(published), description: "Publikasi hasil seleksi; aktif hanya setelah aturan disetujui." }, update: { value: String(published) } });
+    await tx.schoolSetting.upsert({ where: { key: spmbPolicy.selectionResultsPublishedSettingKey }, create: { key: spmbPolicy.selectionResultsPublishedSettingKey, value: String(published), description: spmbPolicy.demoMode ? "Publikasi hasil contoh untuk demo saja." : "Publikasi hasil seleksi; aktif hanya setelah aturan disetujui." }, update: { value: String(published) } });
     await tx.auditLog.create({ data: { actorUserId: actor.id, entityType: "SELECTION_PUBLICATION", entityId: spmbPolicy.selectionResultsPublishedSettingKey, action: published ? AuditAction.PUBLISH : AuditAction.UPDATE, details: { published } } });
     return { published };
   });

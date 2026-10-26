@@ -15,9 +15,13 @@ export const metadata: Metadata = {
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
+  const demoMode = process.env.SPMB_DEMO_MODE === "true";
   return (
     <html lang="id" className={plusJakarta.variable + " h-full antialiased"}>
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {demoMode && <div className="demo-mode-banner" role="note"><strong>MODE DEMO</strong><span>Seluruh akun, data, kuota, biaya, tes, dan hasil di situs ini hanya simulasi.</span></div>}
+        {children}
+      </body>
     </html>
   );
 }

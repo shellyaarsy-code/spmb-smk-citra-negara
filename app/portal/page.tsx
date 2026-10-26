@@ -44,6 +44,10 @@ export default function PortalPage() {
           {portal.secondary && <a className="button button-outline portal-button-secondary" href={portal.href + "?mode=register"}>{portal.secondary}</a>}
         </article>)}</div>
       </section>
+      <section className="portal-demo-invite" aria-label="Demo interaktif untuk guru">
+        <div><span className="kicker">UNTUK GURU DAN CALON SISWA</span><h2>Ingin mencoba alur SPMB?</h2><p>Jelajahi portal siswa, admin, dan kepala sekolah dengan autentikasi serta data demo bersama.</p></div>
+        <a className="button" href="/demo">Buka demo interaktif <span>↗</span></a>
+      </section>
       <SiteFooter />
     </main>
   );
