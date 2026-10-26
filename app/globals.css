@@ -1716,9 +1716,10 @@ a { color: inherit; text-decoration: none; }
 .principal-panel-heading p { margin: 3px 0 0; color: #8a958d; font-size: 12px; }
 .principal-panel-heading>svg { width: 15px; height: 15px; flex: 0 0 15px; color: #52766a; }
 .principal-quota-list { margin-top: 13px; display: grid; gap: 10px; }
-.principal-quota-label { margin-bottom: 4px; display: flex; align-items: baseline; justify-content: space-between; gap: 8px; color: #344139; font-size: 12px; }
+.principal-quota-row { min-width: 0; }
+.principal-quota-label { min-width: 0; margin-bottom: 4px; display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 4px 8px; color: #344139; font-size: 12px; }
 .principal-quota-label strong { min-width: 0; overflow: hidden; font-weight: 600; text-overflow: ellipsis; white-space: nowrap; }
-.principal-quota-label span { flex: 0 0 auto; color: #758078; white-space: nowrap; }
+.principal-quota-label span { min-width: 0; flex: 0 1 auto; color: #758078; white-space: normal; }
 .principal-quota-label b { color: #344139; font-weight: 700; }
 .principal-quota-track { height: 6px; overflow: hidden; border-radius: 10px; background: #edf1ed; }
 .principal-quota-track i { height: 100%; display: block; border-radius: inherit; }
