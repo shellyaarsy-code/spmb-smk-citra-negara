@@ -2674,28 +2674,19 @@ button:disabled { cursor: not-allowed; }
 }
 
 
-/* Authenticated student detail pages use the portal sidebar as the sole navigation. */
-.verification-shell > .verification-topbar {
-  min-height: 0;
-  padding: 10px 5%;
-  display: flex;
-  justify-content: flex-end;
-  border: 0;
-  border-bottom: 1px solid #e7ede8;
+/* Use the same authenticated portal shell on every Siswa page; only the page content changes. */
+.verification-outer { padding-top: 18px; }
+.verification-shell {
+  width: min(1440px, 100%);
+  margin: 0 auto;
+  background: transparent;
 }
-.verification-shell > .verification-topbar > .verification-topbar-brand,
-.verification-shell > .verification-topbar > nav {
-  display: none !important;
-}
-.verification-shell > .verification-topbar > .verification-account {
-  grid-column: auto;
-  grid-row: auto;
-}
-.verification-shell > .verification-topbar + .verification-app {
-  min-height: calc(100vh - 48px);
-}
-@media (max-width: 680px) {
-  .verification-shell > .verification-topbar + .verification-app {
-    min-height: calc(100vh - 42px);
-  }
+.verification-shell > .verification-topbar { display: none !important; }
+.verification-shell > .verification-app { min-height: calc(100vh - 36px); }
+.verification-shell .verification-main { padding-top: 0; }
+
+@media (max-width: 760px) {
+  .verification-outer { padding: 0; }
+  .verification-shell { width: 100%; }
+  .verification-shell > .verification-app { min-height: 100vh; }
 }
