@@ -1,19 +1,21 @@
-# UI design system consolidation
+# UI design system
 
-The shared foundation lives in `app/globals.css` and is used by the public pages, authentication screens, and the Admin, Kepala Sekolah, and Siswa portals.
+The shared visual foundation is maintained in `app/globals.css` and is used by public pages, authentication screens, and the Admin, Kepala Sekolah, and Siswa portals.
 
-## Shared tokens
+## Semantic tokens
 
-- Typography: Inter when available, then Segoe UI and Arial; a 12/14/16/18/22/24 px scale, 13 px labels, and shared 1.25/1.5/1.65 line heights.
-- Spacing: 4, 8, 12, 16, 20, 24, and 32 px tokens. Page-specific layouts can keep their own responsive grid gaps.
-- Dimensions: 40 px shared controls, public header height, 1440 px content width, 1500 px dashboard width, and separate Admin, Principal, and Student sidebar widths including compact breakpoints.
-- Surfaces: shared panel and control radii, standard border, panel shadow, focus ring, and semantic warning, success, danger, and information colors.
-- Shared component rules: role navigation, common action buttons, form controls, dashboard headings and descriptions, registration and results tables, card surfaces, and status badges.
+The semantic tokens added for the SPMB foundations are `--color-primary`, `--color-primary-hover`, `--color-primary-tint`, `--color-bg-base`, `--color-surface`, `--color-text`, `--color-text-muted`, `--color-border`, and foreground/background pairs for warning, success, danger, and information. Additional tokens cover focus, sidebar states, typography, spacing, radius, elevation, motion, and layer order.
 
-Role-specific layout colors and responsive behavior remain where they support the distinct workflows. Existing `BrandLogo` sizing rules also remain role-specific so the official emblem keeps its aspect ratio in each header.
+Legacy tokens remain as compatibility aliases while page-level styles are migrated. Do not remove them until their consumers have been migrated and checked.
 
-## Legacy styles
+## Typography
 
-The stylesheet still contains many page-level `font-size` declarations, including overrides for compact mobile layouts, chart labels, small status chips, and dense selection data. The latest static count is 893 declarations; this work does not claim they have all been converted to the shared scale. Shared token rules now govern common form controls, portal navigation, dashboard descriptions and headings, table cells, buttons, authentication copy, and status badges. Some older declarations for those elements remain in the file and are superseded by the shared rules; page-local chart and dense data labels retain their sizing pending visual review at supported viewport widths.
+The requested family is Plus Jakarta Sans. `--font-body` points at that family, but the repository does not currently include or load its font asset; browsers without the family installed will use their sans-serif fallback. The shared size tokens cover 12, 14, 16, 18, 22, and 24 px plus overline, page-title, and KPI sizes. Many older page-specific font sizes remain and need page-by-page migration.
 
-Do not replace the remaining declarations wholesale. Migrate a page group at a time and verify its desktop and mobile layout before removing its local rules.
+## Dashboard navigation
+
+All three role sidebars now render through the shared React component in app/components/app-sidebar.tsx; role-specific wrappers supply menus and optional contextual panels. Their visual styling is normalized through shared selectors: light surface, semantic text, green-tinted active item with a leading indicator, shared 248 px desktop width, 20 px icons, 44 px targets, and a horizontally scrollable navigation row on mobile. A shared React `AppSidebar`/`AppShell` has not yet been introduced.
+
+## Remaining work
+
+Page-local color, spacing, radius, shadow, and typography literals remain in the large global stylesheet. Continue migrating a page group at a time and verify layout, contrast, keyboard access, and mobile behavior. Status chips, cards, forms, topbars, empty/loading/error states, and data/demo modes still need shared primitives and adoption across roles.
