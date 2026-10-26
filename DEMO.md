@@ -25,4 +25,14 @@ Script opsional npm run demo:create-staff hanya membuat dua akun staf dan memaka
 - Unggah bukti bayar dan dokumen memakai Vercel Blob privat yang tersambung ke proyek hanya pada environment Preview. SDK memakai OIDC Vercel; tidak perlu menambahkan token read-write permanen. Jenis file default PDF/JPEG/PNG dengan batas 4 MiB.
 - Keputusan hasil hanya gambaran. Publikasi dari database tetap memerlukan `SPMB_OFFICIAL_RULES_APPROVED=true`; untuk mencoba antarmuka seleksi gunakan pratinjau simulasi pada portal admin.
 
-Seed belum dijalankan dan database Preview belum terbukti terpisah dari Production. Jangan membuat akun/unggah dokumen atau menjalankan seed sampai `DATABASE_URL` dan `DIRECT_URL` Preview menunjuk ke branch/demo database yang terisolasi; jangan menganggap variabel yang hanya bertanda Preview otomatis memakai database terpisah. Fixture belum tersedia untuk login sampai schema dan data demo disiapkan.
+## Status lingkungan demo yang sudah disiapkan
+
+- Preview cabang `integration/demo-shared-data` memakai Neon branch terisolasi `spmb-demo-test`, database `spmb_demo_test`. `DATABASE_URL` dan `DIRECT_URL` dibuat khusus untuk cabang Preview tersebut; database Neon `production` tidak digunakan oleh konfigurasi Preview ini.
+- Database pengujian sudah memiliki empat migrasi Prisma yang tercatat selesai, enam akun sintetis (Admin, Kepala Sekolah, dan empat siswa), empat pendaftaran, enam program keahlian, tiga jenis dokumen, tiga soal TKA, dua pembayaran simulasi, satu hasil seleksi, dan satu pengumuman.
+- Fixture tersebut sudah tersedia. **Jangan jalankan `npm run prisma:seed:demo` atau `npm run demo:create-staff` lagi pada database ini**: pemeriksaan seed memang dirancang untuk berhenti jika akun/fixture yang sama sudah ada.
+- Akun demo di Preview terpisah dari akun demo yang ditemukan di branch Neon `production`. Perubahan dan akun baru yang dibuat selama uji coba Preview berada di `spmb_demo_test`; perubahan itu tidak otomatis menjadi data Production.
+- Data pendaftar baru berbagi database demo yang sama dengan akun/pendaftaran sintetis, sehingga Admin dan Kepala Sekolah dapat memeriksa dampaknya sesuai hak akses setelah siswa menyelesaikan dan mengirim formulir. Pembuatan akun saja belum sama dengan pengiriman pendaftaran.
+- Keempat migrasi dan data fixture sudah diperiksa baca-saja. Build Preview berhasil, ESLint/typecheck berhasil setelah Prisma Client digenerate, dan 71 unit test lulus. Uji browser end-to-end untuk login/registrasi dan visibilitas lintas role masih perlu dilakukan; build berhasil bukan bukti bahwa seluruh alur sudah lulus.
+- Gunakan hanya data fiktif untuk demonstrasi. Dokumen dan pembayaran tetap berupa simulasi; jangan unggah identitas asli atau melakukan transfer. Keputusan seleksi dan aturan resmi tetap harus mengikuti persetujuan sekolah.
+
+`prisma/create-demo-staff.ts` sekarang menuntut `SPMB_DEMO_MODE=true`, konfirmasi disposable database, dan kecocokan persis `SPMB_DEMO_SEED_TARGET` terhadap hostname/database di `DATABASE_URL`. Script memakai `SPMB_DEMO_PASSWORD` dari environment, tidak menampilkan kata sandi, dan menolak jika akun staf demo sudah ada.
