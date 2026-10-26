@@ -2672,3 +2672,30 @@ button:disabled { cursor: not-allowed; }
   .principal-report-kpi>strong { margin-top:8px; font-size:26px; }
   .principal-report-panel>header { align-items:flex-start; flex-direction:column; }
 }
+
+
+/* Authenticated student detail pages use the portal sidebar as the sole navigation. */
+.verification-shell > .verification-topbar {
+  min-height: 0;
+  padding: 10px 5%;
+  display: flex;
+  justify-content: flex-end;
+  border: 0;
+  border-bottom: 1px solid #e7ede8;
+}
+.verification-shell > .verification-topbar > .verification-topbar-brand,
+.verification-shell > .verification-topbar > nav {
+  display: none !important;
+}
+.verification-shell > .verification-topbar > .verification-account {
+  grid-column: auto;
+  grid-row: auto;
+}
+.verification-shell > .verification-topbar + .verification-app {
+  min-height: calc(100vh - 48px);
+}
+@media (max-width: 680px) {
+  .verification-shell > .verification-topbar + .verification-app {
+    min-height: calc(100vh - 42px);
+  }
+}
