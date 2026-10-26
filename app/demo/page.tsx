@@ -5,7 +5,7 @@ import "./demo.css";
 const demoRoles = [
   {
     title: "Calon siswa",
-    description: "Buat akun, lengkapi pendaftaran, dan pantau tahapan SPMB.",
+    description: "Daftarkan akun siswa baru, lengkapi formulir, dan pantau tahapan SPMB dari data tersimpan.",
     href: "/portal/login/siswa?mode=register",
     action: "Daftar sebagai siswa demo",
   },
@@ -49,11 +49,11 @@ export default function DemoPage() {
         <aside className="demo-access-note" role="note">
           <strong>Data demo harus disiapkan pada database demo terlebih dahulu.</strong>
           <p>Gunakan hanya data fiktif dan akun demo. Jangan masukkan data pribadi calon siswa sungguhan. Kata sandi akun bersama dibagikan terpisah oleh pengelola.</p>
-          <h2>Akun demo</h2>
+          <h2>Akses demo</h2>
           <ul>
             <li>Admin: <code>admin.demo@spmb.test</code></li>
             <li>Kepala sekolah: <code>kepala-sekolah.demo@spmb.test</code></li>
-            <li>Siswa: <code>siswa1.demo@spmb.test</code> sampai <code>siswa4.demo@spmb.test</code></li>
+            <li>Siswa baru: pilih “Daftar sebagai siswa demo” untuk membuat akun baru. Akun tersebut tersimpan di database demo bersama.</li>
           </ul>
         </aside>
       </section>
