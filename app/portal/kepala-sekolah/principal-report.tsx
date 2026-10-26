@@ -3,16 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import PrincipalSidebar from "./principal-sidebar";
-import { demoPpdbWaves, formatPpdbNumber } from "../demo-ppdb-data";
+import { demoPpdbPrograms, demoPpdbWaves, formatPpdbNumber } from "../demo-ppdb-data";
 import { downloadCsv } from "../csv-export";
 import BrandLogo from "../../components/brand-logo";
 
-const programs = [
-  { name: "Pengembangan Perangkat Lunak dan Gim", code: "PPLG", capacity: 120, admitted: 120, percentage: "100%" },
-  { name: "Teknik Jaringan Komputer", code: "TKJ", capacity: 120, admitted: 98, percentage: "81,6%" },
-  { name: "Desain Komunikasi Visual", code: "DKV", capacity: 120, admitted: 110, percentage: "91,6%" },
-  { name: "Manajemen Perkantoran dan Layanan Bisnis", code: "MPLB", capacity: 80, admitted: 75, percentage: "93,7%" },
-];
+const programs = demoPpdbPrograms.map((program) => ({
+  name: program.name,
+  code: program.code,
+  capacity: program.capacity,
+  admitted: program.admitted,
+  percentage: `${((program.admitted / program.capacity) * 100).toLocaleString("id-ID", { maximumFractionDigits: 1 })}%`,
+}));
 
 export default function PrincipalReport({ demo }: { demo: boolean }) {
   const [period, setPeriod] = useState<keyof typeof demoPpdbWaves>("Semua Gelombang");

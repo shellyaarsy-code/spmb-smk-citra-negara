@@ -1,7 +1,7 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
 import PrincipalSidebar from "./principal-sidebar";
-import { demoPpdbMetrics, formatPpdbNumber } from "../demo-ppdb-data";
+import { demoPpdbMetrics, demoPpdbPrograms, demoPpdbWeekly, formatPpdbNumber } from "../demo-ppdb-data";
 
 type IconName = "grid" | "users" | "cap" | "user" | "shield" | "file" | "bell" | "calendar" | "logout" | "clock" | "trend";
 
@@ -22,14 +22,7 @@ function Icon({ name }: { name: IconName }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
-const programs = [
-  { code: "PPLG", name: "Pengembangan Perangkat Lunak dan Gim", students: 124, quota: 144, color: "forest" },
-  { code: "TJKT", name: "Teknik Jaringan Komputer dan Telekomunikasi", students: 108, quota: 108, color: "teal" },
-  { code: "DKV", name: "Desain Komunikasi Visual", students: 92, quota: 108, color: "blue" },
-  { code: "MPLB", name: "Manajemen Perkantoran dan Layanan Bisnis", students: 64, quota: 72, color: "amber" },
-  { code: "BDR", name: "Bisnis Digital dan Ritel", students: 48, quota: 72, color: "violet" },
-  { code: "PHT", name: "Perhotelan", students: 32, quota: 36, color: "pink" },
-];
+const programs = demoPpdbPrograms.map((program) => ({ code: program.code, name: program.name, students: program.admitted, quota: program.capacity, color: program.quotaColor }));
 
 const notifications = [
   { icon: "users" as const, tone: "amber", title: "Kuota TJKT Terisi Penuh", detail: "Gelombang 1 · pendaftar program TJKT sudah mencapai 100%.", time: "12 menit lalu" },
@@ -37,10 +30,7 @@ const notifications = [
   { icon: "file" as const, tone: "blue", title: "Nilai Ujian Masuk Diunggah", detail: "Nilai Saringan Masuk (TKA) Gelombang 1 telah tersedia.", time: "4 jam lalu" },
 ];
 
-const weekdays = [
-  { day: "Senin", count: 20 }, { day: "Selasa", count: 35 }, { day: "Rabu", count: 45 },
-  { day: "Kamis", count: 30 }, { day: "Jumat", count: 60 }, { day: "Sabtu", count: 85 }, { day: "Minggu", count: 110 },
-];
+const maxWeeklyApplicants = Math.max(...demoPpdbWeekly.map((week) => week.newApplicants));
 
 function Metric({ icon, label, value, note, tone }: { icon: IconName; label: string; value: string; note: string; tone: string }) {
   return <article className="principal-metric"><div className="principal-metric-top"><span>{label}</span><i className={tone}><Icon name={icon} /></i></div><strong>{value}</strong><small className={tone}>{note}</small></article>;
@@ -59,8 +49,8 @@ export default function PrincipalDashboard({ demo, summary }: { demo: boolean; s
 
         <section className="principal-metrics" aria-label="Ringkasan penerimaan">
           <Metric icon="user" label="Total Aplikasi Terkirim" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : summary ? "Data aplikasi persisten" : "Data belum dapat dimuat"} tone="green" />
-          <Metric icon="shield" label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="mint" />
-          <Metric icon="file" label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="blue" />
+          <Metric icon="shield" label={demo ? "Berkas Lengkap" : "Dokumen Menunggu Verifikasi"} value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "79,2% dari total pendaftar" : "Dokumen berstatus pending"} tone="mint" />
+          <Metric icon="file" label={demo ? "Pendaftar Lolos Verifikasi" : "Dokumen Terverifikasi"} value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "51,6% dari total pendaftar" : "Dokumen berstatus verified"} tone="blue" />
           <Metric icon="cap" label="Aplikasi Berstatus PASSED" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary?.passed.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Status saat ini; bukan hasil perhitungan seleksi"} tone="amber" />
         </section>
 
@@ -80,8 +70,8 @@ export default function PrincipalDashboard({ demo, summary }: { demo: boolean; s
         </div>
 
         <section className="principal-panel principal-chart-panel" aria-labelledby="principal-chart-title">
-          <div className="principal-panel-heading"><h2 id="principal-chart-title">Alur &amp; Statistik Pendaftaran Harian</h2><span className="principal-chart-period">7 HARI TERAKHIR</span></div>
-          {demo ? <div className="principal-week-chart" role="img" aria-label="Pendaftar baru per hari: Senin 20, Selasa 35, Rabu 45, Kamis 30, Jumat 60, Sabtu 85, Minggu 110.">{weekdays.map(({ day, count }) => <div className="principal-chart-column" key={day}><span className="principal-chart-value">{count} pendaftar</span><i style={{ height: `${Math.max(12, count / 110 * 78)}px` }} /><small>{day}</small></div>)}</div> : <div className="principal-dashboard-empty">Grafik pendaftaran harian akan tampil saat data tersedia.</div>}
+          <div className="principal-panel-heading"><h2 id="principal-chart-title">Tren Pendaftar Baru per Minggu</h2><span className="principal-chart-period">7 MINGGU</span></div>
+          {demo ? <div className="principal-week-chart" role="img" aria-label={`Pendaftar baru per minggu: ${demoPpdbWeekly.map((week) => `${week.label} ${week.newApplicants}`).join(", ")}; total ${formatPpdbNumber(demoPpdbMetrics.totalApplicants)} pendaftar.`}>{demoPpdbWeekly.map((week) => <div className="principal-chart-column" key={week.label}><span className="principal-chart-value">+{formatPpdbNumber(week.newApplicants)}</span><i style={{ height: `${Math.max(12, week.newApplicants / maxWeeklyApplicants * 78)}px` }} /><small>{week.label}</small></div>)}</div> : <div className="principal-dashboard-empty">Grafik mingguan akan tampil saat data tersedia.</div>}
         </section>
       </section>
     </div>

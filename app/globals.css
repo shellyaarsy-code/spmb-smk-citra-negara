@@ -1276,10 +1276,13 @@ a { color: inherit; text-decoration: none; }
 
 /* Bank Soal TKA admin */
 .admin-dashboard-nav-link svg { width: 15px; height: 15px; flex: 0 0 15px; }
+.demo-analytics-tip { margin-top: 12px; padding: 10px 12px; border: 1px solid #dce9df; border-radius: 8px; color: #536a5a; background: #f4f8f5; font-size: 13px; line-height: 1.55; }
 .admin-bank-support { margin-top: 20px; padding: 12px 10px; border-radius: 9px; color: #eef7f1; background: #064a32; }
 .admin-bank-support strong { font-size: 12px; }
 .admin-bank-support p { margin: 8px 0 10px; color: #d1e2d6; font-size: 12px; line-height: 1.5; }
 .admin-bank-support span { display: block; color: #eaf5ec; font-size: 12px; font-weight: 650; }
+.admin-bank-demo-link { margin-top: 10px; padding: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid #ffffff55; border-radius: 7px; color: #fff; background: #ffffff0c; font-size: 12px; font-weight: 750; line-height: 1.35; text-align: center; text-decoration: none; }
+.admin-bank-demo-link:hover { background: #ffffff1b; }
 .admin-question-bank-main { padding-bottom: 20px; }
 .admin-bank-header { margin-bottom: 17px; }
 .admin-bank-header .admin-dashboard-header-actions { gap: 16px; }
@@ -1679,6 +1682,8 @@ a { color: inherit; text-decoration: none; }
 .principal-dashboard-access strong { display: flex; align-items: center; gap: 5px; color: #927424; font-size: 12px; }
 .principal-dashboard-access svg { width: 11px; height: 11px; }
 .principal-dashboard-access p { margin: 5px 0 0; color: #80764f; font-size: 12px; line-height: 1.45; }
+.principal-dashboard-demo-toggle { margin-top: 8px; padding: 7px 8px; display: block; border: 1px solid #0c644233; border-radius: 6px; color: #0c6442; background: #ffffffa8; font-size: 12px; font-weight: 750; line-height: 1.35; text-align: center; text-decoration: none; }
+.principal-dashboard-demo-toggle:hover { background: #fff; }
 .principal-dashboard-logout { min-height: 31px; margin-top: 9px; padding: 0 9px; display: flex; align-items: center; gap: 8px; border: 1px solid #ffffff48; border-radius: 6px; color: #edf6ef; font-size: 12px; }
 .principal-dashboard-logout:hover { background: #ffffff13; }
 .principal-dashboard-main { min-width: 0; padding: 0 22px 22px; background: #f8faf7; }
@@ -1737,6 +1742,7 @@ a { color: inherit; text-decoration: none; }
 .principal-chart-value { color: #36443b; font-size: 12px; white-space: nowrap; }
 .principal-chart-column>i { width: min(26px,65%); min-height: 8px; display: block; border-radius: 3px 3px 0 0; background: #0d6040; }
 .principal-chart-column>small { min-height: 22px; padding-top: 5px; color: #8a958d; font-size: 12px; }
+@media (max-width: 580px) { .principal-map-data { grid-template-columns: 1fr; }.principal-map-legend { align-items: flex-start; flex-direction: column; }.principal-school-ranking li { grid-template-columns: 20px minmax(0,1fr) auto; }.principal-school-ranking li>small { grid-column: 2 / -1; margin-top: -3px; } }
 @media (min-width: 1300px) { .principal-dashboard-main { padding-inline: 28px; }.principal-dashboard-header { margin-inline: -28px; padding-inline: 28px; }.principal-panel { padding: 17px; }.principal-panel-heading h2 { font-size: 12px; }.principal-metric { min-height: 102px; padding: 14px 15px 11px; }.principal-metric-top { font-size: 12px; }.principal-metric>strong { font-size: 26px; }.principal-metric>small,.principal-quota-label,.principal-notification-list strong { font-size: 12px; }.principal-notification-list small,.principal-notification-list time { font-size: 12px; }.principal-quota-list { gap: 11px; }.principal-week-chart { min-height: 145px; }.principal-chart-column>i { width: 30px; }.principal-chart-value,.principal-chart-column>small { font-size: 12px; } }
 @media (max-width: 1050px) { .principal-dashboard-outer { padding: 12px; }.principal-dashboard-app { min-height: calc(100vh - 24px); grid-template-columns: var(--principal-sidebar-width-compact) minmax(0,1fr); }.principal-dashboard-sidebar { padding-inline: 12px; }.principal-dashboard-main { padding-inline: 15px; }.principal-dashboard-header { margin-inline: -15px; padding-inline: 15px; }.principal-metrics { gap: 8px; }.principal-metric { padding-inline: 9px; }.principal-metric-top { font-size: 12px; }.principal-metric>strong { font-size: 20px; }.principal-dashboard-content { grid-template-columns: minmax(0,1fr) minmax(205px,.8fr); gap: 10px; }.principal-panel { padding: 12px; }.principal-quota-label { font-size: 12px; } }
 @media (max-width: 760px) { .principal-dashboard-outer { padding: 0; }.principal-dashboard-app { min-height: 100vh; grid-template-columns: minmax(0,1fr); overflow: visible; }.principal-dashboard-sidebar { padding: 10px 14px 8px; }.principal-dashboard-brand { min-height: 30px; }.principal-dashboard-profile { display: none; }.principal-dashboard-nav { margin-top: 8px; display: flex; gap: 5px; overflow-x: auto; }.principal-dashboard-nav a { min-height: 32px; flex: 0 0 auto; font-size: 12px; }.principal-dashboard-access,.principal-dashboard-logout { display: none; }.principal-dashboard-main { padding: 0 14px 18px; }.principal-dashboard-header { min-height: 56px; margin: 0 -14px 12px; padding: 8px 14px; }.principal-dashboard-header h1 { font-size: 14px; }.principal-dashboard-header p { max-width: 250px; font-size: 12px; line-height: 1.4; }.principal-dashboard-header-meta { align-items: flex-end; flex-direction: column; gap: 4px; font-size: 12px; }.principal-live { min-height: 19px; padding-inline: 7px; font-size: 12px; }.principal-school-year { font-size: 12px; }.principal-metrics { grid-template-columns: repeat(2,minmax(0,1fr)); }.principal-metric { min-height: 82px; }.principal-dashboard-content { grid-template-columns: minmax(0,1fr); gap: 10px; }.principal-panel { padding: 12px; }.principal-quota-label { font-size: 12px; }.principal-notifications-panel { min-height: 210px; }.principal-week-chart { gap: 4px; padding-inline: 5px; }.principal-chart-value { font-size: 12px; }.principal-chart-column>i { width: 20px; }.principal-demo-note { align-items: flex-start; flex-wrap: wrap; }.principal-demo-note a { margin-left: 0; } }
@@ -1826,13 +1832,20 @@ a { color: inherit; text-decoration: none; }
 .principal-school-ranking li>b { width: 18px; height: 18px; display: grid; place-items: center; border-radius: 5px; color: #316e50; background: #e9f4ec; font-size: 12px; }
 .principal-school-ranking li>span { overflow: hidden; color: #56655b; font-size: 12px; text-overflow: ellipsis; white-space: nowrap; }
 .principal-school-ranking li>strong { color: #36463b; font-size: 12px; white-space: nowrap; }
-.principal-school-ranking li>small { display: none; }
+.principal-school-ranking li>small { display: block; color: #819086; font-size: 11px; white-space: nowrap; }
+.principal-school-other-note { margin: 8px 0 0; color: #7c897f; font-size: 11px; line-height: 1.45; }
 .principal-map-wrap { min-height: 190px; margin-top: 8px; display: grid; justify-items: center; }
 .principal-district-map { width: min(100%,340px); height: auto; }
 .principal-map-legend { width: 100%; display: flex; align-items: center; justify-content: space-between; gap: 8px; color: #657369; font-size: 12px; }
 .principal-map-legend span { display: flex; align-items: center; gap: 5px; }
 .principal-map-legend span i { width: 7px; height: 7px; border-radius: 50%; background: #f6c84d; }
 .principal-map-legend small { color: #939d96; text-align: right; }
+.principal-map-data { width: 100%; margin-top: 8px; display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 6px; }
+.principal-map-data-row { min-width: 0; padding: 7px 8px; display: grid; gap: 3px; border: 1px solid #e7eee8; border-radius: 7px; background: #fbfcfb; }
+.principal-map-data-row span { color: #66756b; font-size: 11px; }
+.principal-map-data-row strong { color: #24543b; font-size: 12px; }
+.principal-map-data-row small { color: #8a958d; font-size: 11px; }
+.principal-weekly-bar>small span { display: block; color: #568270; font-size: 10px; font-weight: 650; }
 .principal-grad-table-panel,.principal-report-document { min-width: 0; }
 .principal-report-document { overflow: hidden; }
 .principal-report-main { padding-bottom: 32px; }

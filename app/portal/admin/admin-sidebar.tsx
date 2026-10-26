@@ -45,6 +45,7 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
       <strong>Butuh Bantuan Sistem?</strong>
       <p>Hubungi tim developer PPDB Negara jika mengalami kendala server.</p>
       <span>Ext. 102 (IT Support)</span>
+      <a className="admin-bank-demo-link" href={demo ? "/portal/admin" : "/portal/admin?mode=demo"}>{demo ? "Kembali ke Data Tersimpan" : "Buka Dashboard Simulasi · 1.240 Pendaftar"}</a>
     </section>
   );
   return (

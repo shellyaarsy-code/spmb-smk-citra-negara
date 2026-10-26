@@ -1,26 +1,14 @@
 import PrincipalSidebar from "./principal-sidebar";
 import Link from "next/link";
-import { demoPpdbMetrics, formatPpdbNumber } from "../demo-ppdb-data";
+import { demoPpdbMetrics, demoPpdbOtherSchoolApplicants, demoPpdbOtherSchoolShare, demoPpdbRegions, demoPpdbSchoolOrigins, demoPpdbWeekly, formatPpdbNumber } from "../demo-ppdb-data";
 
 const funnel = [
   { step: "1", name: "Pendaftaran Akun", count: formatPpdbNumber(demoPpdbMetrics.totalApplicants), note: "Akun terdaftar", percent: 100, tone: "forest" },
-  { step: "2", name: "Berkas Lengkap", count: formatPpdbNumber(demoPpdbMetrics.completeDocuments), note: "Dokumen lengkap", percent: 79.1, tone: "teal" },
+  { step: "2", name: "Berkas Lengkap", count: formatPpdbNumber(demoPpdbMetrics.completeDocuments), note: "Dokumen lengkap", percent: 79.2, tone: "teal" },
   { step: "3", name: "Lolos Verifikasi", count: formatPpdbNumber(demoPpdbMetrics.verifiedApplicants), note: "Berkas valid", percent: 51.6, tone: "blue" },
   { step: "4", name: "Lulus Seleksi", count: formatPpdbNumber(demoPpdbMetrics.admittedApplicants), note: "Penerima SPMB", percent: 39.8, tone: "purple" },
 ];
 
-const weekly = [
-  { label: "Minggu 1", value: 120 }, { label: "Minggu 2", value: 240 }, { label: "Minggu 3", value: 310 },
-  { label: "Minggu 4", value: 450 }, { label: "Minggu 5", value: 680 }, { label: "Minggu 6", value: 820 }, { label: "Minggu 7", value: demoPpdbMetrics.completeDocuments },
-];
-
-const schools = [
-  { name: "SMP Negeri 1 Depok", students: 142, percent: "22,2%" },
-  { name: "SMP Negeri 2 Depok", students: 98, percent: "15,3%" },
-  { name: "SMP Negeri 4 Depok", students: 84, percent: "13,1%" },
-  { name: "MTs Negeri Depok", students: 62, percent: "9,7%" },
-  { name: "SMP Citra Bangsa", students: 48, percent: "7,5%" },
-];
 
 function StatsCard({ label, value, note, tone, icon }: { label: string; value: string; note: string; tone: string; icon: string }) {
   return <article className={`principal-statistics-card ${tone}`}><div><span>{label}</span><i aria-hidden="true">{icon}</i></div><strong>{value}</strong><small>{note}</small></article>;
@@ -54,8 +42,8 @@ export default function PrincipalStatistics({ demo, summary }: { demo: boolean; 
 
       <section className="principal-statistics-metrics" aria-label="Ringkasan statistik PPDB">
         <StatsCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary ? summary.total.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : summary ? "Aplikasi yang telah dikirim" : "Data belum dapat dimuat"} tone="green" icon="♙" />
-        <StatsCard label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary ? summary.pendingDocuments.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="mint" icon="✓" />
-        <StatsCard label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary ? summary.verifiedDocuments.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="blue" icon="◎" />
+        <StatsCard label={demo ? "Berkas Lengkap" : "Dokumen Menunggu Verifikasi"} value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary ? summary.pendingDocuments.toLocaleString("id-ID") : "—"} note={demo ? "79,2% dari total pendaftar" : "Dokumen berstatus pending"} tone="mint" icon="✓" />
+        <StatsCard label={demo ? "Pendaftar Lolos Verifikasi" : "Dokumen Terverifikasi"} value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary ? summary.verifiedDocuments.toLocaleString("id-ID") : "—"} note={demo ? "51,6% dari total pendaftar" : "Dokumen berstatus verified"} tone="blue" icon="◎" />
         <StatsCard label="Aplikasi Berstatus Lulus" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary ? summary.passed.toLocaleString("id-ID") : "—"} note={demo ? "Simulasi" : "Status saat ini, tanpa perhitungan seleksi"} tone="teal" icon="↗" />
       </section>
 
@@ -64,15 +52,15 @@ export default function PrincipalStatistics({ demo, summary }: { demo: boolean; 
           {demo ? <div className="principal-funnel-list">{funnel.map((stage) => <article key={stage.step}><span className="principal-funnel-step">{stage.step}</span><strong>{stage.name}</strong><b>{stage.count}</b><small>{stage.note}<br />{stage.percent}% dari pendaftar awal</small><i className={stage.tone} style={{ width: `${stage.percent}%` }} /></article>)}</div> : summary ? <div className="principal-funnel-list">{summary.statuses.map((item, index) => <article key={item.status}><span className="principal-funnel-step">{index + 1}</span><strong>{item.status.replaceAll("_", " ")}</strong><b>{item.count.toLocaleString("id-ID")}</b><small>Jumlah aplikasi saat ini</small><i className="forest" style={{ width: `${summary.total ? Math.min(100, item.count / summary.total * 100) : 0}%` }} /></article>)}</div> : <div className="principal-results-empty">Statistik belum dapat dimuat.</div>}
         </section>
 
-        <section className="principal-statistics-panel principal-weekly-panel" aria-labelledby="principal-weekly-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-weekly-title">Tren Pendaftaran Mingguan (Akun)</h2><p>Jumlah akun terdaftar secara akumulatif.</p></div><span>7 MINGGU</span></div>
-          {demo ? <div className="principal-weekly-chart" role="img" aria-label={`Pendaftar kumulatif tujuh minggu: ${weekly.map((week) => week.value).join(", ")}.`}>{weekly.map((week) => <div className="principal-weekly-bar" key={week.label}><b>{week.value}</b><i style={{ height: `${week.value / demoPpdbMetrics.completeDocuments * 110}px` }} /><small>{week.label}</small></div>)}</div> : <div className="principal-results-empty">Tren mingguan akan tampil saat data tersedia.</div>}
+        <section className="principal-statistics-panel principal-weekly-panel" aria-labelledby="principal-weekly-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-weekly-title">Tren Pendaftaran Mingguan (Akumulatif)</h2><p>Kolom menunjukkan total akun sampai akhir minggu; jumlah baru tersedia dalam keterangan kolom.</p></div><span>7 MINGGU</span></div>
+          {demo ? <div className="principal-weekly-chart" role="img" aria-label={`Pendaftar kumulatif tujuh minggu: ${demoPpdbWeekly.map((week) => `${week.label} ${week.cumulativeApplicants}`).join(", ")}.`}>{demoPpdbWeekly.map((week) => <div className="principal-weekly-bar" key={week.label}><b>{formatPpdbNumber(week.cumulativeApplicants)}</b><i style={{ height: `${week.cumulativeApplicants / demoPpdbMetrics.totalApplicants * 110}px` }} /><small>{week.label}<span>+{formatPpdbNumber(week.newApplicants)} baru</span></small></div>)}</div> : <div className="principal-results-empty">Tren mingguan akan tampil saat data tersedia.</div>}
         </section>
 
         <section className="principal-statistics-panel principal-schools-panel" aria-labelledby="principal-schools-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-schools-title">Asal Sekolah Terbanyak (SMP / Sederajat)</h2><p>Asal sekolah dari calon siswa yang telah lolos verifikasi.</p></div></div>
-          {demo ? <ol className="principal-school-ranking">{schools.map((school, index) => <li key={school.name}><b>{index + 1}</b><span>{school.name}</span><strong>{school.students} Calon Siswa</strong><small>{school.percent}</small></li>)}</ol> : <div className="principal-results-empty">Asal sekolah belum tersedia.</div>}
+          {demo ? <><ol className="principal-school-ranking">{demoPpdbSchoolOrigins.map((school, index) => <li key={school.name}><b>{index + 1}</b><span>{school.name}</span><strong>{formatPpdbNumber(school.students)} siswa</strong><small>{school.percent}</small></li>)}</ol><p className="principal-school-other-note">Sekolah lainnya: {formatPpdbNumber(demoPpdbOtherSchoolApplicants)} siswa ({demoPpdbOtherSchoolShare}) dari total pendaftar terverifikasi.</p></> : <div className="principal-results-empty">Asal sekolah belum tersedia.</div>
         </section>
 
-        <section className="principal-statistics-panel principal-map-panel" aria-labelledby="principal-map-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-map-title">Distribusi Pemetaan Geografis Pendaftar</h2><p>Ilustrasi sebaran pendaftar di Depok dan sekitarnya.</p></div></div>{demo ? <DistrictMap /> : <div className="principal-results-empty">Peta sebaran akan tampil setelah data domisili tersedia.</div>}</section>
+        <section className="principal-statistics-panel principal-map-panel" aria-labelledby="principal-map-title"><div className="principal-statistics-panel-heading"><div><h2 id="principal-map-title">Distribusi Pemetaan Geografis Pendaftar</h2><p>Ilustrasi sebaran pendaftar di Depok dan sekitarnya.</p></div></div>{demo ? <><DistrictMap /><div className="principal-map-data" aria-label="Ringkasan pendaftar per wilayah">{demoPpdbRegions.map((region) => <div className="principal-map-data-row" key={region.name}><span>{region.name}</span><strong>{formatPpdbNumber(region.applicants)} siswa</strong><small>{region.share} dari total pendaftar</small></div>)}</div></> : <div className="principal-results-empty">Peta sebaran akan tampil setelah data domisili tersedia.</div></section>
       </div>
     </section>
   </div></main>;

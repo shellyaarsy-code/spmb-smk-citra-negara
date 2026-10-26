@@ -36,6 +36,7 @@ export default function DemoPage() {
         <span className="kicker">DEMO SPMB · SMK CITRA NEGARA · 2026/2027</span>
         <h1>Jelajahi alur penerimaan siswa baru</h1>
         <p>Demo memakai portal, autentikasi, dan data bersama yang sama dengan aplikasi. Perubahan pada pendaftaran siswa dapat dilihat oleh admin dan kepala sekolah sesuai hak aksesnya.</p>
+        <p className="demo-analytics-tip">Setelah masuk sebagai Admin atau Kepala Sekolah, pilih <strong>Buka Dashboard Simulasi</strong> di panel samping untuk melihat statistik sintetis 1.240 pendaftar, tren mingguan, asal sekolah, sebaran wilayah, dan contoh hasil seleksi. Mode simulasi hanya mengubah data yang ditampilkan; login dan pembatasan role tetap berlaku.</p>
         <div className="portal-grid demo-role-grid">
           {demoRoles.map((role) => (
             <article className="portal-card" key={role.title}>
