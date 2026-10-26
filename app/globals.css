@@ -1,6 +1,44 @@
 @import "tailwindcss";
 
 :root {
+  /* Semantic design tokens; visual decisions belong here. */
+  --color-primary: #0C5335;
+  --color-primary-hover: #1E8A5F;
+  --color-primary-tint: #E8F5EE;
+  --color-bg-base: #F8FAF7;
+  --color-surface: #FFFFFF;
+  --color-text: #26312C;
+  --color-text-muted: #66746B;
+  --color-border: #D8E4DE;
+  --color-warning: #8B5E00;
+  --color-warning-bg: #FEF3C7;
+  --color-success: #166534;
+  --color-success-bg: #DCFCE7;
+  --color-danger: #A33333;
+  --color-danger-bg: #FEE2E2;
+  --color-info: #315B91;
+  --color-info-bg: #E8F0FB;
+  --color-focus: #1E8A5F;
+  --color-sidebar-bg: var(--color-surface);
+  --color-sidebar-text: var(--color-text-muted);
+  --color-sidebar-active-bg: var(--color-primary-tint);
+  --color-sidebar-active-text: var(--color-primary);
+  --font-family-sans: var(--font-plus-jakarta), system-ui, sans-serif;
+  --text-overline: 0.75rem;
+  --text-subheading: 1rem;
+  --text-page-title: 1.75rem;
+  --text-kpi: 2rem;
+  --space-7: 1.75rem;
+  --space-10: 2.5rem;
+  --radius-card: 1rem;
+  --radius-chip: 9999px;
+  --shadow-sm: 0 2px 8px rgb(18 62 39 / 6%);
+  --shadow-md: 0 8px 28px rgb(18 62 39 / 7%);
+  --motion-duration: 180ms;
+  --motion-easing: cubic-bezier(0.2, 0, 0, 1);
+  --z-sidebar: 20;
+  --z-overlay: 40;
+  --z-dialog: 50;
   --green: #0C5335;
   --green-deep: #0C5335;
   --green-secondary: #1E8A5F;
@@ -33,7 +71,7 @@
   --radius-alert: 12px;
   --radius-control: 8px;
   --border-standard: 1px solid var(--line);
-  --font-body: Inter, "Segoe UI", Arial, sans-serif;
+  --font-body: var(--font-family-sans);
   --text-xs: 0.75rem;
   --text-sm: 0.875rem;
   --text-base: 1rem;
@@ -64,7 +102,7 @@
 * { box-sizing: border-box; }
 html { scroll-behavior: smooth; }
 body { margin: 0; color: var(--ink); background: var(--paper); font-family: var(--font-body); line-height: var(--line-height-normal); }
-button, input, select, textarea { font-family: inherit; }
+button, input, select, textarea, table { font-family: inherit; }
 button:focus-visible, a:focus-visible, input:focus-visible, select:focus-visible, textarea:focus-visible, summary:focus-visible { outline: var(--focus-ring); outline-offset: 2px; }
 .cn-brand-logo { display: block; flex: 0 0 auto; width: var(--brand-logo-size, 32px); height: var(--brand-logo-size, 32px); object-fit: contain; }
 a { color: inherit; text-decoration: none; }
@@ -2025,3 +2063,88 @@ body :is(input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),sel
 button:disabled { cursor: not-allowed; }
 
 /* Keep smaller page-specific type for chart labels, icon marks, and dense mobile data. */
+
+/* Shared dashboard navigation foundation across the three system roles. */
+:root { --dashboard-sidebar-width: 248px; }
+.admin-dashboard-app { grid-template-columns: var(--dashboard-sidebar-width) minmax(0, 1fr); }
+.principal-dashboard-app { grid-template-columns: var(--dashboard-sidebar-width) minmax(0, 1fr); }
+.student-dashboard-app { grid-template-columns: var(--dashboard-sidebar-width) minmax(0, 1fr); }
+:is(.admin-dashboard-sidebar, .principal-dashboard-sidebar, .student-sidebar) {
+  width: auto;
+  min-width: 0;
+  padding: var(--space-6) var(--space-4);
+  color: var(--color-sidebar-text);
+  border-right: 1px solid var(--color-border);
+  background: var(--color-sidebar-bg);
+}
+:is(.admin-dashboard-brand, .principal-dashboard-brand, .student-dashboard-brand) {
+  min-height: 40px;
+  padding: 0 0 var(--space-6);
+  gap: var(--space-2);
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  line-height: var(--line-height-normal);
+}
+:is(.admin-dashboard-brand small, .principal-dashboard-brand small) { color: var(--color-text-muted); font-size: var(--text-caption); }
+:is(.admin-dashboard-nav, .principal-dashboard-nav, .student-sidebar-nav) {
+  margin-top: 0;
+  display: grid;
+  gap: var(--space-1);
+}
+:is(.admin-dashboard-nav-link, .principal-dashboard-nav a, .student-nav-link) {
+  min-height: 44px;
+  padding: 0 var(--space-3);
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-control);
+  color: var(--color-sidebar-text);
+  background: transparent;
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--line-height-normal);
+  transition: color var(--motion-duration) var(--motion-easing), background var(--motion-duration) var(--motion-easing);
+}
+:is(.admin-dashboard-nav-link svg, .principal-dashboard-nav svg, .student-nav-link svg) { width: 20px; height: 20px; flex: 0 0 20px; }
+:is(.admin-dashboard-nav-link.active, .principal-dashboard-nav a.active, .student-nav-link.active) {
+  position: relative;
+  color: var(--color-sidebar-active-text);
+  background: var(--color-sidebar-active-bg);
+  font-weight: var(--weight-semibold);
+}
+:is(.admin-dashboard-nav-link.active, .principal-dashboard-nav a.active, .student-nav-link.active)::before {
+  position: absolute;
+  inset-block: var(--space-2);
+  inset-inline-start: 0;
+  width: 3px;
+  border-radius: var(--radius-chip);
+  background: var(--color-primary);
+  content: "";
+}
+:is(.admin-dashboard-nav-link:not(.active):not([aria-disabled="true"]):hover, .principal-dashboard-nav a:not(.active):hover, .student-nav-link:not(.active):not([aria-disabled="true"]):hover) {
+  color: var(--color-primary);
+  background: var(--color-bg-base);
+}
+:is(.admin-dashboard-logout, .principal-dashboard-logout) {
+  min-height: 44px;
+  padding-inline: var(--space-3);
+  border: 0;
+  border-radius: var(--radius-control);
+  color: var(--color-sidebar-text);
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+}
+:is(.admin-dashboard-logout, .principal-dashboard-logout):hover { color: var(--color-danger); background: var(--color-danger-bg); }
+:is(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app) { background: var(--color-bg-base); }
+:where(button, a, input, select, textarea, summary, [tabindex]):focus-visible { outline: 1.5px solid var(--color-focus); outline-offset: 2px; }
+@media (max-width: 760px) {
+  :is(.admin-dashboard-outer, .principal-dashboard-outer, .student-dashboard-outer) { padding: 0; }
+  :is(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app) { min-height: 100vh; grid-template-columns: minmax(0, 1fr); overflow: visible; }
+  :is(.admin-dashboard-sidebar, .principal-dashboard-sidebar, .student-sidebar) { padding: var(--space-3) var(--space-4); border-right: 0; border-bottom: 1px solid var(--color-border); }
+  :is(.admin-dashboard-nav, .principal-dashboard-nav, .student-sidebar-nav) { margin-top: var(--space-2); display: flex; gap: var(--space-1); overflow-x: auto; }
+  :is(.admin-dashboard-nav-link, .principal-dashboard-nav a, .student-nav-link) { min-height: 44px; flex: 0 0 auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto; animation-duration: 0.01ms; animation-iteration-count: 1; transition-duration: 0.01ms; }
+}

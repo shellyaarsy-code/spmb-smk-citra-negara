@@ -1,7 +1,6 @@
-import Link from "next/link";
-import AuthLogoutLink from "../../components/auth-logout-link";
-import BrandLogo from "../../components/brand-logo";
+import AppSidebar, { type AppSidebarItem } from "../../components/app-sidebar";
 
+type PrincipalSection = "dashboard" | "registrants" | "testResults" | "results" | "statistics" | "reports";
 type PrincipalIconName = "grid" | "users" | "cap" | "chart" | "file" | "shield" | "logout";
 
 function PrincipalIcon({ name }: { name: PrincipalIconName }) {
@@ -17,26 +16,17 @@ function PrincipalIcon({ name }: { name: PrincipalIconName }) {
   return <svg aria-hidden="true" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round">{paths[name]}</svg>;
 }
 
-export default function PrincipalSidebar({ active, demo }: { active: "dashboard" | "registrants" | "testResults" | "results" | "statistics" | "reports"; demo: boolean }) {
-  const dashboardHref = demo ? "/portal/kepala-sekolah?mode=demo" : "/portal/kepala-sekolah";
-  const registrantsHref = demo ? "/portal/kepala-sekolah/pendaftar?mode=demo" : "/portal/kepala-sekolah/pendaftar";
-  const resultsHref = demo ? "/portal/kepala-sekolah/hasil-seleksi?mode=demo" : "/portal/kepala-sekolah/hasil-seleksi";
-  const testResultsHref = demo ? "/portal/kepala-sekolah/hasil-tes?mode=demo" : "/portal/kepala-sekolah/hasil-tes";
-  const statisticsHref = demo ? "/portal/kepala-sekolah/statistik?mode=demo" : "/portal/kepala-sekolah/statistik";
-  const reportsHref = demo ? "/portal/kepala-sekolah/laporan?mode=demo" : "/portal/kepala-sekolah/laporan";
-  return <aside className="principal-dashboard-sidebar">
-    <Link className="principal-dashboard-brand" href={dashboardHref}><BrandLogo width={32} /><span>SMK CITRA NEGARA<small>PORTAL PPDB</small></span></Link>
-    <div className="principal-dashboard-profile"><i>K</i><span><strong>Kepala Sekolah</strong><small>KEPALA SEKOLAH</small></span></div>
-    <nav className="principal-dashboard-nav" aria-label="Menu Kepala Sekolah">
-      <Link className={active === "dashboard" ? "active" : ""} href={dashboardHref} aria-current={active === "dashboard" ? "page" : undefined}><PrincipalIcon name="grid" />Monitoring Dashboard</Link>
-      <Link className={active === "registrants" ? "active" : ""} href={registrantsHref} aria-current={active === "registrants" ? "page" : undefined}><PrincipalIcon name="users" />Data Pendaftar (Siswa)</Link>
-      <Link className={active === "testResults" ? "active" : ""} href={testResultsHref} aria-current={active === "testResults" ? "page" : undefined}><PrincipalIcon name="cap" />Hasil Tes Akademik</Link>
-      <Link className={active === "results" ? "active" : ""} href={resultsHref} aria-current={active === "results" ? "page" : undefined}><PrincipalIcon name="cap" />Hasil Seleksi</Link>
-      <Link className={active === "statistics" ? "active" : ""} href={statisticsHref} aria-current={active === "statistics" ? "page" : undefined}><PrincipalIcon name="chart" />Statistik PPDB</Link>
-      <Link className={active === "reports" ? "active" : ""} href={reportsHref} aria-current={active === "reports" ? "page" : undefined}><PrincipalIcon name="file" />Laporan Eksekutif</Link>
-    </nav>
-    <div className="principal-dashboard-school-year"><strong>Tahun Pelajaran</strong><span>2026/2027</span><small>Monitoring penerimaan siswa</small></div>
-    <div className="principal-dashboard-access"><strong><PrincipalIcon name="shield" /> HAK AKSES: READ-ONLY</strong><p>Data monitoring tidak dapat diubah.</p></div>
-    <AuthLogoutLink className="principal-dashboard-logout" href="/portal/login/kepala-sekolah"><PrincipalIcon name="logout" />Keluar Sistem</AuthLogoutLink>
-  </aside>;
+export default function PrincipalSidebar({ active, demo }: { active: PrincipalSection; demo: boolean }) {
+  const suffix = demo ? "?mode=demo" : "";
+  const links: AppSidebarItem[] = [
+    { label: "Monitoring Dashboard", href: "/portal/kepala-sekolah" + suffix, icon: <PrincipalIcon name="grid" />, active: active === "dashboard" },
+    { label: "Data Pendaftar (Siswa)", href: "/portal/kepala-sekolah/pendaftar" + suffix, icon: <PrincipalIcon name="users" />, active: active === "registrants" },
+    { label: "Hasil Tes Akademik", href: "/portal/kepala-sekolah/hasil-tes" + suffix, icon: <PrincipalIcon name="cap" />, active: active === "testResults" },
+    { label: "Hasil Seleksi", href: "/portal/kepala-sekolah/hasil-seleksi" + suffix, icon: <PrincipalIcon name="cap" />, active: active === "results" },
+    { label: "Statistik PPDB", href: "/portal/kepala-sekolah/statistik" + suffix, icon: <PrincipalIcon name="chart" />, active: active === "statistics" },
+    { label: "Laporan Eksekutif", href: "/portal/kepala-sekolah/laporan" + suffix, icon: <PrincipalIcon name="file" />, active: active === "reports" },
+  ];
+  const beforeNav = <><div className="principal-dashboard-profile"><i>K</i><span><strong>Kepala Sekolah</strong><small>KEPALA SEKOLAH</small></span></div></>;
+  const support = <><div className="principal-dashboard-school-year"><strong>Tahun Pelajaran</strong><span>2026/2027</span><small>Monitoring penerimaan siswa</small></div><div className="principal-dashboard-access"><strong><PrincipalIcon name="shield" /> HAK AKSES: READ-ONLY</strong><p>Data monitoring tidak dapat diubah.</p></div></>;
+  return <AppSidebar sidebarClassName="principal-dashboard-sidebar" brandClassName="principal-dashboard-brand" brandMarkClassName="principal-dashboard-brand-mark" brandHref={"/portal/kepala-sekolah" + suffix} brandLabel="SMK CITRA NEGARA" brandSubtitle="PORTAL PPDB" brandAriaLabel="SMK Citra Negara, dashboard Kepala Sekolah" navClassName="principal-dashboard-nav" linkClassName="" navAriaLabel="Menu Kepala Sekolah" items={links} beforeNav={beforeNav} support={support} logoutHref="/portal/login/kepala-sekolah" logoutLabel="Keluar Sistem" logoutIcon={<PrincipalIcon name="logout" />} logoutClassName="principal-dashboard-logout" logoWidth={34} />;
 }
