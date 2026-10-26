@@ -47,7 +47,7 @@ export default function DemoPage() {
           ))}
         </div>
         <aside className="demo-access-note" role="note">
-          <strong>Data demo harus disiapkan pada database demo terlebih dahulu.</strong>
+          <strong>Demo aktif dengan data sintetis bersama.</strong>
           <p>Gunakan hanya data fiktif dan akun demo. Jangan masukkan data pribadi calon siswa sungguhan. Kata sandi akun bersama dibagikan terpisah oleh pengelola.</p>
           <h2>Akses demo</h2>
           <ul>
