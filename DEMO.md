@@ -14,6 +14,9 @@ Jalankan `npm run prisma:seed:demo` hanya terhadap database demo yang berisi dat
 
 Semua akun memakai `SPMB_DEMO_PASSWORD`. Kata sandi di-hash dengan bcrypt, dibagikan terpisah oleh pengelola, dan variabelnya tidak boleh memakai kata sandi sekolah. Jangan tampilkan kata sandi di halaman publik atau log. Seluruh nominal dan kuota di seed adalah angka simulasi. Tujuan pembayaran secara eksplisit menyatakan jangan transfer.
 
+
+Script opsional npm run demo:create-staff hanya membuat dua akun staf dan memakai pengaman target demo yang sama. Script ini memerlukan DATABASE_URL, SPMB_DEMO_SEED_TARGET, SPMB_DEMO_MODE=true, SPMB_DEMO_STAFF_CONFIRM=CREATE_ONLY_THE_TWO_DEMO_STAFF_ACCOUNTS, dan SPMB_DEMO_PASSWORD yang sama dengan seed. Script tidak mencetak password. Untuk demo lintas role lengkap, seed penuh tetap menjadi pilihan utama.
+
 ## Syarat agar alur dapat dicoba
 
 - Database demo sudah memiliki schema terbaru. Fixture tidak menjalankan migrasi dan tidak menghapus data lama.
