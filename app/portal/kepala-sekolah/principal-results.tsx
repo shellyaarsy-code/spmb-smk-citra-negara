@@ -1,6 +1,6 @@
 import PrincipalSidebar from "./principal-sidebar";
 import Link from "next/link";
-import { demoPpdbMetrics, demoPpdbPrograms, demoPpdbSelectionSummary, formatPpdbNumber } from "../demo-ppdb-data";
+import { demoPpdbPrograms, demoPpdbSelectionSummary, formatPpdbNumber } from "../demo-ppdb-data";
 import type { getPrincipalSelectionOverview } from "../../../services/principal/principal-service";
 
 const quotas = demoPpdbPrograms.map((program) => ({ code: program.code, label: program.name, filled: program.admitted, capacity: program.capacity, color: program.quotaColor }));

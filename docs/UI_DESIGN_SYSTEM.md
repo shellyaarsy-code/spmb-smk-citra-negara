@@ -1,21 +1,51 @@
 # UI design system
 
-The shared visual foundation is maintained in `app/globals.css` and is used by public pages, authentication screens, and the Admin, Kepala Sekolah, and Siswa portals.
+Visual foundation lives in `app/globals.css`. All three portal sidebars share the React component `app/components/app-sidebar.tsx`; role wrappers provide distinct allowed menu items and context. Root typography uses the self-hosted `Plus_Jakarta_Sans` loader from `next/font/google` in `app/layout.tsx`, with the CSS variable `--font-plus-jakarta` and system fallback.
 
-## Semantic tokens
+## Implemented tokens
 
-The semantic tokens added for the SPMB foundations are `--color-primary`, `--color-primary-hover`, `--color-primary-tint`, `--color-bg-base`, `--color-surface`, `--color-text`, `--color-text-muted`, `--color-border`, and foreground/background pairs for warning, success, danger, and information. Additional tokens cover focus, sidebar states, typography, spacing, radius, elevation, motion, and layer order.
+| Category | Tokens and current values |
+|---|---|
+| Brand | `--color-primary` (`#0C5335`), `--color-primary-hover` (`#1E8A5F`), `--color-primary-tint` (`#E8F5EE`) |
+| Surface and text | `--color-bg-base` (`#F8FAF7`), `--color-surface` (`#FFFFFF`), `--color-text` (`#26312C`), `--color-text-muted` (`#66746B`), `--color-border` (`#D8E4DE`) |
+| Semantic | warning `#8B5E00` / `#FEF3C7`; success `#166534` / `#DCFCE7`; danger `#A33333` / `#FEE2E2`; information `#315B91` / `#E8F0FB` |
+| Type | `--font-body`; sizes `--text-xs` 12px, `--text-sm` 14px, `--text-base` 16px, `--text-lg` 18px, `--text-xl` 22px, `--text-2xl` 24px; page-title and KPI aliases |
+| Spacing | 4, 8, 12, 16, 20, 24, and 32px via `--space-1` to `--space-8`; `--space-7` 28px and `--space-10` 40px |
+| Shape/elevation | control radius 8px, alert radius 12px, card radius 16px, chip radius 9999px; `--shadow-sm`, `--shadow-md` |
+| Motion/layers | 180ms standard easing, sidebar/overlay/dialog layers 20/40/50; reduced-motion system preference disables transitions and smooth scroll |
+| Control/focus | shared target height 40px; keyboard focus is a 2px solid semantic focus outline with 3px offset |
 
-Legacy tokens remain as compatibility aliases while page-level styles are migrated. Do not remove them until their consumers have been migrated and checked.
+Legacy colors and layout tokens remain in use by older page selectors. Do not remove them until all consumers migrate and visual checks cover those routes.
 
-## Typography
+## Shared layout and component rules
 
-The requested family is Plus Jakarta Sans. `--font-body` points at that family, but the repository does not currently include or load its font asset; browsers without the family installed will use their sans-serif fallback. The shared size tokens cover 12, 14, 16, 18, 22, and 24 px plus overline, page-title, and KPI sizes. Many older page-specific font sizes remain and need page-by-page migration.
+- Portal shells share a light canvas, border, radius, and elevation. Desktop sidebar baseline is 248px; compact desktop uses 216px. At 760px and below the sidebar becomes a 2-column mobile navigation area.
+- Active navigation uses the semantic green tint and leading indicator; role-specific items remain distinct.
+- Portal headers share 21–24px title scale and 14px supporting text. Cards share surface, border, 16px radius, and small elevation where the common selectors apply.
+- Tables that exceed narrow viewports use a containing horizontal scroller rather than shrinking every column until unreadable.
+- Inputs and buttons have global focus-visible treatment; icon-only controls require a visible or accessible label from the page implementation.
+- Demo banners label simulated information. A table showing a sample must not imply the sample is the whole population.
 
-## Dashboard navigation
+## Role consistency matrix
 
-All three role sidebars now render through the shared React component in app/components/app-sidebar.tsx; role-specific wrappers supply menus and optional contextual panels. Their visual styling is normalized through shared selectors: light surface, semantic text, green-tinted active item with a leading indicator, shared 248 px desktop width, 20 px icons, 44 px targets, and a horizontally scrollable navigation row on mobile. A shared React `AppSidebar`/`AppShell` has not yet been introduced.
+| Component | Calon Siswa | Admin | Kepala Sekolah | Shared rule / exception |
+|---|---|---|---|---|
+| Sidebar | `StudentSidebar` | `AdminSidebar` | `PrincipalSidebar` | Shared `AppSidebar`; menus and help differ by role. |
+| Role guard | SISWA | ADMIN | KEPALA_SEKOLAH | Existing server layout guards remain authoritative. |
+| Metrics/cards | Application progress and student tasks | Review queue and workflow | Read-only monitoring | Common surface/tokens; content and actions remain role-appropriate. |
+| Lists/tables | Own profile/docs/results | Operational worklists | Monitoring only | Existing role-specific behavior retained; narrow layouts scroll horizontally where needed. |
+| Demo mode | Existing demo/query support | Existing simulation | Existing simulation | Demo presentation never grants access or changes persistence. |
 
-## Remaining work
+## Migration boundaries
 
-Page-local color, spacing, radius, shadow, and typography literals remain in the large global stylesheet. Continue migrating a page group at a time and verify layout, contrast, keyboard access, and mobile behavior. Status chips, cards, forms, topbars, empty/loading/error states, and data/demo modes still need shared primitives and adoption across roles.
+The application has a large global stylesheet with older local rules. Full conversion to React primitives or CSS modules is not yet complete. Avoid broad selector rewrites until all three roles and all key routes can be checked at desktop, tablet, and phone widths. Auth/session, API authorization, SPMB policy, data model, and persisted behavior are not design-system concerns and must not be changed as part of UI polish.
+
+## Verification for this audit continuation
+
+- `npm test`: passed, 71 tests.
+- `npm run typecheck`: passed.
+- `npm run lint`: passed with no warning after removing one unused import in the audited route component.
+- `npm run build`: Turbopack stopped because Windows denied creating a Prisma Client junction under `.next`; the fallback `npx next build --webpack` stopped because Windows denied making `.next/types/app/portal/kepala-sekolah/pendaftar`. Neither produced a successful local production build.
+- Visual Preview inspection: six Kepala Sekolah demo routes at the available narrow browser viewport; not the full role/viewport matrix.
+
+Admin and student visual coverage, public/login pages, and the requested 360/390/1024/1280/1440px viewport matrix remain outstanding unless subsequent QA evidence is added here. A successful remote Preview deployment build is not a substitute for direct visual inspection of those screens.

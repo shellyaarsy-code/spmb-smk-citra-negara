@@ -51,7 +51,7 @@ export default function PrincipalResults({ demo, overview }: { demo: boolean; ov
 
         <section className="principal-result-metrics" aria-label="Ringkasan hasil seleksi">
           <ResultMetric icon="star" label="Nilai Tertinggi Terpublikasi" value={demo ? "92.33" : overview?.highestScore?.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : overview ? `${overview.publishedCount} nilai dipublikasikan` : "Data belum dapat dimuat"} tone="green" />
-          <ResultMetric icon="check" label="Nilai Terpublikasi" value={demo ? "78.00" : overview?.publishedCount.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : "Nilai TKA tanpa keputusan lulus"} tone="mint" />
+          <ResultMetric icon="check" label={demo ? "Sampel Nilai Ditampilkan" : "Nilai Terpublikasi"} value={demo ? scoreRows.length.toLocaleString("id-ID") : overview?.publishedCount.toLocaleString("id-ID") ?? "—"} note={demo ? "Baris contoh pada tabel" : "Nilai TKA tanpa keputusan lulus"} tone="mint" />
           <ResultMetric icon="people" label="Attempt Selesai" value={demo ? "493" : overview?.completedAttempts.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : "Seluruh attempt yang selesai"} tone="blue" />
           <ResultMetric icon="chart" label="Rata-Rata Nilai Terpublikasi" value={demo ? "81.25" : overview?.averageScore?.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : "Tidak menetapkan kelulusan"} tone="amber" />
         </section>
