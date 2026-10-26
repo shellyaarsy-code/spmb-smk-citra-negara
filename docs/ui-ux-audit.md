@@ -57,7 +57,7 @@ Partisipasi tes demo pada layar hasil tes = 589 selesai + 24 berjalan + 27 belum
 
 ## Bukti visual dan risiko regresi
 
-Preview baseline diperiksa melalui tab browser yang sudah terbuka. Halaman Kepala Sekolah pada mode demo memperlihatkan banner simulasi, sidebar bersama, ringkasan, panel analitik, serta tabel. Pada viewport sempit, navigasi tersusun dua kolom, kartu ringkasan menjadi dua kolom, dan tabel memakai gulir horizontal. Screenshot terlihat pada sesi QA; berkas PNG tidak diekspor dari alat browser pada audit ini.
+Preview baseline diperiksa melalui tab browser yang sudah terbuka. Enam halaman Kepala Sekolah pada mode demo memperlihatkan banner simulasi, sidebar bersama, ringkasan, panel analitik, tabel, filter, dan kartu laporan. Pada viewport sempit, navigasi tersusun dua kolom, kartu ringkasan menjadi dua kolom, dan tabel memakai gulir horizontal. Pada deployment baru, landing page, login Admin/Kepala Sekolah/Calon Siswa, dan formulir registrasi dilihat pada viewport browser 1280×720; tidak ada form yang dikirim. Console browser tidak memperlihatkan error pada halaman yang diamati. Screenshot ditampilkan oleh alat QA, tetapi file PNG tidak diekspor pada sesi ini.
 
 Perubahan CSS bersifat global untuk fokus dan motion, sehingga berpotensi memengaruhi kontrol publik, login, dan seluruh portal. Uji lint, typecheck, test, build, dan pemeriksaan visual pascaperubahan dicatat terpisah setelah dijalankan. Interaksi yang mengirim formulir, ekspor, pembayaran, upload, publikasi, atau ujian tidak dilakukan.
 
@@ -75,6 +75,8 @@ Perubahan CSS bersifat global untuk fokus dan motion, sehingga berpotensi memeng
 - Type-check: passed.
 - Lint: passed with no warnings after removing one unused import in the audited route component.
 - Build: local Turbopack failed while making a Prisma Client junction (Windows access denied); Webpack fallback failed creating `.next/types/.../pendaftar` (Windows EPERM). No build success is claimed.
-- Visual: six Kepala Sekolah Preview routes inspected in demo mode at the browser's narrow viewport. Admin, student, public/login, and full viewport regression remain unverified.
+- Preview deployment dari branch kerja mencapai READY dan build Vercel mengompilasi aplikasi dengan sukses; commit dan URL deployment final dicantumkan pada laporan sesi QA.
+- Visual: six Kepala Sekolah demo routes inspected at the narrow viewport on baseline Preview; public landing, role login screens, and registration form inspected on the new Preview. Browser console was empty on observed screens. The new Preview redirects protected pages to the Kepala Sekolah login because its host-only session does not inherit the old deployment session; no credential was entered.
+- Admin and student authenticated dashboards, post-deployment Headmaster dashboard, and the requested full viewport matrix remain unverified. No API or database errors are asserted because those authenticated views were not reached on the new deployment.
 
 Kriteria yang belum diperiksa visual pada role/viewport lain tetap ditandai belum diverifikasi.
