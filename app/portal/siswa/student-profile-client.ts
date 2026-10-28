@@ -39,8 +39,30 @@ export function useCurrentStudentData() {
 
 export async function fetchCurrentStudentData(): Promise<StudentDataResponse> {
   const response = await fetch("/api/student/profile", { cache: "no-store" });
-  if (!response.ok) throw new Error("Data profil belum dapat dimuat.");
-  return response.json() as Promise<StudentDataResponse>;
+  const result: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      typeof result === "object" &&
+      result !== null &&
+      "error" in result &&
+      typeof result.error === "string"
+        ? result.error
+        : "Data profil belum dapat dimuat.";
+    throw new Error(message);
+  }
+
+  if (
+    typeof result !== "object" ||
+    result === null ||
+    !("profile" in result) ||
+    !(result.profile === null || (typeof result.profile === "object" && result.profile !== null && !Array.isArray(result.profile))) ||
+    !("guardians" in result) ||
+    !Array.isArray(result.guardians)
+  ) {
+    throw new Error("Respons data profil tidak sesuai. Muat ulang halaman atau coba lagi.");
+  }
+
+  return result as StudentDataResponse;
 }
 
 export function toStudentFormValues(data: StudentDataResponse) {
