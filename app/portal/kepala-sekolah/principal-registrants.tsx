@@ -84,7 +84,7 @@ export default function PrincipalRegistrants({ demo }: { demo: boolean }) {
       <PrincipalSidebar active="registrants" demo={demo} />
       <section className="principal-dashboard-main principal-registrants-main" aria-label="Data pendaftar siswa">
         <header className="principal-dashboard-header"><div><h1>Data Pendaftar (Siswa)</h1><p>Direktori dan status kelengkapan data administratif pendaftar PPDB SMK Citra Negara 2026/2027.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />GELOMBANG 1 ACTIVE</span><span className="principal-school-year">▣ &nbsp;Tahun Ajaran 2026/2027</span></div></header>
-        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka ringkasan contoh; baris tabel adalah data fiktif untuk demonstrasi visual.</span><Link href="/portal/kepala-sekolah/pendaftar">Tampilan kosong</Link></div>}
+        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka ringkasan contoh; baris tabel adalah data fiktif untuk demonstrasi visual.</span><span>Data simulasi</span></div>}
 
         <section className="principal-list-toolbar" aria-label="Cari dan filter pendaftar">
           <label className="principal-list-search"><PrincipalIcon name="search" /><input type="search" value={query} onChange={(event) => updateFilters(setQuery, event.target.value)} placeholder="Cari pendaftar (Nama, NISN, Sekolah)…" aria-label="Cari nama, NISN, sekolah, atau nomor pendaftaran" /></label>
