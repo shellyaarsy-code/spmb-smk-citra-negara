@@ -11,8 +11,8 @@ export default function StudentDocumentsPage() {
         <section className="student-dashboard-main student-form-main" aria-label="Unggah berkas dokumen pendaftaran">
           <header className="student-dashboard-header student-form-header">
             <div>
-              <h1>Unggah Berkas Dokumen</h1>
-              <p>Unggah pindaian berkas administrasi wajib untuk mempermudah validasi SPMB</p>
+              <h1>Unggah Dokumen Pendaftaran</h1>
+              <p>Unggah dokumen sesuai kebijakan berkas yang ditampilkan. Dokumen wajib digunakan untuk proses verifikasi, tetapi tidak menghalangi pengiriman aplikasi.</p>
             </div>
             <span className="student-status-badge">Status: Pengisian Formulir</span>
           </header>

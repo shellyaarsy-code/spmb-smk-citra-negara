@@ -5,7 +5,7 @@ import "./demo.css";
 const demoRoles = [
   {
     title: "Calon siswa",
-    description: "Buat akun, lengkapi pendaftaran, dan pantau tahapan SPMB.",
+    description: "Daftarkan akun siswa baru, lengkapi formulir, dan pantau tahapan SPMB dari data tersimpan.",
     href: "/portal/login/siswa?mode=register",
     action: "Daftar sebagai siswa demo",
   },
@@ -36,6 +36,7 @@ export default function DemoPage() {
         <span className="kicker">DEMO SPMB · SMK CITRA NEGARA · 2026/2027</span>
         <h1>Jelajahi alur penerimaan siswa baru</h1>
         <p>Demo memakai portal, autentikasi, dan data bersama yang sama dengan aplikasi. Perubahan pada pendaftaran siswa dapat dilihat oleh admin dan kepala sekolah sesuai hak aksesnya.</p>
+        <p className="demo-analytics-tip">Setelah masuk sebagai Admin atau Kepala Sekolah, pilih <strong>Buka Dashboard Simulasi</strong> di panel samping untuk melihat statistik sintetis 1.240 pendaftar, tren mingguan, asal sekolah, sebaran wilayah, dan contoh hasil seleksi. Mode simulasi hanya mengubah data yang ditampilkan; login dan pembatasan role tetap berlaku.</p>
         <div className="portal-grid demo-role-grid">
           {demoRoles.map((role) => (
             <article className="portal-card" key={role.title}>
@@ -47,13 +48,13 @@ export default function DemoPage() {
           ))}
         </div>
         <aside className="demo-access-note" role="note">
-          <strong>Data demo harus disiapkan pada database demo terlebih dahulu.</strong>
+          <strong>Demo aktif dengan data sintetis bersama.</strong>
           <p>Gunakan hanya data fiktif dan akun demo. Jangan masukkan data pribadi calon siswa sungguhan. Kata sandi akun bersama dibagikan terpisah oleh pengelola.</p>
-          <h2>Akun demo</h2>
+          <h2>Akses demo</h2>
           <ul>
             <li>Admin: <code>admin.demo@spmb.test</code></li>
             <li>Kepala sekolah: <code>kepala-sekolah.demo@spmb.test</code></li>
-            <li>Siswa: <code>siswa1.demo@spmb.test</code> sampai <code>siswa4.demo@spmb.test</code></li>
+            <li>Siswa baru: pilih “Daftar sebagai siswa demo” untuk membuat akun baru. Akun tersebut tersimpan di database demo bersama.</li>
           </ul>
         </aside>
       </section>

@@ -31,19 +31,27 @@ type AppSidebarProps = {
   logoutIcon: ReactNode;
   logoutClassName: string;
   logoutInNav?: boolean;
+  logoutMobileInNav?: boolean;
   logoWidth?: number;
 };
 
 export default function AppSidebar({
   sidebarClassName, brandClassName, brandMarkClassName, brandHref, brandLabel, brandSubtitle,
   brandAriaLabel, navClassName, linkClassName, navAriaLabel, items, beforeNav, support, logoutHref,
-  logoutLabel, logoutIcon, logoutClassName, logoutInNav = false, logoWidth = 32,
+  logoutLabel, logoutIcon, logoutClassName, logoutInNav = false, logoutMobileInNav = false, logoWidth = 32,
 }: AppSidebarProps) {
-  const logout = (
-    <AuthLogoutLink className={logoutClassName} href={logoutHref}>
+  const renderLogout = (className: string) => (
+    <AuthLogoutLink className={className} href={logoutHref}>
       {logoutIcon}<span>{logoutLabel}</span>
     </AuthLogoutLink>
   );
+  const logout = renderLogout(logoutClassName);
+  const mobileLogout = logoutMobileInNav
+    ? renderLogout(`${logoutClassName} mobile-only-logout`)
+    : null;
+  const desktopLogout = logoutMobileInNav
+    ? renderLogout(`${logoutClassName} desktop-only-logout`)
+    : logout;
 
   return (
     <aside className={sidebarClassName}>
@@ -65,9 +73,10 @@ export default function AppSidebar({
           );
         })}
         {logoutInNav && logout}
+        {!logoutInNav && mobileLogout}
       </nav>
       {support}
-      {!logoutInNav && logout}
+      {!logoutInNav && desktopLogout}
     </aside>
   );
 }

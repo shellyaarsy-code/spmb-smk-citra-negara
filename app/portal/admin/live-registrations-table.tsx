@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { AdminIcon } from "./admin-sidebar";
+import { getApplicationStatusTone } from "./status-labels";
 
 type Program = { code: string; name: string };
 type ApplicantRow = { registrationNumber: string; status: string; submittedAt: string; name: string | null; nisn: string | null; programs: { priority: number; code: string; name: string }[] };
@@ -88,7 +89,7 @@ export default function LiveRegistrationsTable() {
           <tbody>{rows.map((applicant) => <tr key={applicant.registrationNumber}>
             <td className="admin-registration-number">{applicant.registrationNumber}</td><td className="admin-applicant-name">{applicant.name || "Nama belum diisi"}</td><td className="admin-applicant-nisn">{applicant.nisn || "—"}</td>
             <td>{applicant.programs.length ? applicant.programs.map((item) => `${item.priority}. ${item.code}`).join(" · ") : "—"}</td><td className="admin-applicant-date">{dateLabel(applicant.submittedAt)}</td>
-            <td><span className="admin-applicant-status verification">{statusLabels[applicant.status] ?? applicant.status}</span></td><td><Link className="admin-detail-button" href={`/portal/admin/pendaftaran/${encodeURIComponent(applicant.registrationNumber)}`}>Detail</Link></td>
+            <td><span className={`admin-applicant-status ${getApplicationStatusTone(applicant.status)}`}>{statusLabels[applicant.status] ?? applicant.status}</span></td><td><Link className="admin-detail-button" href={`/portal/admin/pendaftaran/${encodeURIComponent(applicant.registrationNumber)}`}>Detail</Link></td>
           </tr>)}{!rows.length && <tr><td className="admin-table-empty" colSpan={7}>Tidak ada pendaftar yang sesuai dengan filter.</td></tr>}</tbody>
         </table></div>
         <div className="admin-table-pagination"><button type="button" className="admin-page-button admin-page-edge" disabled={page <= 1} onClick={() => setPage((value) => Math.max(1, value - 1))}>Sebelumnya</button><span>Halaman {page} dari {totalPages}</span><button type="button" className="admin-page-button admin-page-edge" disabled={page >= totalPages} onClick={() => setPage((value) => value + 1)}>Selanjutnya</button></div>

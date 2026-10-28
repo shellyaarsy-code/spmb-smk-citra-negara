@@ -85,7 +85,7 @@ export default function RegistrationsTable({ demo }: { demo: boolean }) {
           <div className="admin-dashboard-account"><span>AD</span><div><strong>Admin Admisi</strong><small>PANITIA PPDB</small></div></div>
         </div>
       </header>
-      {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Daftar ini berisi contoh visual, termasuk baris yang dibuat untuk pratinjau filter dan halaman. Tidak ada data siswa sungguhan.</span><Link href="/portal/admin/pendaftaran">Lihat tampilan kosong</Link></div>}
+      {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Daftar ini berisi contoh visual, termasuk baris yang dibuat untuk pratinjau filter dan halaman. Tidak ada data siswa sungguhan.</span><span>Data simulasi</span></div>}
 
       <section className="admin-registration-filters" aria-label="Filter daftar calon siswa">
         <label className="admin-dashboard-search admin-registration-mobile-search"><AdminIcon name="search" /><input type="search" placeholder="Cari No. Pendaftaran, Nama…" aria-label="Cari nomor pendaftaran, nama, atau NISN" value={search} onChange={(event) => { setSearch(event.target.value); setPage(1); setSelected([]); }} /></label>

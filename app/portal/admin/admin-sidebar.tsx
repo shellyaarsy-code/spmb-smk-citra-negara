@@ -41,30 +41,29 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
     { label: "Pembayaran", href: href("/portal/admin/pembayaran"), icon: <AdminIcon name="settings" />, active: active === "payments" },
   ];
   const support = (
-    <section className="admin-bank-support" aria-label="Bantuan sistem">
-      <strong>Butuh Bantuan Sistem?</strong>
-      <p>Hubungi tim developer PPDB Negara jika mengalami kendala server.</p>
-      <span>Ext. 102 (IT Support)</span>
-    </section>
+    <a className="admin-bank-support admin-dashboard-access" aria-label={demo ? "Kembali ke data tersimpan Admin" : "Buka dashboard simulasi Admin"} href={demo ? "/portal/admin" : "/portal/admin?mode=demo"}>
+      <strong><AdminIcon name="check" /> HAK AKSES: ADMIN</strong>
+      <p>Pengelolaan data sesuai kewenangan admin. Bantuan sistem: Ext. 102.</p>
+    </a>
   );
   return (
     <AppSidebar
       sidebarClassName="admin-dashboard-sidebar"
       brandClassName="admin-dashboard-brand"
       brandMarkClassName="admin-dashboard-brand-mark"
-      brandHref="/portal/login/admin"
+      brandHref={demo ? "/portal/admin?mode=demo" : "/portal/admin"}
       brandLabel="SPMB CITRA NEGARA"
       brandSubtitle="PORTAL ADMIN"
-      brandAriaLabel="SPMB SMK Citra Negara, kembali ke login admin"
+      brandAriaLabel="SPMB SMK Citra Negara, kembali ke dashboard admin"
       navClassName="admin-dashboard-nav"
       linkClassName="admin-dashboard-nav-link"
       navAriaLabel="Menu admin"
       items={items}
       support={support}
       logoutHref="/portal/login/admin"
-      logoutLabel="Kembali ke Login"
+      logoutLabel="Keluar"
       logoutIcon={<AdminIcon name="logout" />}
-      logoutClassName="admin-dashboard-logout"
+      logoutClassName="admin-dashboard-logout" logoutMobileInNav
     />
   );
 }

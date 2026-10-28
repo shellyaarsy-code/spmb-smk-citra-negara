@@ -41,7 +41,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
     catch { summary = null; }
   }
   const funnel = demo
-    ? [{ label: "Membuat Akun", count: formatPpdbNumber(demoPpdbMetrics.totalApplicants), percent: 100, color: "green" }, { label: "Berkas Lengkap", count: formatPpdbNumber(demoPpdbMetrics.completeDocuments), percent: 79.1, color: "green" }, { label: "Lolos Verifikasi Admin", count: formatPpdbNumber(demoPpdbMetrics.verifiedApplicants), percent: 51.6, color: "green" }, { label: "Lulus Seleksi Akhir", count: formatPpdbNumber(demoPpdbMetrics.admittedApplicants), percent: 39.8, color: "blue" }]
+    ? [{ label: "Membuat Akun", count: formatPpdbNumber(demoPpdbMetrics.totalApplicants), percent: 100, color: "green" }, { label: "Berkas Lengkap", count: formatPpdbNumber(demoPpdbMetrics.completeDocuments), percent: 79.2, color: "green" }, { label: "Lolos Verifikasi Admin", count: formatPpdbNumber(demoPpdbMetrics.verifiedApplicants), percent: 51.6, color: "green" }, { label: "Lulus Seleksi Akhir", count: formatPpdbNumber(demoPpdbMetrics.admittedApplicants), percent: 39.8, color: "blue" }]
     : [];
   const liveStatuses = summary
     ? [...summary.statuses].sort((a, b) => {
@@ -76,14 +76,14 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
             </div>
           </header>
 
-          {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Angka, agenda, dan daftar nama pada halaman ini hanya contoh visual, bukan data pendaftar sungguhan.</span><Link href="/portal/admin">Lihat tampilan kosong</Link></div>}
+          {demo && <div className="portal-demo-notice admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Angka, agenda, dan daftar nama pada halaman ini hanya contoh visual, bukan data pendaftar sungguhan.</span><span>Data simulasi</span></div>}
 
           {process.env.VERCEL_ENV === "preview" && spmbPolicy.demoMode && <DemoDocumentTypesSetup />}
 
           <section className="admin-metrics-grid" aria-label="Ringkasan jumlah pendaftar">
             <MetricCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Akun terdaftar (simulasi)" : summary ? "Aplikasi yang telah dikirim" : "Data belum dapat dimuat"} tone="green" icon="people" />
-            <MetricCard label="Dokumen Menunggu Verifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus pending"} tone="amber" icon="check" />
-            <MetricCard label="Dokumen Terverifikasi" value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : "Dokumen berstatus verified"} tone="mint" icon="check" />
+            <MetricCard label={demo ? "Berkas Lengkap" : "Dokumen Menunggu Verifikasi"} value={demo ? formatPpdbNumber(demoPpdbMetrics.completeDocuments) : summary?.pendingDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "79,2% dari total pendaftar" : summary ? "Dokumen berstatus pending" : "Data belum dapat dimuat"} tone="amber" icon="check" />
+            <MetricCard label={demo ? "Pendaftar Lolos Verifikasi" : "Dokumen Terverifikasi"} value={demo ? formatPpdbNumber(demoPpdbMetrics.verifiedApplicants) : summary?.verifiedDocuments.toLocaleString("id-ID") ?? "—"} note={demo ? "51,6% dari total pendaftar" : summary ? "Dokumen berstatus verified" : "Data belum dapat dimuat"} tone="mint" icon="check" />
             <MetricCard label="Status Lulus" value={demo ? formatPpdbNumber(demoPpdbMetrics.admittedApplicants) : summary?.passed.toLocaleString("id-ID") ?? "—"} note={demo ? `Simulasi ${demoPpdbMetrics.passRate}` : `Aplikasi berstatus ${getApplicationStatusLabel("PASSED")}`} tone="blue" icon="chart" />
             {!demo && <>
               <MetricCard label="Pembayaran Menunggu" value={summary?.pendingPayments.toLocaleString("id-ID") ?? "—"} note={summary ? "Menunggu pemeriksaan admin" : "Data belum dapat dimuat"} tone="amber" icon="check" href="/portal/admin/pembayaran" />
@@ -119,7 +119,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
             </section>}
           </div>
 
-          <footer className="admin-dashboard-footer"><span>SPMB SMK Citra Negara</span><Link href="/portal/admin?mode=demo">Buka contoh tampilan</Link></footer>
+          <footer className="admin-dashboard-footer"><span>SPMB SMK Citra Negara</span></footer>
         </section>
       </div>
     </main>

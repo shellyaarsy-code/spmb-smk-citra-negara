@@ -1,0 +1,194 @@
+# Checkpoint Audit UI/UX SPMB — 28 Oktober 2026
+
+Branch kerja: `integration/demo-shared-data`
+
+## Deployment
+- Commit yang diperiksa: `7384569b71ade28bd8a698a6b8c013478932f98c` — `Align student brand navigation with dashboard home`.
+- Preview: https://spmb-smk-citra-negara-3kv3lhyxi-l-74c0.vercel.app
+- Status Vercel saat pemeriksaan: `READY`.
+- Branch `master` dan production tidak disentuh.
+
+## Perubahan lintas role yang sudah ada di branch
+- Warna portal diselaraskan ke hijau tenang dan permukaan netral.
+- Link brand Admin kembali ke dashboard Admin, dengan mempertahankan query mode demo.
+- Link brand Calon Siswa kembali ke dashboard siswa.
+- Skala logo sidebar, judul dashboard, dan deskripsi dashboard diselaraskan.
+- Kartu akses Admin/Kepala Sekolah dan bantuan Calon Siswa dipertahankan terlihat pada layar kecil.
+- Geometri badge status dan kontrol pagination diselaraskan tanpa mengubah label/status bisnis.
+- Link contoh tampilan di footer dashboard Admin dihapus; footer portal tetap ada.
+
+## Pemeriksaan yang dilakukan pada checkpoint ini
+- Membaca ulang dashboard Admin, dashboard Kepala Sekolah, dan sidebar Calon Siswa pada branch kerja.
+- Meninjau CSS yang mengatur judul, sidebar, kartu akses, tampilan mobile, tabel pendaftar, dan pagination.
+- Memeriksa URL preview terbaru. Permintaan langsung ke `/portal/admin?mode=demo` tanpa sesi autentikasi menampilkan halaman login Admin (response mengarah ke route login). Ini konsisten dengan proteksi sesi, tetapi tidak membuktikan dashboard sudah diuji setelah login.
+- Tidak mengirim form, tidak mengubah data, tidak menguji transaksi tulis, dan tidak mencoba melewati autentikasi.
+
+## Temuan / batas bukti
+- CSS global memiliki banyak lapisan lama dan override; perlu audit cascade terarah sebelum menyederhanakan atau menghapus aturan.
+- Markup tabel daftar pendaftar memiliki wrapper scroll horizontal dan status loading/error/empty; tetap perlu pemeriksaan visual di browser untuk memastikan perilaku pada ukuran desktop, tablet, 760px, dan 420px.
+- Fetch HTML dan status `READY` tidak membuktikan visual pixel-level, interaksi, atau alur autentikasi berjalan benar.
+- Audit halaman fitur per route, screenshot visual, dan pengujian end-to-end lintas role masih terbuka.
+
+## Batas kerja tetap
+- Jangan mengedit/merge/promosikan ke `master` atau production.
+- Jangan mereset akun, autentikasi, database, atau data demo.
+- Kepala Sekolah harus tetap read-only; perbaikan UI tidak boleh menambah hak edit.
+- Pertahankan alur, konten, dan fitur yang ada; perbaikan adalah penyempurnaan, bukan redesign.
+
+
+## Temuan tambahan — halaman Data Pendaftar Kepala Sekolah
+- Pada halaman live, kolom pencarian sebelumnya tidak menampilkan ikon pencarian, sedangkan halaman demo menggunakan ikon yang sama di dalam kontrol.
+- Perbaikan kecil diterapkan pada `app/portal/kepala-sekolah/live-principal-registrants.tsx`: ikon pencarian disamakan dengan versi demo. Label aksesibel dan perilaku input tetap dipertahankan.
+- Commit: `fcba47d4ef5a2c8171de5f809818ae9867636560` — `Align principal live search field with demo UI`.
+- Status build/deployment untuk commit ini harus dicek terpisah; perubahan belum dinyatakan tervalidasi secara visual.
+
+
+## Temuan tambahan — pagination Data Pendaftar Kepala Sekolah
+- Markup pagination live sebelumnya berbeda dari demo: elemen `nav` menjadi container utama, sehingga aturan responsive yang menargetkan `.principal-list-pagination nav` dan `.principal-list-pagination p` tidak cocok pada versi live. Versi live juga tidak menyediakan tombol nomor halaman seperti versi demo.
+- Markup live sekarang menggunakan pembungkus, ringkasan jumlah/rentang data, dan navigasi bernomor yang mengikuti pola demo. Tombol tetap menggunakan pagination API dan tidak memberi hak edit.
+- Commit: `689237527fe6e2b55d128df3d4a322fb6b2a5335` — `Align principal live pagination with demo layout`.
+- Ikon pencarian live yang disamakan pada commit sebelumnya tetap dipertahankan.
+- Perlu cek build/deployment dan visual responsif setelah commit terbaru siap.
+
+
+## Temuan tambahan — nomor halaman aktif di pagination live
+- Pemeriksaan lanjutan menemukan bahwa pagination live hanya menampilkan lima nomor pertama melalui `slice(0, 5)`. Jika jumlah halaman lebih dari lima dan pengguna menuju halaman selanjutnya, nomor halaman aktif tidak lagi terlihat di deretan tombol.
+- Pagination sekarang menghitung jendela hingga lima nomor yang bergeser mengikuti halaman aktif, tetap dibatasi dari halaman pertama hingga terakhir.
+- Commit: `d385994d9b4dfc36bc613a1eedafeecbc17f7771` — `Keep current page visible in principal pagination`.
+- Ini perbaikan navigasi tampilan; sumber data, ukuran halaman API, dan hak read-only Kepala Sekolah tidak diubah.
+- Build dan pengujian visual responsif untuk commit ini masih perlu diverifikasi.
+
+## Temuan tambahan — warna status pada tabel Admin live
+- Tabel pendaftar Admin versi live sebelumnya menggunakan satu kelas warna `verification` untuk semua status aplikasi. Akibatnya, status yang secara makna berbeda (misalnya lulus, tidak lulus, menunggu, atau informasi umum) tampil dengan warna yang sama.
+- Komponen live sekarang memakai helper `getApplicationStatusTone` yang sudah digunakan dalam sistem label status, dan CSS menyediakan kelas semantik success/danger/warning/info untuk badge tersebut.
+- Label status, filter, data, endpoint, pagination, dan izin tidak diubah.
+- Commit kode: `6d25b646b80790394fdaf8916e81a8864aa89be7` — `Use semantic status colors in live admin registrations`.
+- Commit CSS: `ff58bf4df6969344476ee334b8cfb66dba54bf58` — `Add semantic tones for live application status badges`.
+- Perlu menunggu build preview dan pemeriksaan visual terautentikasi. Perubahan kode saja belum membuktikan tampilan sudah tervalidasi.
+
+## Temuan tambahan — badge status hasil seleksi Kepala Sekolah
+- Pada halaman demo hasil seleksi, status keputusan ditampilkan sebagai badge berwarna (hijau untuk lulus, amber untuk daftar tunggu, merah untuk tidak lulus). Pada halaman live, status sebelumnya ditampilkan sebagai teks mentah tanpa badge.
+- Tampilan live kini menggunakan badge dan label Indonesia yang sejalan dengan demo untuk status `PASSED`, `WAITLISTED`, dan `FAILED`. Status tak dikenal tetap terlihat dengan gaya netral agar tidak salah diberi makna.
+- Perubahan hanya pada presentasi status di halaman read-only Kepala Sekolah; sumber data, publikasi, aturan seleksi, dan izin tidak diubah.
+- Commit komponen: `ba5d9fcf0f21672165d223b00af9f06a9fe6b883` — `Align live selection outcome badges with demo UI`.
+- Commit CSS: `69af0492d6f4cfbb2c2deb189ebdb772291fcace` — `Add neutral fallback tone for principal selection statuses`.
+- Build dan pemeriksaan visual setelah login masih perlu diverifikasi.
+
+## Temuan tambahan — status Admin TKA dan verifikasi dokumen
+- Panel Admin TKA sebelumnya menampilkan kode mentah status tes dan attempt, sehingga status teknis seperti `PUBLISHED` atau `COMPLETED` kurang ramah untuk presentasi.
+- Komponen Admin TKA sekarang menerjemahkan status yang dikenal ke label Bahasa Indonesia dan menampilkan badge semantik. Status yang belum dikenal tetap terlihat dalam format netral/informatif.
+- Daftar dokumen pada panel verifikasi sekarang menampilkan label Bahasa Indonesia dan warna badge sesuai status `PENDING`, `VERIFIED`, `REJECTED`, dan `REVISION_REQUIRED`.
+- Perubahan hanya pada label dan presentasi; endpoint, alur penyimpanan, penerbitan tes, verifikasi dokumen, dan hak akses tidak diubah.
+- Commit TKA: `8614130f0b9e275874f343518c0bb6167c059e6d` — `Use readable semantic status badges in TKA admin`.
+- Commit verifikasi dokumen: `bb140b610bf5ce6b0dfd55cf123b339dacf5927f` — `Localize document verification status badges`.
+- Build dan pemeriksaan visual masih menunggu deployment preview terbaru.
+
+## Temuan tambahan — badge status tabel pendaftar Kepala Sekolah
+- Tabel pendaftar live Kepala Sekolah sebelumnya menampilkan status sebagai teks biasa, sementara tampilan dashboard memakai badge untuk beberapa status.
+- Status aplikasi live kini memakai kelas badge yang sudah tersedia: hijau untuk status selesai/terverifikasi/lulus, amber untuk menunggu, merah untuk gagal/ditolak/dibatalkan, dan netral untuk status lain.
+- Label status yang dikenal tetap memakai kamus Bahasa Indonesia yang sudah ada; status tak dikenal ditampilkan dengan pemisah yang lebih mudah dibaca.
+- Empty state sekarang membedakan daftar yang benar-benar belum memiliki aplikasi dengan hasil filter yang kosong.
+- Perubahan bersifat presentasional; halaman tetap read-only dan API/izin tidak berubah.
+- Commit: `c84fdeb07b08e6de97e592c0ec6d0a9835ebd52b` — `Add semantic applicant status badges to principal live table`.
+- Deployment dan pemeriksaan visual sesudah login masih perlu diverifikasi.
+
+
+
+## Temuan tambahan — state formulir verifikasi dokumen
+- Form verifikasi live sebelumnya selalu memulai pilihan status pada “Terverifikasi” dan catatan kosong, meskipun dokumen yang sedang aktif mungkin sudah ditolak atau memerlukan revisi. Ini berisiko membuat nilai formulir tidak mencerminkan status dokumen yang dipilih.
+- Form sekarang mengisi status dan catatan dari dokumen aktif, dengan perilaku lama untuk status `PENDING` (pilihan awal tindakan tetap “Terverifikasi”). Pesan hasil operasi tetap memakai `role="status"` karena state yang sama juga mengumumkan keberhasilan simpan; loading dan empty state memakai status aksesibel, dan empty state tidak menutupi pesan error.
+- Commit: `87a5dc27ad538bd8b4fd3e8035c4279632011b44` — `Initialize document review form from selected document`.
+- Perubahan tidak mengubah endpoint, aturan verifikasi, API, atau izin Admin. Build preview dan pemeriksaan visual setelah autentikasi tetap harus diverifikasi.
+
+
+## Temuan tambahan — empty state pilihan tes pada formulir TKA
+- Form tambah soal sebelumnya menampilkan pilihan tes draft kosong jika belum ada tes berstatus draft; form jadwal juga menampilkan pilihan tes terbit kosong jika belum ada tes berstatus published. Tombol simpan memang sudah dinonaktifkan, tetapi alasan dan langkah berikutnya tidak dijelaskan.
+- Kedua formulir kini menampilkan pesan kontekstual: buat draft tes terlebih dahulu untuk menambah soal, atau terbitkan tes terlebih dahulu untuk membuat jadwal. Kondisi tombol, endpoint, validasi, dan alur TKA tetap dipertahankan.
+- Commit: `77009954dbe43df8b040e8bd54a1786b64809c19` — `Explain empty test choices in TKA admin forms`.
+- Build preview dan pemeriksaan visual setelah autentikasi masih perlu diverifikasi.
+
+
+## Temuan tambahan — respons API TKA yang bukan JSON
+- Komponen Bank Soal/Jadwal sebelumnya memanggil `response.json()` tanpa fallback pada proses memuat data dan menyimpan perubahan. Jika server mengembalikan body kosong atau bukan JSON, pesan dapat berubah menjadi error parsing yang kurang membantu.
+- Parsing respons kini memakai fallback `null`; saat respons HTTP gagal, komponen tetap menggunakan pesan API jika tersedia atau pesan fallback yang sudah ada. Endpoint, payload, aturan simpan, dan hak akses tidak berubah.
+- Commit: `c3fd6f78307d9d9f8e39460cd435d9abf35b17f6` — `Handle non-JSON responses in TKA admin feedback`.
+- Deployment untuk commit ini belum diperiksa pada saat checkpoint ditulis; pemeriksaan build dan visual terautentikasi masih diperlukan.
+
+
+## Temuan tambahan — halaman verifikasi pembayaran Admin
+- Respons endpoint pembayaran, konfigurasi pembayaran, dan aksi verifikasi/penolakan kini diparse dengan fallback jika body bukan JSON, agar kegagalan HTTP tetap menampilkan pesan fallback yang dapat dipahami.
+- Empty state “Belum ada pembayaran tercatat” sekarang hanya muncul saat pemuatan berhasil dan tidak ada data; pesan itu tidak lagi tampil bersamaan dengan error pemuatan.
+- Validasi nominal positif, metode/tujuan wajib, konfirmasi perubahan kebijakan, dan alasan penolakan tetap dipertahankan. Tidak ada perubahan pada API atau hak akses.
+- Commit: `c8f8e6b098fa4356f348d5815f5070b6fe3e9d79` — `Improve payment review API errors and empty state`.
+- Deployment untuk commit ini belum diperiksa saat checkpoint ditulis; visual test dengan sesi Admin belum dilakukan.
+
+
+## Temuan tambahan — halaman siswa (hasil TKA, hasil seleksi, notifikasi)
+- `app/portal/siswa/live-tka-results.tsx`: parsing respons API hasil TKA memakai fallback jika body bukan JSON, agar respons HTTP gagal tetap menghasilkan pesan yang dapat dipahami.
+- `app/portal/siswa/live-selection-result.tsx`: menambahkan status memuat sebelum memutuskan bahwa hasil belum dipublikasikan; parsing respons API lebih tahan terhadap body kosong/bukan JSON; kegagalan ditandai sebagai pesan error.
+- `app/portal/siswa/live-notifications.tsx`: parsing respons pemuatan dan tandai-dibaca memiliki fallback; empty state hanya muncul jika tidak ada error.
+- Commit kode berturut-turut: `0db806d96e3e020684ba12f2f005e76a7e0a19ef` (hasil seleksi), `57b313835597625768b540df548d3ddd8a439973` (notifikasi), `8d716f81596a65edf12b7b104fa0151627a9ecce` (hasil TKA).
+- Tidak mengubah endpoint, aturan seleksi/nilai, hak akses, atau isi data. Status deployment dan pemeriksaan visual terautentikasi harus diverifikasi terpisah.
+
+
+## Temuan tambahan — konfigurasi seleksi admin
+- `app/portal/admin/live-selection-management.tsx`: pemuatan data seleksi dan aksi simpan kini menggunakan fallback ketika respons API kosong atau bukan JSON, sehingga pesan kegagalan tidak bergantung pada parsing JSON yang sukses.
+- Commit: `8728cc39c1293b9973620d080a4b66b2bdb6e0db`.
+- Tidak mengubah aturan keputusan, perhitungan kelulusan, endpoint, maupun pembatasan akses. Pengujian alur melalui akun admin dan validasi build tetap perlu dipastikan dari deployment.
+
+
+## Temuan tambahan — pengelolaan dan eligibilitas TKA admin
+- `app/portal/admin/live-tka-management.tsx`: pemuatan tes, jadwal, dan hasil kini menangani body respons kosong/non-JSON tanpa melempar error parsing yang menutupi pesan UI.
+- `app/portal/admin/live-tka-eligibility.tsx`: aksi simpan juga memakai fallback parsing dan pesan kegagalan yang aman.
+- Commit kode: `e8b57fa7553ed3ba1fc96ff6a56a6338260644dd` dan `dd1326216ee0e603ad71d2d094d0f5ca06860010`.
+- Cakupan perubahan dibatasi pada penanganan respons API sisi UI; tidak mengubah aturan TKA, jadwal, nilai, autentikasi, maupun otorisasi.
+
+
+## Temuan tambahan — respons API draft pendaftaran siswa
+- `app/portal/siswa/student-application-client.ts`: parser bersama kini menolak respons sukses yang kosong atau bukan objek JSON, dan menampilkan pesan yang dapat dipahami alih-alih membiarkan data `null` mengalir ke komponen.
+- Commit: `a9edb795cc8a9ee69d511fe03a03cd6e4e55cd5e`.
+- Cakupan tetap pada validasi bentuk respons sisi klien; endpoint, data pendaftar, aturan submit, dan otorisasi tidak diubah.
+
+
+## Temuan tambahan — validasi daftar program keahlian
+- `app/portal/siswa/student-application-client.ts`: hasil endpoint daftar program sekarang diperiksa agar benar-benar berupa array yang berisi item dengan `code` dan `name` bertipe string sebelum diteruskan ke UI.
+- Commit: `4b54a4f14644b8cf0e1dc8bc6675ee5110dbe9aa`.
+- Tujuan: mengubah respons sukses yang bentuknya keliru menjadi pesan error yang tertangani, bukan membiarkan komponen menerima `undefined` atau data tidak valid. Tidak mengubah daftar jurusan, aturan pemilihan, atau API.
+
+
+## Temuan tambahan — validasi respons API profil siswa
+- `app/portal/siswa/student-profile-client.ts`: pemuatan profil sebelumnya langsung melakukan cast hasil JSON ke tipe TypeScript. Respons JSON yang rusak atau struktur sukses yang tidak sesuai dapat menyebabkan form gagal saat mengakses data wali.
+- Sekarang JSON dibaca dengan fallback aman; respons HTTP gagal memakai pesan error server yang tersedia, dan respons sukses diperiksa untuk memastikan `profile` serta array `guardians` memiliki bentuk dasar yang diharapkan sebelum diteruskan ke form.
+- Commit: `4b2d27feec07d2a9408d07d9bb21684c2cea494d` — `Validate student profile API response`.
+- Perubahan hanya memperkuat penanganan respons di client; endpoint, aturan validasi server, data, autentikasi, dan alur pendaftaran tidak diubah.
+
+
+## Temuan tambahan — validasi struktur draft aplikasi siswa
+- `app/portal/siswa/student-application-client.ts`: helper sebelumnya hanya memastikan respons JSON berupa objek, lalu menganggapnya sebagai `StudentApplicationDraft`. Properti `programChoices` yang hilang atau struktur pilihan jurusan yang keliru dapat menyebabkan error pada form berikutnya.
+- Kini respons draft yang digunakan untuk GET draft, menyimpan draft, dan mengirim aplikasi diperiksa: status harus berupa string, `programChoices` harus berupa array, dan setiap pilihan harus memiliki prioritas numerik serta `studyProgram.code/name` berupa string.
+- Commit: `4d5270073b41f7b2d9d935efcb67d814ecd746df` — `Validate student application draft response`.
+- Ini validasi bentuk respons client-side, bukan pengganti validasi server; aturan seleksi, penyimpanan, autentikasi, dan endpoint tidak diubah.
+
+
+## Temuan tambahan — ketahanan alur unggah dokumen siswa
+- `app/portal/siswa/student-documents-client.ts`: pemuat daftar dokumen dan tipe dokumen sekarang memastikan respons sukses memiliki properti yang diminta berbentuk array; respons HTML/JSON rusak atau bentuk payload salah menghasilkan pesan error, bukan nilai `undefined` yang diteruskan ke UI.
+- `app/portal/siswa/student-documents-form.tsx`: konfigurasi upload sekarang memeriksa status HTTP dan bentuk `enabled`, `allowedMimeTypes`, serta `maxFileSizeBytes`. Bila konfigurasi gagal/tidak valid, upload tetap dinonaktifkan.
+- Commit client daftar dokumen: `69a7299c88aaf81906b3c34dc9b1bc5e7a657786` — `Validate student document list API responses`.
+- Commit form konfigurasi upload: `c52fac6fdb72a4d72333b805ab9b9cc1374b2e11` — `Validate student document upload configuration`.
+- Pemeriksaan server yang dibaca tetap mengandalkan role SISWA, kepemilikan dokumen, tipe/MIME dan signature file, batas ukuran, status aplikasi yang dapat diedit, dan storage privat. Perubahan di atas tidak melonggarkan aturan server tersebut.
+
+## Pembaruan — build validasi dokumen berhasil
+- Commit perbaikan: `c0d2d67104184844d8b75e7e7c8080e272341a8e` — `Fix document response type validation`.
+- Pada `app/portal/siswa/student-documents-client.ts`, hasil JSON yang sudah dipastikan objek sekarang diperlakukan sebagai `Record<string, unknown>` sebelum properti dinamis dibaca. Validasi bahwa properti yang diminta ada dan berbentuk array tetap aktif.
+- Deployment preview untuk commit ini: https://spmb-smk-citra-negara-mbus9z1xf-l-74c0.vercel.app — status Vercel terverifikasi `READY`. Log build menunjukkan kompilasi Next.js dan pemeriksaan TypeScript berhasil.
+- Status `READY` membuktikan build/deployment selesai, bukan bukti bahwa seluruh alur unggah dan unduh sudah diuji dengan akun terautentikasi.
+
+## Audit kode lanjutan — alur dokumen siswa dan Admin
+- Route siswa yang diperiksa: `app/api/student/documents/route.ts`, `app/api/student/document-types/route.ts`, `app/api/student/document-upload-config/route.ts`, dan `app/api/student/documents/[documentId]/route.ts`.
+- Route Admin yang diperiksa: `app/api/admin/documents/[documentId]/route.ts`.
+- Service/policy yang diperiksa: `services/documents/document-service.ts`, `document-policy.ts`, `document-validation.ts`, `document-storage.ts`, `document-config.ts`, dan `document-http.ts`.
+- Kontrol yang tampak pada kode: role SISWA untuk tipe dokumen/unggah/unduh/hapus milik sendiri; role ADMIN untuk unduh dan verifikasi Admin; query kepemilikan siswa pada operasi dokumen; file storage privat; allowlist MIME dan pemeriksaan signature PDF/JPEG/PNG di server; batas ukuran file di server; nama file dibersihkan; respons file memakai `Content-Disposition` dan `X-Content-Type-Options: nosniff`; penghapusan siswa dibatasi ke dokumen berstatus `PENDING` saat aplikasi masih dapat diedit; dan aksi verifikasi dicatat dalam audit log serta transaksi database.
+- Endpoint konfigurasi hanya mengaktifkan upload jika konfigurasi valid, storage tersedia, dan ada tipe dokumen aktif. Pada UI, konfigurasi yang gagal atau tidak valid membuat upload tetap nonaktif.
+- Temuan/batas bukti: pemeriksaan ini adalah pembacaan kode, bukan pengujian runtime. Belum ada bukti uji autentikasi dengan sesi SISWA/ADMIN, unggah berkas nyata, download privat, penolakan file invalid, verifikasi dokumen, atau perilaku storage pada deployment. Tidak ada perubahan API, kebijakan, data, atau izin sebagai bagian dari audit baca ini.
+- Langkah berikutnya: uji alur dokumen melalui sesi yang sah (tanpa melewati autentikasi), pastikan storage privat benar-benar terkonfigurasi di preview, lalu cek visual halaman dokumen pada desktop dan layar kecil.
+

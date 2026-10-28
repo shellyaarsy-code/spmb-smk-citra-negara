@@ -73,9 +73,9 @@ SPMB = nama sistem; Calon siswa = pengguna role SISWA; Pendaftar = aplikasi calo
 ## Panduan demo yang terverifikasi dari kode
 
 - Beberapa route UI menerima ?mode=demo setelah login; parameter itu bukan akses role.
-- Seed database: npm run prisma:seed:demo memakai SPMB_DEMO_DATABASE_URL, SPMB_DEMO_ADMIN_EMAIL, SPMB_DEMO_ADMIN_PASSWORD. Ikuti README dan gunakan database terpisah.
-- README menyebut admin dan delapan pendaftar sintetis. Tidak ada panduan umum kredensial semua role, reset terpisah, atau toggle empty/loading global.
-- Jangan menjalankan seed pada database operasional tanpa memeriksa konfigurasi seperti dijelaskan README.
+- Seed database: npm run prisma:seed:demo membaca DATABASE_URL, SPMB_DEMO_SEED_TARGET, SPMB_DEMO_SEED_CONFIRM, dan SPMB_DEMO_PASSWORD. Seed berhenti jika fixture yang sama sudah ada; pastikan target database terisolasi terlebih dahulu.
+- README kini mengarahkan ke DEMO.md. Seed utama menyediakan dua akun staf dan empat akun siswa sintetis; belum ada panduan reset terpisah, kredensial publik, atau toggle empty/loading global.
+- Jangan menjalankan seed pada database operasional. Panduan DEMO.md mensyaratkan target database disposable yang terpisah dan belum terverifikasi.
 
 ## Selesai dan tersisa
 

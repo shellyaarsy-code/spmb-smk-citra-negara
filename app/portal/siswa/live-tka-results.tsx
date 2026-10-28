@@ -6,7 +6,7 @@ export default function LiveTkaResults() {
   const [results, setResults] = useState<Result[]>([]); const [loading, setLoading] = useState(true); const [error, setError] = useState("");
   useEffect(() => {
     let active = true;
-    const timer = window.setTimeout(() => { void fetch("/api/student/tka/results", { cache: "no-store" }).then(async (response) => { const body = await response.json(); if (!response.ok) throw new Error(body.error || "Hasil belum dapat dimuat."); if (active) setResults(Array.isArray(body.results) ? body.results : []); }).catch((reason: unknown) => { if (active) setError(reason instanceof Error ? reason.message : "Hasil belum dapat dimuat."); }).finally(() => { if (active) setLoading(false); }); }, 0);
+    const timer = window.setTimeout(() => { void fetch("/api/student/tka/results", { cache: "no-store" }).then(async (response) => { const body = await response.json().catch(() => null); if (!response.ok) throw new Error(body?.error || "Hasil belum dapat dimuat."); if (active) setResults(Array.isArray(body.results) ? body.results : []); }).catch((reason: unknown) => { if (active) setError(reason instanceof Error ? reason.message : "Hasil belum dapat dimuat."); }).finally(() => { if (active) setLoading(false); }); }, 0);
     return () => { active = false; window.clearTimeout(timer); };
   }, []);
   if (loading) return <section className="tka-result-empty"><p role="status">Memuat hasil TKA…</p></section>;

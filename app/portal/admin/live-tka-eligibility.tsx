@@ -18,7 +18,7 @@ export default function LiveTkaEligibility() {
   useEffect(() => { const id = window.setTimeout(() => { void load(); }, 0); return () => window.clearTimeout(id); }, [load]);
   async function save(url: string, method: string, body: unknown, success: string) {
     setBusy(url); setMessage("");
-    try { const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const result = await response.json(); if (!response.ok) throw new Error(result.error || "Perubahan gagal disimpan."); await load(); setMessage(success); }
+    try { const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const result = await response.json().catch(() => null); if (!response.ok) throw new Error(result?.error || "Perubahan gagal disimpan."); await load(); setMessage(success); }
     catch (e) { setMessage(e instanceof Error ? e.message : "Perubahan gagal disimpan."); }
     finally { setBusy(""); }
   }

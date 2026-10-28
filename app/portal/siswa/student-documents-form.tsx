@@ -27,7 +27,35 @@ export default function StudentDocumentsForm() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch("/api/student/document-upload-config", { cache: "no-store" }).then((response) => response.json()).then((data) => setUploadConfig(data)).catch(() => setUploadConfig({ enabled: false, allowedMimeTypes: [], maxFileSizeBytes: null }));
+    let cancelled = false;
+    fetch("/api/student/document-upload-config", { cache: "no-store" })
+      .then(async (response) => {
+        const data: unknown = await response.json().catch(() => null);
+        if (!response.ok) throw new Error("Konfigurasi unggah dokumen belum dapat dimuat.");
+        if (
+          typeof data !== "object" ||
+          data === null ||
+          !("enabled" in data) ||
+          typeof data.enabled !== "boolean" ||
+          !("allowedMimeTypes" in data) ||
+          !Array.isArray(data.allowedMimeTypes) ||
+          !data.allowedMimeTypes.every((type) => typeof type === "string") ||
+          !("maxFileSizeBytes" in data) ||
+          !(data.maxFileSizeBytes === null || (typeof data.maxFileSizeBytes === "number" && Number.isFinite(data.maxFileSizeBytes) && data.maxFileSizeBytes > 0))
+        ) {
+          throw new Error("Konfigurasi unggah dokumen tidak sesuai.");
+        }
+        return {
+          enabled: data.enabled,
+          allowedMimeTypes: data.allowedMimeTypes as string[],
+          maxFileSizeBytes: data.maxFileSizeBytes as number | null,
+        };
+      })
+      .then((config) => { if (!cancelled) setUploadConfig(config); })
+      .catch(() => {
+        if (!cancelled) setUploadConfig({ enabled: false, allowedMimeTypes: [], maxFileSizeBytes: null });
+      });
+    return () => { cancelled = true; };
   }, []);
 
   async function uploadFile(file: File) {
@@ -94,7 +122,7 @@ export default function StudentDocumentsForm() {
                     <button type="button" disabled={!uploadConfig.enabled || selectedType !== documentType.code || Boolean(busyType)} onClick={() => fileInput.current?.click()}>{busyType === documentType.code ? "Mengunggah…" : "Pilih file"}</button>
                     {selectedType === documentType.code && <input ref={fileInput} id={`document-${documentType.code}`} type="file" accept={uploadConfig.allowedMimeTypes.join(",")} hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFile(file); }} />}
                   </label>
-                  {documentType.required && <span className="student-document-pending">Ditandai wajib</span>}
+                  {documentType.required && <span className="student-document-pending">Wajib untuk verifikasi</span>}
                 </div>
               </div>
             );

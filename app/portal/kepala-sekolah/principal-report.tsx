@@ -3,16 +3,17 @@
 import { useState } from "react";
 import Link from "next/link";
 import PrincipalSidebar from "./principal-sidebar";
-import { demoPpdbWaves, formatPpdbNumber } from "../demo-ppdb-data";
+import { demoPpdbPrograms, demoPpdbWaves, formatPpdbNumber } from "../demo-ppdb-data";
 import { downloadCsv } from "../csv-export";
 import BrandLogo from "../../components/brand-logo";
 
-const programs = [
-  { name: "Pengembangan Perangkat Lunak dan Gim", code: "PPLG", capacity: 120, admitted: 120, percentage: "100%" },
-  { name: "Teknik Jaringan Komputer", code: "TKJ", capacity: 120, admitted: 98, percentage: "81,6%" },
-  { name: "Desain Komunikasi Visual", code: "DKV", capacity: 120, admitted: 110, percentage: "91,6%" },
-  { name: "Manajemen Perkantoran dan Layanan Bisnis", code: "MPLB", capacity: 80, admitted: 75, percentage: "93,7%" },
-];
+const programs = demoPpdbPrograms.map((program) => ({
+  name: program.name,
+  code: program.code,
+  capacity: program.capacity,
+  admitted: program.admitted,
+  percentage: `${((program.admitted / program.capacity) * 100).toLocaleString("id-ID", { maximumFractionDigits: 1 })}%`,
+}));
 
 export default function PrincipalReport({ demo }: { demo: boolean }) {
   const [period, setPeriod] = useState<keyof typeof demoPpdbWaves>("Semua Gelombang");
@@ -44,7 +45,7 @@ export default function PrincipalReport({ demo }: { demo: boolean }) {
       <PrincipalSidebar active="reports" demo={demo} />
       <section className="principal-dashboard-main principal-report-main" aria-label="Laporan eksekutif PPDB">
         <header className="principal-dashboard-header"><div><h1>Laporan Eksekutif &amp; Unduhan Dokumen</h1><p>Kompilasi data monitoring PPDB dan keputusan penerimaan untuk kebutuhan pimpinan.</p></div><span className="principal-live"><i />MONITORING AKTIF</span></header>
-        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Laporan ini berisi data contoh untuk tahun pelajaran 2026/2027.</span><Link href="/portal/kepala-sekolah/laporan">Tampilan kosong</Link></div>}
+        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Laporan ini berisi data contoh untuk tahun pelajaran 2026/2027.</span><span>Data simulasi</span></div>}
 
         <section className="principal-report-toolbar" aria-label="Filter dan tindakan laporan">
           <label className="principal-report-filter"><span>Tahun Pelajaran</span><select defaultValue="2026/2027" aria-label="Tahun pelajaran"><option>2026/2027</option></select></label>

@@ -19,7 +19,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html lang="id" className={plusJakarta.variable + " h-full antialiased"}>
       <body className="min-h-full flex flex-col">
-        {demoMode && <div className="demo-mode-banner" role="note"><strong>MODE DEMO</strong><span>Seluruh akun, data, kuota, biaya, tes, dan hasil di situs ini hanya simulasi.</span></div>}
+        {demoMode && <div className="demo-mode-banner" role="note"><strong>LINGKUNGAN DEMO</strong><span>Formulir yang dikirim tersimpan di database demo bersama. Tampilan berlabel SIMULASI memakai angka contoh, bukan data pendaftar.</span></div>}
         {children}
       </body>
     </html>
