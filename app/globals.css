@@ -3447,3 +3447,85 @@ button:disabled { cursor: not-allowed; }
   color: #8a3d32;
   background: #fff6f4;
 }
+
+
+/* Responsive finishing pass: dashboard headers and notices must reflow, not overflow. */
+.principal-dashboard-header > div:first-child,
+.admin-dashboard-header > div:first-child,
+.student-dashboard-header > div:first-child {
+  min-width: 0;
+  max-width: 100%;
+}
+.principal-dashboard-header h1,
+.admin-dashboard-header h1,
+.student-dashboard-header h1,
+.principal-dashboard-header p,
+.admin-dashboard-header p,
+.student-dashboard-header p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.principal-dashboard-header-meta,
+.admin-dashboard-header-actions {
+  min-width: 0;
+  max-width: 100%;
+}
+.principal-notification-list li > span {
+  flex: 1 1 0;
+}
+.principal-notification-list small,
+.principal-notification-list time {
+  display: block;
+  line-height: 1.5;
+}
+.student-announcement h3,
+.student-announcement p {
+  overflow-wrap: anywhere;
+}
+.admin-login-feedback {
+  white-space: normal;
+}
+@media (max-width: 760px) {
+  .principal-dashboard-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 10px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+  .principal-dashboard-header-meta,
+  .admin-dashboard-header-actions {
+    width: 100%;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+  .principal-dashboard-account,
+  .admin-dashboard-account {
+    max-width: 100%;
+  }
+  .principal-dashboard-main > p[role="status"],
+  .principal-dashboard-main > p[role="alert"],
+  .student-dashboard-main > p[role="status"],
+  .student-dashboard-main > p[role="alert"] {
+    padding: 10px 12px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 420px) {
+  .principal-dashboard-header h1,
+  .admin-dashboard-header h1,
+  .student-dashboard-header h1 {
+    font-size: 19px;
+    line-height: 1.3;
+  }
+  .principal-notification-list li {
+    gap: 7px;
+  }
+  .principal-notification-list li > span {
+    overflow-wrap: anywhere;
+  }
+  .student-announcement > div {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
