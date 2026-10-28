@@ -58,7 +58,7 @@ export default function LiveDocumentReview({ registrationNumber }: { registratio
 
   return <section className="admin-verification-card" aria-label="Verifikasi dokumen tersimpan">
     <h1>Verifikasi Berkas</h1><p>No. pendaftaran: {registrationNumber}</p>
-    {error && <p role="alert">{error}</p>}{loading && <p role="status">Memuat dokumen…</p>}
+    {error && <p role="status">{error}</p>}{loading && <p role="status">Memuat dokumen…</p>}
     {!loading && !error && documents.length === 0 && <p role="status">Belum ada dokumen yang diunggah.</p>}
     <ul>{documents.map((doc) => <li key={doc.id}>
       <button type="button" onClick={() => { setSelected(doc.id); setNotes(doc.verifications[0]?.notes ?? ""); setStatus(doc.status === "PENDING" ? "VERIFIED" : doc.status); }}>{doc.documentType.name}: {doc.fileName} — <span className={`admin-applicant-status ${documentStatusTone(doc.status)}`}>{documentStatusLabel(doc.status)}</span></button>
