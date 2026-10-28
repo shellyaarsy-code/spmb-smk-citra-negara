@@ -106,3 +106,10 @@ Branch kerja: `integration/demo-shared-data`
 - Kedua formulir kini menampilkan pesan kontekstual: buat draft tes terlebih dahulu untuk menambah soal, atau terbitkan tes terlebih dahulu untuk membuat jadwal. Kondisi tombol, endpoint, validasi, dan alur TKA tetap dipertahankan.
 - Commit: `77009954dbe43df8b040e8bd54a1786b64809c19` — `Explain empty test choices in TKA admin forms`.
 - Build preview dan pemeriksaan visual setelah autentikasi masih perlu diverifikasi.
+
+
+## Temuan tambahan — respons API TKA yang bukan JSON
+- Komponen Bank Soal/Jadwal sebelumnya memanggil `response.json()` tanpa fallback pada proses memuat data dan menyimpan perubahan. Jika server mengembalikan body kosong atau bukan JSON, pesan dapat berubah menjadi error parsing yang kurang membantu.
+- Parsing respons kini memakai fallback `null`; saat respons HTTP gagal, komponen tetap menggunakan pesan API jika tersedia atau pesan fallback yang sudah ada. Endpoint, payload, aturan simpan, dan hak akses tidak berubah.
+- Commit: `c3fd6f78307d9d9f8e39460cd435d9abf35b17f6` — `Handle non-JSON responses in TKA admin feedback`.
+- Deployment untuk commit ini belum diperiksa pada saat checkpoint ditulis; pemeriksaan build dan visual terautentikasi masih diperlukan.
