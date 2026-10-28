@@ -176,3 +176,19 @@ Branch kerja: `integration/demo-shared-data`
 - Commit client daftar dokumen: `69a7299c88aaf81906b3c34dc9b1bc5e7a657786` — `Validate student document list API responses`.
 - Commit form konfigurasi upload: `c52fac6fdb72a4d72333b805ab9b9cc1374b2e11` — `Validate student document upload configuration`.
 - Pemeriksaan server yang dibaca tetap mengandalkan role SISWA, kepemilikan dokumen, tipe/MIME dan signature file, batas ukuran, status aplikasi yang dapat diedit, dan storage privat. Perubahan di atas tidak melonggarkan aturan server tersebut.
+
+## Pembaruan — build validasi dokumen berhasil
+- Commit perbaikan: `c0d2d67104184844d8b75e7e7c8080e272341a8e` — `Fix document response type validation`.
+- Pada `app/portal/siswa/student-documents-client.ts`, hasil JSON yang sudah dipastikan objek sekarang diperlakukan sebagai `Record<string, unknown>` sebelum properti dinamis dibaca. Validasi bahwa properti yang diminta ada dan berbentuk array tetap aktif.
+- Deployment preview untuk commit ini: https://spmb-smk-citra-negara-mbus9z1xf-l-74c0.vercel.app — status Vercel terverifikasi `READY`. Log build menunjukkan kompilasi Next.js dan pemeriksaan TypeScript berhasil.
+- Status `READY` membuktikan build/deployment selesai, bukan bukti bahwa seluruh alur unggah dan unduh sudah diuji dengan akun terautentikasi.
+
+## Audit kode lanjutan — alur dokumen siswa dan Admin
+- Route siswa yang diperiksa: `app/api/student/documents/route.ts`, `app/api/student/document-types/route.ts`, `app/api/student/document-upload-config/route.ts`, dan `app/api/student/documents/[documentId]/route.ts`.
+- Route Admin yang diperiksa: `app/api/admin/documents/[documentId]/route.ts`.
+- Service/policy yang diperiksa: `services/documents/document-service.ts`, `document-policy.ts`, `document-validation.ts`, `document-storage.ts`, `document-config.ts`, dan `document-http.ts`.
+- Kontrol yang tampak pada kode: role SISWA untuk tipe dokumen/unggah/unduh/hapus milik sendiri; role ADMIN untuk unduh dan verifikasi Admin; query kepemilikan siswa pada operasi dokumen; file storage privat; allowlist MIME dan pemeriksaan signature PDF/JPEG/PNG di server; batas ukuran file di server; nama file dibersihkan; respons file memakai `Content-Disposition` dan `X-Content-Type-Options: nosniff`; penghapusan siswa dibatasi ke dokumen berstatus `PENDING` saat aplikasi masih dapat diedit; dan aksi verifikasi dicatat dalam audit log serta transaksi database.
+- Endpoint konfigurasi hanya mengaktifkan upload jika konfigurasi valid, storage tersedia, dan ada tipe dokumen aktif. Pada UI, konfigurasi yang gagal atau tidak valid membuat upload tetap nonaktif.
+- Temuan/batas bukti: pemeriksaan ini adalah pembacaan kode, bukan pengujian runtime. Belum ada bukti uji autentikasi dengan sesi SISWA/ADMIN, unggah berkas nyata, download privat, penolakan file invalid, verifikasi dokumen, atau perilaku storage pada deployment. Tidak ada perubahan API, kebijakan, data, atau izin sebagai bagian dari audit baca ini.
+- Langkah berikutnya: uji alur dokumen melalui sesi yang sah (tanpa melewati autentikasi), pastikan storage privat benar-benar terkonfigurasi di preview, lalu cek visual halaman dokumen pada desktop dan layar kecil.
+
