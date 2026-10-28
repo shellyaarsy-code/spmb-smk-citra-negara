@@ -66,3 +66,11 @@ Branch kerja: `integration/demo-shared-data`
 - Commit CSS: `ff58bf4df6969344476ee334b8cfb66dba54bf58` — `Add semantic tones for live application status badges`.
 - Perlu menunggu build preview dan pemeriksaan visual terautentikasi. Perubahan kode saja belum membuktikan tampilan sudah tervalidasi.
 
+## Temuan tambahan — badge status hasil seleksi Kepala Sekolah
+- Pada halaman demo hasil seleksi, status keputusan ditampilkan sebagai badge berwarna (hijau untuk lulus, amber untuk daftar tunggu, merah untuk tidak lulus). Pada halaman live, status sebelumnya ditampilkan sebagai teks mentah tanpa badge.
+- Tampilan live kini menggunakan badge dan label Indonesia yang sejalan dengan demo untuk status `PASSED`, `WAITLISTED`, dan `FAILED`. Status tak dikenal tetap terlihat dengan gaya netral agar tidak salah diberi makna.
+- Perubahan hanya pada presentasi status di halaman read-only Kepala Sekolah; sumber data, publikasi, aturan seleksi, dan izin tidak diubah.
+- Commit komponen: `ba5d9fcf0f21672165d223b00af9f06a9fe6b883` — `Align live selection outcome badges with demo UI`.
+- Commit CSS: `69af0492d6f4cfbb2c2deb189ebdb772291fcace` — `Add neutral fallback tone for principal selection statuses`.
+- Build dan pemeriksaan visual setelah login masih perlu diverifikasi.
+
