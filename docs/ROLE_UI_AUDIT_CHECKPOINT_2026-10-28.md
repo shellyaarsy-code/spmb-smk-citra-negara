@@ -57,3 +57,12 @@ Branch kerja: `integration/demo-shared-data`
 - Commit: `d385994d9b4dfc36bc613a1eedafeecbc17f7771` — `Keep current page visible in principal pagination`.
 - Ini perbaikan navigasi tampilan; sumber data, ukuran halaman API, dan hak read-only Kepala Sekolah tidak diubah.
 - Build dan pengujian visual responsif untuk commit ini masih perlu diverifikasi.
+
+## Temuan tambahan — warna status pada tabel Admin live
+- Tabel pendaftar Admin versi live sebelumnya menggunakan satu kelas warna `verification` untuk semua status aplikasi. Akibatnya, status yang secara makna berbeda (misalnya lulus, tidak lulus, menunggu, atau informasi umum) tampil dengan warna yang sama.
+- Komponen live sekarang memakai helper `getApplicationStatusTone` yang sudah digunakan dalam sistem label status, dan CSS menyediakan kelas semantik success/danger/warning/info untuk badge tersebut.
+- Label status, filter, data, endpoint, pagination, dan izin tidak diubah.
+- Commit kode: `6d25b646b80790394fdaf8916e81a8864aa89be7` — `Use semantic status colors in live admin registrations`.
+- Commit CSS: `ff58bf4df6969344476ee334b8cfb66dba54bf58` — `Add semantic tones for live application status badges`.
+- Perlu menunggu build preview dan pemeriksaan visual terautentikasi. Perubahan kode saja belum membuktikan tampilan sudah tervalidasi.
+
