@@ -68,11 +68,11 @@
   --section-padding: 80px;
   --content-max-width: 1440px;
   --dashboard-max-width: 1500px;
-  --admin-sidebar-width: 220px;
-  --admin-sidebar-width-compact: 190px;
-  --principal-sidebar-width: 205px;
-  --principal-sidebar-width-compact: 185px;
-  --student-sidebar-width: clamp(190px, 18.5vw, 230px);
+  --admin-sidebar-width: var(--dashboard-sidebar-width);
+  --admin-sidebar-width-compact: var(--dashboard-sidebar-width-compact);
+  --principal-sidebar-width: var(--dashboard-sidebar-width);
+  --principal-sidebar-width-compact: var(--dashboard-sidebar-width-compact);
+  --student-sidebar-width: var(--dashboard-sidebar-width);
   --site-header-height: 76px;
   --radius-container: 16px;
   --radius-panel: 16px;
@@ -164,7 +164,7 @@ a { color: inherit; text-decoration: none; }
 .portal-button.button-outline:hover { border-color: var(--green); color: #fff; background: var(--green); }
 .portal-button-secondary { margin-top: 8px; }
 .registration-page { min-height: 100vh; padding: 40px clamp(16px, 5.2vw, 56px); display: grid; place-items: center; background: var(--green-soft); }
-.registration-shell { width: min(1440px, 100%); min-height: min(675px, calc(100vh - 80px)); display: grid; grid-template-columns: minmax(300px, .67fr) minmax(0, 1fr); overflow: hidden; background: var(--pale); box-shadow: 0 14px 40px #123e2710; }
+.registration-shell { width: min(1120px, 100%); min-height: min(675px, calc(100vh - 72px)); display: grid; grid-template-columns: minmax(300px, .67fr) minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--pale); box-shadow: var(--shadow-md); }
 .registration-aside { position: relative; isolation: isolate; min-height: 100%; padding: 42px; display: flex; flex-direction: column; color: #fff; background: var(--green); }
 .registration-aside::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg,rgba(12,83,53,.94),rgba(12,83,53,.97)),url("/plangcn.jpg") center / cover no-repeat; }
 .registration-brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .04em; }
@@ -695,7 +695,7 @@ a { color: inherit; text-decoration: none; }
 .login-page { min-height: 100vh; display: grid; place-items: center; position: relative; padding: 70px 20px; background: var(--pale); }.login-back { position: absolute; top: 25px; left: clamp(20px,7vw,90px); color: var(--green); font-size: 12px; font-weight: 700; }.login-card { width: min(390px,100%); padding: 27px 28px; border: 1px solid #edf1ed; border-radius: 9px; background: #fff; box-shadow: 0 12px 35px #123e270a; text-align: center; }.login-logo { width: 34px; height: 34px; display: grid; place-items: center; margin: 0 auto 10px; border-radius: 8px 8px 8px 2px; color: #fff; background: var(--green); font-size: 12px; font-weight: 800; }.login-card h1 { margin: 7px 0; font-size: 20px; letter-spacing: -.03em; }.login-card>p { margin: 0 0 20px; color: var(--muted); font-size: 12px; line-height: 1.6; }.login-card form { display: grid; gap: 13px; text-align: left; }.login-card label { display: grid; gap: 5px; color: #3b5848; font-size: 12px; font-weight: 700; }.login-card input { width: 100%; height: 36px; padding: 0 10px; border: 1px solid #dce6df; border-radius: 4px; outline-color: #4e8c6c; font: inherit; font-size: 12px; }.login-card input::placeholder { color: #9aa79e; }.forgot-link { justify-self: end; color: var(--green); font-size: 12px; }.login-submit { width: 100%; min-height: 36px; cursor: pointer; }.login-register { margin-top: 17px; color: #829087; font-size: 12px; }.login-register a { display: block; margin-top: 5px; color: var(--green); font-weight: 700; }.login-note { display: block; margin-top: 18px; color: #9aa69e; font-size: 12px; }
 
 .admin-login-page { min-height: 100vh; padding: clamp(16px, 3vw, 36px); display: grid; place-items: center; background: var(--green-soft); }
-.admin-login-shell { width: min(1440px, 100%); min-height: min(740px, calc(100vh - 72px)); display: grid; grid-template-columns: minmax(360px, .82fr) minmax(0, 1fr); overflow: hidden; background: var(--pale); box-shadow: 0 14px 40px #123e2710; }
+.admin-login-shell { width: min(1120px, 100%); min-height: min(675px, calc(100vh - 72px)); display: grid; grid-template-columns: minmax(320px, .9fr) minmax(0, 1fr); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--pale); box-shadow: var(--shadow-md); }
 .admin-login-aside { position: relative; isolation: isolate; min-width: 0; padding: 48px clamp(30px, 5.4vw, 78px); display: flex; flex-direction: column; color: #fff; background: var(--green); }
 .admin-login-aside::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(180deg, rgba(6, 74, 48, .94), rgba(6, 74, 48, .96)), url("/plangcn.jpg") center 24% / cover no-repeat; }
 .admin-login-brand { display: inline-flex; align-items: center; gap: 10px; color: #fff; font-size: 12px; font-weight: 800; letter-spacing: .035em; }
@@ -1620,10 +1620,10 @@ a { color: inherit; text-decoration: none; }
 @media print { body { background: #fff !important; }.admin-dashboard-outer { padding: 0 !important; background: #fff !important; }.admin-dashboard-app { width: 100% !important; min-height: 0 !important; display: block !important; box-shadow: none !important; }.admin-dashboard-sidebar,.admin-dashboard-header-actions,.admin-analytics-toolbar,.admin-analytics-notice,.admin-analytics-disclaimer { display: none !important; }.admin-dashboard-main { padding: 0 !important; }.admin-dashboard-header { margin: 0 0 12px !important; padding: 12px 0 !important; }.admin-analytics-metrics { grid-template-columns: repeat(4,minmax(0,1fr)) !important; }.admin-analytics-layout { grid-template-columns: 1fr 1fr !important; }.admin-analytics-finance { min-height: 0 !important; } }
 
 /* Principal executive portal login */
-.principal-login-page { min-height: 100vh; padding: 34px 24px; display: grid; place-items: center; background: #f6f8f5; }
-.principal-login-shell { width: min(960px,100%); min-height: 460px; display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.04fr); overflow: hidden; border: 1px solid #e5ebe6; border-radius: 18px; background: #fff; box-shadow: 0 16px 45px #173b260c; }
-.principal-login-aside { position: relative; isolation: isolate; min-width: 0; padding: 34px 40px 30px; display: flex; flex-direction: column; color: #fff; background: #17684d; }
-.principal-login-aside::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(150deg,#0c6546e8,#075137f2),url("/plangcn.jpg") center / cover no-repeat; }
+.principal-login-page { min-height: 100vh; padding: 34px 24px; display: grid; place-items: center; background: var(--color-bg-base); }
+.principal-login-shell { width: min(1120px,100%); min-height: min(675px, calc(100vh - 72px)); display: grid; grid-template-columns: minmax(0,1fr) minmax(0,1.04fr); overflow: hidden; border: 1px solid var(--line); border-radius: var(--radius-card); background: var(--color-surface); box-shadow: var(--shadow-md); }
+.principal-login-aside { position: relative; isolation: isolate; min-width: 0; padding: 34px 40px 30px; display: flex; flex-direction: column; color: #fff; background: var(--green); }
+.principal-login-aside::before { content: ""; position: absolute; z-index: -1; inset: 0; background: linear-gradient(150deg,rgba(12,83,53,.92),rgba(7,65,43,.96)),url("/plangcn.jpg") center / cover no-repeat; }
 .principal-login-brand { display: inline-flex; align-items: center; gap: 9px; color: #fff; font-size: 12px; }
 .principal-login-brand>span { width: 25px; height: 25px; display: grid; place-items: center; border-radius: 4px 4px 4px 1px; color: #126344; background: #fff; font-size: 12px; font-weight: 800; }
 .principal-login-brand>b { font-size: 12px; letter-spacing: .02em; }
