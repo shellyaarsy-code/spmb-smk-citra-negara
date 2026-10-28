@@ -33,15 +33,14 @@ async function getResponse<T>(url: string, key: string): Promise<T> {
         : "Data dokumen belum dapat dimuat.";
     throw new Error(message);
   }
-  if (
-    typeof result !== "object" ||
-    result === null ||
-    !(key in result) ||
-    !Array.isArray(result[key])
-  ) {
+  if (typeof result !== "object" || result === null) {
     throw new Error("Respons data dokumen tidak sesuai. Muat ulang halaman atau coba lagi.");
   }
-  return result[key] as T;
+  const payload = result as Record<string, unknown>;
+  if (!(key in payload) || !Array.isArray(payload[key])) {
+    throw new Error("Respons data dokumen tidak sesuai. Muat ulang halaman atau coba lagi.");
+  }
+  return payload[key] as T;
 }
 
 export function useStudentDocuments() {
