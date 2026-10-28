@@ -135,3 +135,10 @@ Branch kerja: `integration/demo-shared-data`
 - `app/portal/admin/live-selection-management.tsx`: pemuatan data seleksi dan aksi simpan kini menggunakan fallback ketika respons API kosong atau bukan JSON, sehingga pesan kegagalan tidak bergantung pada parsing JSON yang sukses.
 - Commit: `8728cc39c1293b9973620d080a4b66b2bdb6e0db`.
 - Tidak mengubah aturan keputusan, perhitungan kelulusan, endpoint, maupun pembatasan akses. Pengujian alur melalui akun admin dan validasi build tetap perlu dipastikan dari deployment.
+
+
+## Temuan tambahan — pengelolaan dan eligibilitas TKA admin
+- `app/portal/admin/live-tka-management.tsx`: pemuatan tes, jadwal, dan hasil kini menangani body respons kosong/non-JSON tanpa melempar error parsing yang menutupi pesan UI.
+- `app/portal/admin/live-tka-eligibility.tsx`: aksi simpan juga memakai fallback parsing dan pesan kegagalan yang aman.
+- Commit kode: `e8b57fa7553ed3ba1fc96ff6a56a6338260644dd` dan `dd1326216ee0e603ad71d2d094d0f5ca06860010`.
+- Cakupan perubahan dibatasi pada penanganan respons API sisi UI; tidak mengubah aturan TKA, jadwal, nilai, autentikasi, maupun otorisasi.
