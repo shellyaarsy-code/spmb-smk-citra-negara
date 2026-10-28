@@ -45,7 +45,7 @@ export default function PrincipalReport({ demo }: { demo: boolean }) {
       <PrincipalSidebar active="reports" demo={demo} />
       <section className="principal-dashboard-main principal-report-main" aria-label="Laporan eksekutif PPDB">
         <header className="principal-dashboard-header"><div><h1>Laporan Eksekutif &amp; Unduhan Dokumen</h1><p>Kompilasi data monitoring PPDB dan keputusan penerimaan untuk kebutuhan pimpinan.</p></div><span className="principal-live"><i />MONITORING AKTIF</span></header>
-        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Laporan ini berisi data contoh untuk tahun pelajaran 2026/2027.</span><Link href="/portal/kepala-sekolah/laporan">Tampilan kosong</Link></div>}
+        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Laporan ini berisi data contoh untuk tahun pelajaran 2026/2027.</span><span>Data simulasi</span></div>}
 
         <section className="principal-report-toolbar" aria-label="Filter dan tindakan laporan">
           <label className="principal-report-filter"><span>Tahun Pelajaran</span><select defaultValue="2026/2027" aria-label="Tahun pelajaran"><option>2026/2027</option></select></label>
