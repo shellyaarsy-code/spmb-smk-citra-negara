@@ -2729,6 +2729,9 @@ button:disabled { cursor: not-allowed; }
 }
 .mobile-only-logout { display: none !important; }
 .desktop-only-logout { display: flex; }
+.admin-dashboard-logout.desktop-only-logout,
+.principal-dashboard-logout.desktop-only-logout,
+.student-sidebar .desktop-only-logout { margin-top: auto; }
 .admin-dashboard-account > span,
 .principal-dashboard-profile > i {
   width: 30px;
