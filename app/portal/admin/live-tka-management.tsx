@@ -43,8 +43,8 @@ export default function LiveTkaManagement({ section }: { section: "questions" | 
     try {
       const [testResponse, scheduleResponse, resultResponse] = await Promise.all([fetch("/api/admin/tka/tests", { cache: "no-store" }), fetch("/api/admin/tka/schedules", { cache: "no-store" }), fetch("/api/admin/tka/results", { cache: "no-store" })]);
       const testBody = await testResponse.json().catch(() => null); const scheduleBody = await scheduleResponse.json().catch(() => null); const resultBody = await resultResponse.json().catch(() => null);
-      if (!testResponse.ok) throw new Error(testBody.error || "Data tes belum dapat dimuat.");
-      if (!scheduleResponse.ok) throw new Error(scheduleBody.error || "Jadwal belum dapat dimuat.");
+      if (!testResponse.ok) throw new Error(testBody?.error || "Data tes belum dapat dimuat.");
+      if (!scheduleResponse.ok) throw new Error(scheduleBody?.error || "Jadwal belum dapat dimuat.");
       if (!resultResponse.ok) throw new Error(resultBody.error || "Hasil belum dapat dimuat.");
       setTests(Array.isArray(testBody) ? testBody : []); setSchedules(Array.isArray(scheduleBody) ? scheduleBody : []); setResults(Array.isArray(resultBody) ? resultBody : []);
       const selectableTests = testBody.filter((item: AdminTest) => item.status === (section === "questions" ? "DRAFT" : "PUBLISHED"));
