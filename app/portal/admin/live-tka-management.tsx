@@ -42,7 +42,7 @@ export default function LiveTkaManagement({ section }: { section: "questions" | 
     setLoading(true);
     try {
       const [testResponse, scheduleResponse, resultResponse] = await Promise.all([fetch("/api/admin/tka/tests", { cache: "no-store" }), fetch("/api/admin/tka/schedules", { cache: "no-store" }), fetch("/api/admin/tka/results", { cache: "no-store" })]);
-      const testBody = await testResponse.json(); const scheduleBody = await scheduleResponse.json(); const resultBody = await resultResponse.json();
+      const testBody = await testResponse.json().catch(() => null); const scheduleBody = await scheduleResponse.json().catch(() => null); const resultBody = await resultResponse.json().catch(() => null);
       if (!testResponse.ok) throw new Error(testBody.error || "Data tes belum dapat dimuat.");
       if (!scheduleResponse.ok) throw new Error(scheduleBody.error || "Jadwal belum dapat dimuat.");
       if (!resultResponse.ok) throw new Error(resultBody.error || "Hasil belum dapat dimuat.");
@@ -58,8 +58,8 @@ export default function LiveTkaManagement({ section }: { section: "questions" | 
     setBusy(true); setNotice("");
     try {
       const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) });
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.error || "Perubahan belum dapat disimpan.");
+      const data = await response.json().catch(() => null);
+      if (!response.ok) throw new Error(data?.error || "Perubahan belum dapat disimpan.");
       await load(); setNotice("Perubahan tersimpan."); return true;
     } catch (error) { setNotice(error instanceof Error ? error.message : "Perubahan belum dapat disimpan."); return false; }
     finally { setBusy(false); }
