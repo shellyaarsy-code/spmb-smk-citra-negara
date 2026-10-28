@@ -47,24 +47,24 @@
   --sidebar-item-height-mobile: 2.75rem;
   --sidebar-icon-size: 1.25rem;
   --sidebar-indicator-width: 0.1875rem;
-  --green: #0C5335;
-  --green-deep: #0C5335;
-  --green-secondary: #1E8A5F;
-  --green-soft: #E8F5EE;
-  --ink: #26312C;
-  --muted: #66746B;
+  --green: #145A3A;
+  --green-deep: #104B32;
+  --green-secondary: #27845B;
+  --green-soft: #EAF4ED;
+  --ink: #25342C;
+  --muted: #68776D;
   --paper: #FFFFFF;
-  --pale: #F8FAF7;
-  --line: #D8E4DE;
-  --status-warning: #8B5E00;
+  --pale: #F7F9F6;
+  --line: #DCE6DF;
+  --status-warning: #875B13;
   --status-warning-text: var(--status-warning);
-  --status-warning-bg: #FEF3C7;
-  --status-success: #166534;
-  --status-success-bg: #DCFCE7;
-  --status-danger: #A33333;
-  --status-danger-bg: #FEE2E2;
-  --status-info: #315B91;
-  --status-info-bg: #E8F0FB;
+  --status-warning-bg: #FFF2D8;
+  --status-success: #176344;
+  --status-success-bg: #E0F3E7;
+  --status-danger: #A43B3B;
+  --status-danger-bg: #FCE8E7;
+  --status-info: #315F88;
+  --status-info-bg: #E8F1F8;
   --section-padding: 80px;
   --content-max-width: 1440px;
   --dashboard-max-width: 1500px;
@@ -3187,4 +3187,85 @@ button:disabled { cursor: not-allowed; }
   .graduation-waiting-badge,
   .official-letter-status,
   .guide-pending { max-width: 100%; white-space: normal; }
+}
+
+
+/* Visual refresh v1: restrained color, shared across every portal role. */
+:root {
+  --portal-sidebar-hover: #F1F6F2;
+  --shadow-sm: 0 2px 8px rgb(20 90 58 / 5%);
+  --shadow-md: 0 10px 30px rgb(20 90 58 / 8%);
+  --shadow-panel: 0 8px 26px rgb(20 90 58 / 6%);
+}
+
+/* Give the authenticated workspaces a calm, consistent canvas. */
+.admin-dashboard-outer,
+.principal-dashboard-outer,
+.student-dashboard-outer {
+  background: #EEF3EF;
+}
+.admin-dashboard-app,
+.principal-dashboard-app,
+.student-dashboard-app {
+  background: #F8FAF8;
+}
+.admin-dashboard-sidebar,
+.principal-dashboard-sidebar,
+.student-sidebar {
+  border-color: #E1E9E3;
+  background: #FFFFFF;
+}
+.admin-dashboard-sidebar .admin-dashboard-nav-link:not(.active):hover,
+.principal-dashboard-sidebar .principal-dashboard-nav a:not(.active):hover,
+.student-sidebar .student-nav-link:not(.active):not([aria-disabled="true"]):hover {
+  background: #F1F6F2;
+}
+.admin-dashboard-sidebar .admin-dashboard-nav-link.active,
+.principal-dashboard-sidebar .principal-dashboard-nav a.active,
+.student-sidebar .student-nav-link.active {
+  color: #145A3A;
+  background: #EAF4ED;
+}
+.admin-dashboard-card,
+.principal-dashboard-card,
+.student-dashboard-card {
+  border-color: #E0E8E2;
+  box-shadow: 0 2px 8px rgb(20 90 58 / 3%);
+}
+.admin-dashboard-card:hover,
+.principal-dashboard-card:hover,
+.student-dashboard-card:hover {
+  border-color: #D5E4D9;
+}
+.admin-dashboard-header,
+.principal-dashboard-header,
+.student-dashboard-header {
+  color: #25342C;
+}
+.admin-dashboard-header p,
+.principal-dashboard-header p,
+.student-dashboard-header p {
+  color: #68776D;
+}
+.admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access,
+.principal-dashboard-sidebar .principal-dashboard-access {
+  border-color: #D7E8DC;
+  background: #F0F7F1;
+}
+.admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access:hover,
+.principal-dashboard-sidebar .principal-dashboard-access:hover {
+  border-color: #BFD9C7;
+  background: #E8F4EB;
+}
+.admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access strong,
+.principal-dashboard-sidebar .principal-dashboard-access strong {
+  color: #145A3A;
+}
+.admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access p,
+.principal-dashboard-sidebar .principal-dashboard-access p {
+  color: #5F7466;
+}
+.admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access:focus-visible,
+.principal-dashboard-sidebar .principal-dashboard-access:focus-visible {
+  outline-color: #27845B;
 }
