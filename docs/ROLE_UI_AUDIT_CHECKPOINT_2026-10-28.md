@@ -41,3 +41,11 @@ Branch kerja: `integration/demo-shared-data`
 - Perbaikan kecil diterapkan pada `app/portal/kepala-sekolah/live-principal-registrants.tsx`: ikon pencarian disamakan dengan versi demo. Label aksesibel dan perilaku input tetap dipertahankan.
 - Commit: `fcba47d4ef5a2c8171de5f809818ae9867636560` — `Align principal live search field with demo UI`.
 - Status build/deployment untuk commit ini harus dicek terpisah; perubahan belum dinyatakan tervalidasi secara visual.
+
+
+## Temuan tambahan — pagination Data Pendaftar Kepala Sekolah
+- Markup pagination live sebelumnya berbeda dari demo: elemen `nav` menjadi container utama, sehingga aturan responsive yang menargetkan `.principal-list-pagination nav` dan `.principal-list-pagination p` tidak cocok pada versi live. Versi live juga tidak menyediakan tombol nomor halaman seperti versi demo.
+- Markup live sekarang menggunakan pembungkus, ringkasan jumlah/rentang data, dan navigasi bernomor yang mengikuti pola demo. Tombol tetap menggunakan pagination API dan tidak memberi hak edit.
+- Commit: `689237527fe6e2b55d128df3d4a322fb6b2a5335` — `Align principal live pagination with demo layout`.
+- Ikon pencarian live yang disamakan pada commit sebelumnya tetap dipertahankan.
+- Perlu cek build/deployment dan visual responsif setelah commit terbaru siap.
