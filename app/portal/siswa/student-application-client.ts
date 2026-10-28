@@ -18,6 +18,9 @@ export type StudentStudyProgram = { code: string; name: string };
 async function parseResponse<T>(response: Response): Promise<T> {
   const result = await response.json().catch(() => null);
   if (!response.ok) throw new Error(result?.error || "Data pendaftaran belum dapat dimuat.");
+  if (result === null || typeof result !== "object") {
+    throw new Error("Respons server tidak sesuai. Muat ulang halaman atau coba lagi beberapa saat.");
+  }
   return result as T;
 }
 
