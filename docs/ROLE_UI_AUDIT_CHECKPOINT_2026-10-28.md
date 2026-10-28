@@ -161,3 +161,10 @@ Branch kerja: `integration/demo-shared-data`
 - Sekarang JSON dibaca dengan fallback aman; respons HTTP gagal memakai pesan error server yang tersedia, dan respons sukses diperiksa untuk memastikan `profile` serta array `guardians` memiliki bentuk dasar yang diharapkan sebelum diteruskan ke form.
 - Commit: `4b2d27feec07d2a9408d07d9bb21684c2cea494d` — `Validate student profile API response`.
 - Perubahan hanya memperkuat penanganan respons di client; endpoint, aturan validasi server, data, autentikasi, dan alur pendaftaran tidak diubah.
+
+
+## Temuan tambahan — validasi struktur draft aplikasi siswa
+- `app/portal/siswa/student-application-client.ts`: helper sebelumnya hanya memastikan respons JSON berupa objek, lalu menganggapnya sebagai `StudentApplicationDraft`. Properti `programChoices` yang hilang atau struktur pilihan jurusan yang keliru dapat menyebabkan error pada form berikutnya.
+- Kini respons draft yang digunakan untuk GET draft, menyimpan draft, dan mengirim aplikasi diperiksa: status harus berupa string, `programChoices` harus berupa array, dan setiap pilihan harus memiliki prioritas numerik serta `studyProgram.code/name` berupa string.
+- Commit: `4d5270073b41f7b2d9d935efcb67d814ecd746df` — `Validate student application draft response`.
+- Ini validasi bentuk respons client-side, bukan pengganti validasi server; aturan seleksi, penyimpanan, autentikasi, dan endpoint tidak diubah.
