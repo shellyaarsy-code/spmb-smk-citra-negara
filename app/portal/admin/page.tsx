@@ -119,7 +119,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
             </section>}
           </div>
 
-          <footer className="admin-dashboard-footer"><span>SPMB SMK Citra Negara</span><Link href="/portal/admin?mode=demo">Buka contoh tampilan</Link></footer>
+          <footer className="admin-dashboard-footer"><span>SPMB SMK Citra Negara</span></footer>
         </section>
       </div>
     </main>
