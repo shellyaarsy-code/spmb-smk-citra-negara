@@ -129,3 +129,9 @@ Branch kerja: `integration/demo-shared-data`
 - `app/portal/siswa/live-notifications.tsx`: parsing respons pemuatan dan tandai-dibaca memiliki fallback; empty state hanya muncul jika tidak ada error.
 - Commit kode berturut-turut: `0db806d96e3e020684ba12f2f005e76a7e0a19ef` (hasil seleksi), `57b313835597625768b540df548d3ddd8a439973` (notifikasi), `8d716f81596a65edf12b7b104fa0151627a9ecce` (hasil TKA).
 - Tidak mengubah endpoint, aturan seleksi/nilai, hak akses, atau isi data. Status deployment dan pemeriksaan visual terautentikasi harus diverifikasi terpisah.
+
+
+## Temuan tambahan — konfigurasi seleksi admin
+- `app/portal/admin/live-selection-management.tsx`: pemuatan data seleksi dan aksi simpan kini menggunakan fallback ketika respons API kosong atau bukan JSON, sehingga pesan kegagalan tidak bergantung pada parsing JSON yang sukses.
+- Commit: `8728cc39c1293b9973620d080a4b66b2bdb6e0db`.
+- Tidak mengubah aturan keputusan, perhitungan kelulusan, endpoint, maupun pembatasan akses. Pengujian alur melalui akun admin dan validasi build tetap perlu dipastikan dari deployment.
