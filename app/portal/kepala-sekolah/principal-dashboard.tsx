@@ -44,7 +44,7 @@ export default function PrincipalDashboard({ demo, summary }: { demo: boolean; s
 
       <section className="principal-dashboard-main" id="overview" aria-label="Monitoring dashboard Kepala Sekolah">
         <header className="principal-dashboard-header"><div><h1>Monitoring Dashboard</h1><p>Ringkasan aplikasi pendaftaran dan dokumen dari data tersimpan.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />{demo ? "GELOMBANG 1 · SIMULASI" : "DATA TERKINI"}</span><span className="principal-school-year"><Icon name="calendar" />Tahun Ajaran 2026/2027</span></div></header>
-        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka dan notifikasi di halaman ini adalah data contoh, bukan data pendaftar sungguhan.</span><span>Data simulasi</span></div>}
+        {demo && <div className="portal-demo-notice principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka dan notifikasi di halaman ini adalah data contoh, bukan data pendaftar sungguhan.</span><span>Data simulasi</span></div>}
 
         <section className="principal-metrics" aria-label="Ringkasan penerimaan">
           <Metric icon="user" label="Total Aplikasi Terkirim" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : summary ? "Data aplikasi persisten" : "Data belum dapat dimuat"} tone="green" />
