@@ -75,7 +75,9 @@ export default function StudentDashboardPage() {
   if (documents.length === 0) documentRows.push(["Dokumen", "Belum ada catatan dokumen"]);
   const hasDraft = Object.keys(draftValues).length > 0 || documents.length > 0;
   const activities = application
-    ? [["Draft aplikasi tersimpan", "Belum dikirim"]]
+    ? application.status === "DRAFT"
+      ? [["Draft aplikasi tersimpan", "Belum dikirim"]]
+      : [["Pendaftaran berhasil dikirim", application.submittedAt ? `Dikirim ${new Date(application.submittedAt).toLocaleString("id-ID")}` : `Status: ${application.status}`]]
     : hasDraft
       ? [["Data aplikasi sementara tersedia", "Belum dikirim ke database aplikasi"]]
       : [["Belum ada aktivitas pendaftaran", "Mulai dengan mengisi formulir siswa"]];
