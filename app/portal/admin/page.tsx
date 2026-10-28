@@ -76,7 +76,7 @@ export default async function AdminDashboardPage({ searchParams }: { searchParam
             </div>
           </header>
 
-          {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Angka, agenda, dan daftar nama pada halaman ini hanya contoh visual, bukan data pendaftar sungguhan.</span><Link href="/portal/admin">Lihat tampilan kosong</Link></div>}
+          {demo && <div className="admin-demo-banner" role="note"><strong>Mode simulasi</strong><span>Angka, agenda, dan daftar nama pada halaman ini hanya contoh visual, bukan data pendaftar sungguhan.</span><span>Data simulasi</span></div>}
 
           {process.env.VERCEL_ENV === "preview" && spmbPolicy.demoMode && <DemoDocumentTypesSetup />}
 
