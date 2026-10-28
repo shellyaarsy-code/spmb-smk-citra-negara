@@ -3122,3 +3122,69 @@ button:disabled { cursor: not-allowed; }
   .admin-dashboard-account > div { min-width: 0; }
   .admin-dashboard-account strong { white-space: normal; }
 }
+
+
+/* Shared geometry for status badges, notification counters, and pagination. */
+.student-status-badge,
+.verification-status-badge,
+.tka-status-badge,
+.payment-status-badge,
+.student-submission-status,
+.admin-detail-status,
+.admin-verification-doc-status,
+.admin-test-session-status,
+.admin-announcement-status,
+.admin-selection-outcome,
+.principal-list-status,
+.principal-result-outcome,
+.graduation-waiting-badge,
+.official-letter-status,
+.guide-pending {
+  box-sizing: border-box;
+  min-height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 3px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 750;
+  line-height: 1.35;
+  letter-spacing: 0;
+  text-align: center;
+  vertical-align: middle;
+}
+.admin-table-pagination button,
+.principal-list-pagination button {
+  box-sizing: border-box;
+  min-width: 30px;
+  min-height: 30px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 7px;
+  font-size: 12px;
+  line-height: 1.2;
+}
+.admin-table-pagination button:focus-visible,
+.principal-list-pagination button:focus-visible {
+  outline: 2px solid #1e8a5f;
+  outline-offset: 2px;
+}
+@media (max-width: 420px) {
+  .student-status-badge,
+  .verification-status-badge,
+  .tka-status-badge,
+  .payment-status-badge,
+  .student-submission-status,
+  .admin-detail-status,
+  .admin-verification-doc-status,
+  .admin-test-session-status,
+  .admin-announcement-status,
+  .admin-selection-outcome,
+  .principal-list-status,
+  .principal-result-outcome,
+  .graduation-waiting-badge,
+  .official-letter-status,
+  .guide-pending { max-width: 100%; white-space: normal; }
+}
