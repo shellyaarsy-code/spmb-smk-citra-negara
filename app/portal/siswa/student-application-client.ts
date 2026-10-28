@@ -31,8 +31,22 @@ export async function fetchCurrentDraftApplication() {
 
 export async function fetchAvailableStudyPrograms() {
   const response = await fetch("/api/student/programs", { cache: "no-store" });
-  const result = await parseResponse<{ programs: StudentStudyProgram[] }>(response);
-  return result.programs;
+  const result = await parseResponse<{ programs?: unknown }>(response);
+  if (
+    !Array.isArray(result.programs) ||
+    !result.programs.every(
+      (program) =>
+        typeof program === "object" &&
+        program !== null &&
+        "code" in program &&
+        typeof program.code === "string" &&
+        "name" in program &&
+        typeof program.name === "string",
+    )
+  ) {
+    throw new Error("Daftar program keahlian belum dapat dibaca. Muat ulang halaman atau coba lagi.");
+  }
+  return result.programs as StudentStudyProgram[];
 }
 
 export async function saveCurrentDraftApplication(input: unknown) {
