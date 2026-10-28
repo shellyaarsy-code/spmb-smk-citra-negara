@@ -62,3 +62,12 @@ This checkpoint is a targeted refinement, not a redesign or rebuild.
 - Visual Preview inspection: six Kepala Sekolah demo routes on the previous READY deployment at the available narrow browser viewport; new deployment public landing, Admin login, Kepala Sekolah login, Calon Siswa login, and registration form at a 1280×720 browser viewport. The registration form was only viewed; it was not submitted.
 
 Admin and student authenticated dashboard visual coverage and the requested 360/390/1024/1440px viewport matrix remain outstanding. The new Preview uses a host-only session cookie, so the existing principal session on the previous deployment does not carry to the new deployment. No credential was entered; the new Preview login screens therefore remain the safe stopping point until the user logs in manually. A successful remote Preview deployment build is not a substitute for direct visual inspection of those screens.
+
+## Cross-role consistency checkpoint
+
+- Admin and principal demo notices share the `portal-demo-notice` visual layer while retaining role-specific wording and existing component classes.
+- Desktop sign-out actions are placed at the bottom of each role sidebar. On narrow layouts, the sign-out action is presented inside the horizontally scrollable/compact navigation so it remains discoverable.
+- Sign-out continues to use the shared `AuthLogoutLink` POST request to `/api/auth/logout`; this change only adjusts presentation and placement.
+- Account identity remains role-appropriate: admin identity in the dashboard header, principal identity in the sidebar, and student identity/status in the dashboard header. These positions are not forcibly made identical because they carry different role-specific context.
+- The current verification covers a successful production build/TypeScript check and HTTP 200 for public preview routes and CSS assets. Authenticated dashboard visuals, real browser screenshots, and full interaction testing still require separate QA; do not describe those as completed based on build status alone.
+
