@@ -3312,3 +3312,58 @@ button:disabled { cursor: not-allowed; }
     margin-top: 10px;
   }
 }
+
+
+/* UI polish: keep demo notices and long dashboard copy inside their containers. */
+.portal-demo-notice,
+.admin-demo-banner,
+.principal-demo-note {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 100%;
+  min-width: 0;
+  flex-wrap: wrap;
+}
+.portal-demo-notice > span,
+.admin-demo-banner > span,
+.principal-demo-note > span {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.portal-demo-notice > span:nth-of-type(1),
+.admin-demo-banner > span:nth-of-type(1),
+.principal-demo-note > span:nth-of-type(1) {
+  flex: 1 1 220px;
+}
+.portal-demo-notice > span:last-child,
+.admin-demo-banner > span:last-child,
+.principal-demo-note > span:last-child {
+  max-width: 100%;
+  white-space: normal;
+  overflow-wrap: anywhere;
+}
+.admin-dashboard-card,
+.admin-metric-card,
+.principal-panel,
+.principal-metric,
+.student-dashboard-card,
+.student-next-step {
+  min-width: 0;
+}
+.admin-dashboard-card p,
+.admin-dashboard-card h2,
+.admin-dashboard-card h3,
+.admin-metric-card p,
+.admin-metric-card strong,
+.principal-panel p,
+.principal-panel h2,
+.principal-panel h3,
+.principal-metric span,
+.principal-metric strong,
+.student-dashboard-card p,
+.student-dashboard-card h2,
+.student-next-step p {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
