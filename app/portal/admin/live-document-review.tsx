@@ -2,6 +2,17 @@
 
 import { useCallback, useEffect, useState } from "react";
 
+function documentStatusLabel(status: string) {
+  const labels: Record<string, string> = { PENDING: "Menunggu verifikasi", VERIFIED: "Terverifikasi", REJECTED: "Ditolak", REVISION_REQUIRED: "Perlu revisi" };
+  return labels[status] ?? status.replaceAll("_", " ");
+}
+function documentStatusTone(status: string) {
+  if (status === "VERIFIED") return "success";
+  if (status === "REJECTED") return "danger";
+  if (status === "PENDING" || status === "REVISION_REQUIRED") return "warning";
+  return "info";
+}
+
 type DocumentRow = { id: string; fileName: string; mimeType: string | null; uploadedAt: string; status: string; documentType: { name: string }; verifications: { status: string; notes: string | null }[] };
 
 export default function LiveDocumentReview({ registrationNumber }: { registrationNumber: string }) {
@@ -44,7 +55,7 @@ export default function LiveDocumentReview({ registrationNumber }: { registratio
     {error && <p role="status">{error}</p>}{loading && <p role="status">Memuat dokumen…</p>}
     {!loading && documents.length === 0 && <p>Belum ada dokumen yang diunggah.</p>}
     <ul>{documents.map((doc) => <li key={doc.id}>
-      <button type="button" onClick={() => { setSelected(doc.id); setNotes(doc.verifications[0]?.notes ?? ""); setStatus(doc.status === "PENDING" ? "VERIFIED" : doc.status); }}>{doc.documentType.name}: {doc.fileName} — {doc.status}</button>
+      <button type="button" onClick={() => { setSelected(doc.id); setNotes(doc.verifications[0]?.notes ?? ""); setStatus(doc.status === "PENDING" ? "VERIFIED" : doc.status); }}>{doc.documentType.name}: {doc.fileName} — <span className={`admin-applicant-status ${documentStatusTone(doc.status)}`}>{documentStatusLabel(doc.status)}</span></button>
       <a href={`/api/admin/documents/${encodeURIComponent(doc.id)}`} download>Unduh</a>
     </li>)}</ul>
     {active && <div>
