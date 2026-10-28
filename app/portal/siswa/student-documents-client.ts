@@ -22,8 +22,25 @@ export type StudentDocumentRecord = {
 
 async function getResponse<T>(url: string, key: string): Promise<T> {
   const response = await fetch(url, { cache: "no-store" });
-  const result = await response.json().catch(() => null);
-  if (!response.ok) throw new Error(result?.error || "Data dokumen belum dapat dimuat.");
+  const result: unknown = await response.json().catch(() => null);
+  if (!response.ok) {
+    const message =
+      typeof result === "object" &&
+      result !== null &&
+      "error" in result &&
+      typeof result.error === "string"
+        ? result.error
+        : "Data dokumen belum dapat dimuat.";
+    throw new Error(message);
+  }
+  if (
+    typeof result !== "object" ||
+    result === null ||
+    !(key in result) ||
+    !Array.isArray(result[key])
+  ) {
+    throw new Error("Respons data dokumen tidak sesuai. Muat ulang halaman atau coba lagi.");
+  }
   return result[key] as T;
 }
 
