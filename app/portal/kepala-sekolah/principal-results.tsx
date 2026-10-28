@@ -18,6 +18,13 @@ function Stat({ label, value, foot, tone }: { label: string; value: string; foot
   return <article className={`principal-grad-stat ${tone}`}><div><span>{label}</span><i aria-hidden="true">{tone === "forest" ? "✓" : tone === "amber" ? "◷" : tone === "rose" ? "!" : "♧"}</i></div><strong>{value}</strong><small>{foot}</small></article>;
 }
 
+function selectionOutcome(status: string) {
+  if (status === "PASSED") return { label: "LULUS", tone: "passed" };
+  if (status === "WAITLISTED") return { label: "DAFTAR TUNGGU", tone: "waiting" };
+  if (status === "FAILED") return { label: "TIDAK LULUS", tone: "failed" };
+  return { label: status.replaceAll("_", " "), tone: "unknown" };
+}
+
 type SelectionOverview = Awaited<ReturnType<typeof getPrincipalSelectionOverview>>;
 
 export default function PrincipalResults({ demo, overview }: { demo: boolean; overview: SelectionOverview | null }) {
@@ -45,7 +52,7 @@ export default function PrincipalResults({ demo, overview }: { demo: boolean; ov
       </div>
 
       <section className="principal-grad-table-panel"><div className="principal-grad-table-heading"><div><h2>Daftar Hasil Keputusan Calon Siswa <span>(Read-Only)</span></h2><p>{demo ? `Enam baris contoh dari ${formatPpdbNumber(demoPpdbSelectionSummary.totalDecisions)} keputusan simulasi; ${formatPpdbNumber(demoPpdbSelectionSummary.pending)} masih menunggu keputusan.` : overview?.demoMode ? "Hasil contoh dari database demo; hanya simulasi." : "Keputusan dari database hanya ditampilkan setelah publikasi resmi."}</p></div><span className="principal-grad-readonly">◉ Mode Pemantauan</span></div>
-        <div className="principal-grad-table-wrap"><table><thead><tr><th>No. Pendaftaran</th><th>Nama Lengkap</th><th>Program</th><th>Peringkat</th><th>Status Keputusan</th></tr></thead><tbody>{demo ? decisions.map((student) => <tr key={student.number}><td>{student.number}</td><td><strong>{student.name}</strong></td><td>{student.program}</td><td>—</td><td><span className={`principal-grad-outcome ${student.outcome === "Lulus" ? "passed" : student.outcome === "Cadangan" ? "waiting" : "failed"}`}>{student.outcome.toUpperCase()}</span></td></tr>) : overview?.published ? overview.results.map((row, index) => <tr key={`${row.registrationNumber}-${row.program}-${index}`}><td>{row.registrationNumber ?? "—"}</td><td><strong>{row.name ?? "Nama belum tersedia"}</strong></td><td>{row.program} · {row.programName}</td><td>{row.rank ?? "—"}</td><td>{row.status}</td></tr>) : <tr><td colSpan={5} className="principal-results-table-empty">{overview ? "Aturan belum disetujui atau hasil belum dipublikasikan." : "Data hasil seleksi belum dapat dimuat."}</td></tr>}</tbody></table></div>
+        <div className="principal-grad-table-wrap"><table><thead><tr><th>No. Pendaftaran</th><th>Nama Lengkap</th><th>Program</th><th>Peringkat</th><th>Status Keputusan</th></tr></thead><tbody>{demo ? decisions.map((student) => <tr key={student.number}><td>{student.number}</td><td><strong>{student.name}</strong></td><td>{student.program}</td><td>—</td><td><span className={`principal-grad-outcome ${student.outcome === "Lulus" ? "passed" : student.outcome === "Cadangan" ? "waiting" : "failed"}`}>{student.outcome.toUpperCase()}</span></td></tr>) : overview?.published ? overview.results.map((row, index) => <tr key={`${row.registrationNumber}-${row.program}-${index}`}><td>{row.registrationNumber ?? "—"}</td><td><strong>{row.name ?? "Nama belum tersedia"}</strong></td><td>{row.program} · {row.programName}</td><td>{row.rank ?? "—"}</td><td>{(() => { const outcome = selectionOutcome(row.status); return <span className={`principal-grad-outcome ${outcome.tone}`}>{outcome.label}</span>; })()}</td></tr>) : <tr><td colSpan={5} className="principal-results-table-empty">{overview ? "Aturan belum disetujui atau hasil belum dipublikasikan." : "Data hasil seleksi belum dapat dimuat."}</td></tr>}</tbody></table></div>
       </section>
     </section>
   </div></main>;
