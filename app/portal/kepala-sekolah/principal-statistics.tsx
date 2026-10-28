@@ -38,7 +38,7 @@ export default function PrincipalStatistics({ demo, summary }: { demo: boolean; 
     <PrincipalSidebar active="statistics" demo={demo} />
     <section className="principal-dashboard-main principal-statistics-main" aria-label="Grafik dan analisis statistik PPDB">
       <header className="principal-dashboard-header"><div><h1>Grafik &amp; Analisis Statistik PPDB</h1><p>Laporan menyeluruh mengenai tren pendaftaran, verifikasi berkas, dan minat program keahlian.</p></div><span className="principal-live"><i />MONITORING AKTIF</span></header>
-      {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Statistik, tren, dan asal sekolah di halaman ini adalah data contoh.</span><Link href="/portal/kepala-sekolah/statistik">Tampilan kosong</Link></div>}
+      {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Statistik, tren, dan asal sekolah di halaman ini adalah data contoh.</span><span>Data simulasi</span></div>}
 
       <section className="principal-statistics-metrics" aria-label="Ringkasan statistik PPDB">
         <StatsCard label="Total Pendaftar" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary ? summary.total.toLocaleString("id-ID") : "—"} note={demo ? "Angka simulasi" : summary ? "Aplikasi yang telah dikirim" : "Data belum dapat dimuat"} tone="green" icon="♙" />
