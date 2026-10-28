@@ -1,5 +1,4 @@
 import PrincipalSidebar from "./principal-sidebar";
-import Link from "next/link";
 import { demoPpdbMetrics, demoPpdbOtherSchoolApplicants, demoPpdbOtherSchoolShare, demoPpdbRegions, demoPpdbSchoolOrigins, demoPpdbWeekly, formatPpdbNumber } from "../demo-ppdb-data";
 
 const funnel = [
