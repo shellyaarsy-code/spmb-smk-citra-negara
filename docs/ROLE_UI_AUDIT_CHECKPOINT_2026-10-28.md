@@ -154,3 +154,10 @@ Branch kerja: `integration/demo-shared-data`
 - `app/portal/siswa/student-application-client.ts`: hasil endpoint daftar program sekarang diperiksa agar benar-benar berupa array yang berisi item dengan `code` dan `name` bertipe string sebelum diteruskan ke UI.
 - Commit: `4b54a4f14644b8cf0e1dc8bc6675ee5110dbe9aa`.
 - Tujuan: mengubah respons sukses yang bentuknya keliru menjadi pesan error yang tertangani, bukan membiarkan komponen menerima `undefined` atau data tidak valid. Tidak mengubah daftar jurusan, aturan pemilihan, atau API.
+
+
+## Temuan tambahan — validasi respons API profil siswa
+- `app/portal/siswa/student-profile-client.ts`: pemuatan profil sebelumnya langsung melakukan cast hasil JSON ke tipe TypeScript. Respons JSON yang rusak atau struktur sukses yang tidak sesuai dapat menyebabkan form gagal saat mengakses data wali.
+- Sekarang JSON dibaca dengan fallback aman; respons HTTP gagal memakai pesan error server yang tersedia, dan respons sukses diperiksa untuk memastikan `profile` serta array `guardians` memiliki bentuk dasar yang diharapkan sebelum diteruskan ke form.
+- Commit: `4b2d27feec07d2a9408d07d9bb21684c2cea494d` — `Validate student profile API response`.
+- Perubahan hanya memperkuat penanganan respons di client; endpoint, aturan validasi server, data, autentikasi, dan alur pendaftaran tidak diubah.
