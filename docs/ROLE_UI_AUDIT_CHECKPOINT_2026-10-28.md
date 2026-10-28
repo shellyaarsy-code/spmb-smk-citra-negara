@@ -74,3 +74,12 @@ Branch kerja: `integration/demo-shared-data`
 - Commit CSS: `69af0492d6f4cfbb2c2deb189ebdb772291fcace` — `Add neutral fallback tone for principal selection statuses`.
 - Build dan pemeriksaan visual setelah login masih perlu diverifikasi.
 
+## Temuan tambahan — status Admin TKA dan verifikasi dokumen
+- Panel Admin TKA sebelumnya menampilkan kode mentah status tes dan attempt, sehingga status teknis seperti `PUBLISHED` atau `COMPLETED` kurang ramah untuk presentasi.
+- Komponen Admin TKA sekarang menerjemahkan status yang dikenal ke label Bahasa Indonesia dan menampilkan badge semantik. Status yang belum dikenal tetap terlihat dalam format netral/informatif.
+- Daftar dokumen pada panel verifikasi sekarang menampilkan label Bahasa Indonesia dan warna badge sesuai status `PENDING`, `VERIFIED`, `REJECTED`, dan `REVISION_REQUIRED`.
+- Perubahan hanya pada label dan presentasi; endpoint, alur penyimpanan, penerbitan tes, verifikasi dokumen, dan hak akses tidak diubah.
+- Commit TKA: `8614130f0b9e275874f343518c0bb6167c059e6d` — `Use readable semantic status badges in TKA admin`.
+- Commit verifikasi dokumen: `bb140b610bf5ce6b0dfd55cf123b339dacf5927f` — `Localize document verification status badges`.
+- Build dan pemeriksaan visual masih menunggu deployment preview terbaru.
+
