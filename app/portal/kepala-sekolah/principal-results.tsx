@@ -25,7 +25,7 @@ export default function PrincipalResults({ demo, overview }: { demo: boolean; ov
     <PrincipalSidebar active="results" demo={demo} />
     <section className="principal-dashboard-main principal-grad-main" aria-label="Laporan hasil seleksi dan kelulusan">
       <header className="principal-dashboard-header"><div><h1>Laporan Hasil Seleksi &amp; Kelulusan</h1><p>{overview?.demoMode ? "Keputusan contoh untuk menunjukkan alur hasil seleksi; seluruh isi hanya simulasi." : "Keputusan penerimaan siswa berdasarkan hasil seleksi dan evaluasi administrasi."}</p></div><span className="principal-live"><i />MONITORING AKTIF</span></header>
-      {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Ringkasan, status, dan hasil pada halaman ini merupakan data contoh.</span><Link href="/portal/kepala-sekolah/hasil-seleksi">Tampilan kosong</Link></div>}
+      {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Ringkasan, status, dan hasil pada halaman ini merupakan data contoh.</span><span>Data simulasi</span></div>}
 
       <section className="principal-grad-stats" aria-label="Ringkasan hasil penerimaan">
         <Stat label="Lulus Seleksi" value={demo ? `${formatPpdbNumber(demoPpdbSelectionSummary.passed)} Siswa` : overview ? overview.counts.passed.toLocaleString("id-ID") : "—"} foot={demo ? "Keputusan simulasi" : overview?.published ? "Keputusan yang dipublikasikan" : "Belum dipublikasikan"} tone="forest" />
