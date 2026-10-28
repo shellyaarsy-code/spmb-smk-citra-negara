@@ -43,7 +43,7 @@ export default function PrincipalDashboard({ demo, summary }: { demo: boolean; s
       <PrincipalSidebar active="dashboard" demo={demo} />
 
       <section className="principal-dashboard-main" id="overview" aria-label="Monitoring dashboard Kepala Sekolah">
-        <header className="principal-dashboard-header"><div><h1>Monitoring Dashboard</h1><p>Ringkasan aplikasi pendaftaran dan dokumen dari data tersimpan.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />{demo ? "GELOMBANG 1 · SIMULASI" : "DATA TERKINI"}</span><span className="principal-school-year"><Icon name="calendar" />Tahun Ajaran 2026/2027</span></div></header>
+        <header className="principal-dashboard-header"><div className="principal-dashboard-heading"><h1>Monitoring Dashboard</h1><p>Ringkasan aplikasi pendaftaran dan dokumen dari data tersimpan.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />{demo ? "GELOMBANG 1 · SIMULASI" : "DATA TERKINI"}</span><span className="principal-school-year"><Icon name="calendar" />Tahun Ajaran 2026/2027</span><span className="principal-dashboard-account"><i>K</i><span><strong>Kepala Sekolah</strong><small>KEPALA SEKOLAH</small></span></span></div></header>
         {demo && <div className="portal-demo-notice principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka dan notifikasi di halaman ini adalah data contoh, bukan data pendaftar sungguhan.</span><span>Data simulasi</span></div>}
 
         <section className="principal-metrics" aria-label="Ringkasan penerimaan">
