@@ -3529,3 +3529,184 @@ button:disabled { cursor: not-allowed; }
     flex-direction: column;
   }
 }
+
+
+/* SPMB motion system: subtle, consistent, and respectful of reduced-motion preferences. */
+:root {
+  --motion-fast: 140ms;
+  --motion-standard: 200ms;
+  --motion-emphasis: 260ms;
+  --motion-easing-standard: cubic-bezier(0.2, 0, 0, 1);
+  --motion-easing-enter: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes spmb-page-enter {
+  from { opacity: 0; transform: translateY(5px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spmb-notice-enter {
+  from { opacity: 0; transform: translateY(3px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes spmb-progress-enter {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+/* Page entrance: one restrained motion per main view, never a looping animation. */
+.admin-dashboard-main,
+.principal-dashboard-main,
+.student-dashboard-main,
+.registration-page,
+.login-page,
+.admin-login-page,
+.principal-login-page {
+  animation: spmb-page-enter var(--motion-emphasis) var(--motion-easing-enter) both;
+}
+
+/* Shared button feedback without changing dimensions or interaction behavior. */
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app, .registration-page, .login-page, .admin-login-page, .principal-login-page) button:not(:disabled),
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app, .registration-page, .login-page, .admin-login-page, .principal-login-page) a.button {
+  transition:
+    color var(--motion-standard) var(--motion-easing-standard),
+    background-color var(--motion-standard) var(--motion-easing-standard),
+    border-color var(--motion-standard) var(--motion-easing-standard),
+    box-shadow var(--motion-standard) var(--motion-easing-standard),
+    transform var(--motion-fast) var(--motion-easing-standard);
+}
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app, .registration-page, .login-page, .admin-login-page, .principal-login-page) button:not(:disabled):active,
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app, .registration-page, .login-page, .admin-login-page, .principal-login-page) a.button:active {
+  transform: translateY(1px);
+}
+
+/* Form controls receive a consistent focus transition; existing focus rings remain intact. */
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app, .registration-page, .login-page, .admin-login-page, .principal-login-page) :is(input, select, textarea) {
+  transition:
+    border-color var(--motion-standard) var(--motion-easing-standard),
+    box-shadow var(--motion-standard) var(--motion-easing-standard),
+    background-color var(--motion-standard) var(--motion-easing-standard);
+}
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app, .registration-page, .login-page, .admin-login-page, .principal-login-page) :is(input, select, textarea):focus-visible {
+  scroll-margin-block: 1rem;
+}
+
+/* Only cards that act as links lift slightly; informational panels stay still. */
+a.admin-metric-card,
+a.student-dashboard-card,
+a.principal-metric[href],
+.admin-dashboard-card a.admin-card-link,
+.student-dashboard-card a,
+.principal-panel a {
+  transition:
+    border-color var(--motion-standard) var(--motion-easing-standard),
+    box-shadow var(--motion-standard) var(--motion-easing-standard),
+    background-color var(--motion-standard) var(--motion-easing-standard),
+    transform var(--motion-standard) var(--motion-easing-standard);
+}
+a.admin-metric-card:hover,
+a.student-dashboard-card:hover,
+a.principal-metric[href]:hover,
+.admin-dashboard-card a.admin-card-link:hover,
+.student-dashboard-card a:hover,
+.principal-panel a:hover {
+  transform: translateY(-2px);
+}
+
+/* Existing sidebar navigation gains a small, consistent movement cue. */
+.admin-dashboard-nav-link,
+.principal-dashboard-nav a,
+.student-nav-link {
+  transition:
+    color var(--motion-standard) var(--motion-easing-standard),
+    background-color var(--motion-standard) var(--motion-easing-standard),
+    box-shadow var(--motion-standard) var(--motion-easing-standard);
+}
+
+/* Feedback appears gently, while status and alert semantics remain unchanged. */
+.portal-demo-notice,
+.admin-demo-banner,
+.principal-demo-note,
+.admin-login-feedback:not(:empty),
+.admin-dashboard-main [role="status"],
+.admin-dashboard-main [role="alert"],
+.principal-dashboard-main [role="status"],
+.principal-dashboard-main [role="alert"],
+.student-dashboard-main [role="status"],
+.student-dashboard-main [role="alert"],
+[role="dialog"],
+dialog[open] {
+  animation: spmb-notice-enter var(--motion-standard) var(--motion-easing-enter) both;
+}
+
+/* Tables and filters respond to interaction without animating data or layout. */
+.admin-bank-table tbody tr,
+.admin-registrations-table tbody tr,
+.admin-selection-table tbody tr,
+.principal-list-table tbody tr,
+.principal-results-table tbody tr {
+  transition: background-color var(--motion-fast) var(--motion-easing-standard);
+}
+:where(.admin-dashboard-app, .principal-dashboard-app, .student-dashboard-app) :is(select, input[type="search"]) {
+  transition:
+    border-color var(--motion-standard) var(--motion-easing-standard),
+    box-shadow var(--motion-standard) var(--motion-easing-standard),
+    background-color var(--motion-standard) var(--motion-easing-standard);
+}
+
+/* Progress visuals animate only their visual fill; the final value still comes from data. */
+.admin-funnel-track span,
+.admin-analytics-bar-track span,
+.principal-quota-track i,
+.principal-subject-track i,
+.principal-report-meter > i {
+  transform-origin: left center;
+  animation: spmb-progress-enter 420ms var(--motion-easing-enter) both;
+}
+
+/* Touch users get no hover lift, and reduced-motion preferences override every motion above. */
+@media (hover: none) {
+  a.admin-metric-card:hover,
+  a.student-dashboard-card:hover,
+  a.principal-metric[href]:hover,
+  .admin-dashboard-card a.admin-card-link:hover,
+  .student-dashboard-card a:hover,
+  .principal-panel a:hover {
+    transform: none;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .admin-dashboard-main,
+  .principal-dashboard-main,
+  .student-dashboard-main,
+  .registration-page,
+  .login-page,
+  .admin-login-page,
+  .principal-login-page,
+  .portal-demo-notice,
+  .admin-demo-banner,
+  .principal-demo-note,
+  .admin-login-feedback:not(:empty),
+  .admin-dashboard-main [role="status"],
+  .admin-dashboard-main [role="alert"],
+  .principal-dashboard-main [role="status"],
+  .principal-dashboard-main [role="alert"],
+  .student-dashboard-main [role="status"],
+  .student-dashboard-main [role="alert"],
+  [role="dialog"],
+  dialog[open],
+  .admin-funnel-track span,
+  .admin-analytics-bar-track span,
+  .principal-quota-track i,
+  .principal-subject-track i,
+  .principal-report-meter > i {
+    animation: none !important;
+  }
+  a.admin-metric-card:hover,
+  a.student-dashboard-card:hover,
+  a.principal-metric[href]:hover,
+  .admin-dashboard-card a.admin-card-link:hover,
+  .student-dashboard-card a:hover,
+  .principal-panel a:hover {
+    transform: none;
+  }
+}
