@@ -121,3 +121,11 @@ Branch kerja: `integration/demo-shared-data`
 - Validasi nominal positif, metode/tujuan wajib, konfirmasi perubahan kebijakan, dan alasan penolakan tetap dipertahankan. Tidak ada perubahan pada API atau hak akses.
 - Commit: `c8f8e6b098fa4356f348d5815f5070b6fe3e9d79` — `Improve payment review API errors and empty state`.
 - Deployment untuk commit ini belum diperiksa saat checkpoint ditulis; visual test dengan sesi Admin belum dilakukan.
+
+
+## Temuan tambahan — halaman siswa (hasil TKA, hasil seleksi, notifikasi)
+- `app/portal/siswa/live-tka-results.tsx`: parsing respons API hasil TKA memakai fallback jika body bukan JSON, agar respons HTTP gagal tetap menghasilkan pesan yang dapat dipahami.
+- `app/portal/siswa/live-selection-result.tsx`: menambahkan status memuat sebelum memutuskan bahwa hasil belum dipublikasikan; parsing respons API lebih tahan terhadap body kosong/bukan JSON; kegagalan ditandai sebagai pesan error.
+- `app/portal/siswa/live-notifications.tsx`: parsing respons pemuatan dan tandai-dibaca memiliki fallback; empty state hanya muncul jika tidak ada error.
+- Commit kode berturut-turut: `0db806d96e3e020684ba12f2f005e76a7e0a19ef` (hasil seleksi), `57b313835597625768b540df548d3ddd8a439973` (notifikasi), `8d716f81596a65edf12b7b104fa0151627a9ecce` (hasil TKA).
+- Tidak mengubah endpoint, aturan seleksi/nilai, hak akses, atau isi data. Status deployment dan pemeriksaan visual terautentikasi harus diverifikasi terpisah.
