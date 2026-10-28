@@ -8,7 +8,7 @@ type BrandLogoProps = {
 export default function BrandLogo({ width = 32, className }: BrandLogoProps) {
   return (
     <Image
-      src="/logo-cn.png"
+      src="/logo-cn-transparent.svg"
       alt="Logo resmi SMK Citra Negara"
       width={width}
       height={width}
