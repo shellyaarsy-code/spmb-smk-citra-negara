@@ -113,3 +113,11 @@ Branch kerja: `integration/demo-shared-data`
 - Parsing respons kini memakai fallback `null`; saat respons HTTP gagal, komponen tetap menggunakan pesan API jika tersedia atau pesan fallback yang sudah ada. Endpoint, payload, aturan simpan, dan hak akses tidak berubah.
 - Commit: `c3fd6f78307d9d9f8e39460cd435d9abf35b17f6` — `Handle non-JSON responses in TKA admin feedback`.
 - Deployment untuk commit ini belum diperiksa pada saat checkpoint ditulis; pemeriksaan build dan visual terautentikasi masih diperlukan.
+
+
+## Temuan tambahan — halaman verifikasi pembayaran Admin
+- Respons endpoint pembayaran, konfigurasi pembayaran, dan aksi verifikasi/penolakan kini diparse dengan fallback jika body bukan JSON, agar kegagalan HTTP tetap menampilkan pesan fallback yang dapat dipahami.
+- Empty state “Belum ada pembayaran tercatat” sekarang hanya muncul saat pemuatan berhasil dan tidak ada data; pesan itu tidak lagi tampil bersamaan dengan error pemuatan.
+- Validasi nominal positif, metode/tujuan wajib, konfirmasi perubahan kebijakan, dan alasan penolakan tetap dipertahankan. Tidak ada perubahan pada API atau hak akses.
+- Commit: `c8f8e6b098fa4356f348d5815f5070b6fe3e9d79` — `Improve payment review API errors and empty state`.
+- Deployment untuk commit ini belum diperiksa saat checkpoint ditulis; visual test dengan sesi Admin belum dilakukan.
