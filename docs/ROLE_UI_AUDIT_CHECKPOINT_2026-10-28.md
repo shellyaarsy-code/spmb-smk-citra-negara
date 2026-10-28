@@ -142,3 +142,9 @@ Branch kerja: `integration/demo-shared-data`
 - `app/portal/admin/live-tka-eligibility.tsx`: aksi simpan juga memakai fallback parsing dan pesan kegagalan yang aman.
 - Commit kode: `e8b57fa7553ed3ba1fc96ff6a56a6338260644dd` dan `dd1326216ee0e603ad71d2d094d0f5ca06860010`.
 - Cakupan perubahan dibatasi pada penanganan respons API sisi UI; tidak mengubah aturan TKA, jadwal, nilai, autentikasi, maupun otorisasi.
+
+
+## Temuan tambahan — respons API draft pendaftaran siswa
+- `app/portal/siswa/student-application-client.ts`: parser bersama kini menolak respons sukses yang kosong atau bukan objek JSON, dan menampilkan pesan yang dapat dipahami alih-alih membiarkan data `null` mengalir ke komponen.
+- Commit: `a9edb795cc8a9ee69d511fe03a03cd6e4e55cd5e`.
+- Cakupan tetap pada validasi bentuk respons sisi klien; endpoint, data pendaftar, aturan submit, dan otorisasi tidak diubah.
