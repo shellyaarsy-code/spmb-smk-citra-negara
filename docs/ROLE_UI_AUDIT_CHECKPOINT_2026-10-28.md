@@ -83,3 +83,12 @@ Branch kerja: `integration/demo-shared-data`
 - Commit verifikasi dokumen: `bb140b610bf5ce6b0dfd55cf123b339dacf5927f` — `Localize document verification status badges`.
 - Build dan pemeriksaan visual masih menunggu deployment preview terbaru.
 
+## Temuan tambahan — badge status tabel pendaftar Kepala Sekolah
+- Tabel pendaftar live Kepala Sekolah sebelumnya menampilkan status sebagai teks biasa, sementara tampilan dashboard memakai badge untuk beberapa status.
+- Status aplikasi live kini memakai kelas badge yang sudah tersedia: hijau untuk status selesai/terverifikasi/lulus, amber untuk menunggu, merah untuk gagal/ditolak/dibatalkan, dan netral untuk status lain.
+- Label status yang dikenal tetap memakai kamus Bahasa Indonesia yang sudah ada; status tak dikenal ditampilkan dengan pemisah yang lebih mudah dibaca.
+- Empty state sekarang membedakan daftar yang benar-benar belum memiliki aplikasi dengan hasil filter yang kosong.
+- Perubahan bersifat presentasional; halaman tetap read-only dan API/izin tidak berubah.
+- Commit: `c84fdeb07b08e6de97e592c0ec6d0a9835ebd52b` — `Add semantic applicant status badges to principal live table`.
+- Deployment dan pemeriksaan visual sesudah login masih perlu diverifikasi.
+
