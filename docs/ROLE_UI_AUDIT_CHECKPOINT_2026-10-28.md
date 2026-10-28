@@ -49,3 +49,11 @@ Branch kerja: `integration/demo-shared-data`
 - Commit: `689237527fe6e2b55d128df3d4a322fb6b2a5335` — `Align principal live pagination with demo layout`.
 - Ikon pencarian live yang disamakan pada commit sebelumnya tetap dipertahankan.
 - Perlu cek build/deployment dan visual responsif setelah commit terbaru siap.
+
+
+## Temuan tambahan — nomor halaman aktif di pagination live
+- Pemeriksaan lanjutan menemukan bahwa pagination live hanya menampilkan lima nomor pertama melalui `slice(0, 5)`. Jika jumlah halaman lebih dari lima dan pengguna menuju halaman selanjutnya, nomor halaman aktif tidak lagi terlihat di deretan tombol.
+- Pagination sekarang menghitung jendela hingga lima nomor yang bergeser mengikuti halaman aktif, tetap dibatasi dari halaman pertama hingga terakhir.
+- Commit: `d385994d9b4dfc36bc613a1eedafeecbc17f7771` — `Keep current page visible in principal pagination`.
+- Ini perbaikan navigasi tampilan; sumber data, ukuran halaman API, dan hak read-only Kepala Sekolah tidak diubah.
+- Build dan pengujian visual responsif untuk commit ini masih perlu diverifikasi.
