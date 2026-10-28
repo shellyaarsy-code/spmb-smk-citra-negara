@@ -11,7 +11,7 @@ export default function LiveSelectionManagement() {
   const [overview, setOverview] = useState<Overview | null>(null); const [criteria, setCriteria] = useState<Criterion[]>([]); const [busy, setBusy] = useState(false); const [loading, setLoading] = useState(true); const [notice, setNotice] = useState(""); const [page, setPage] = useState(1);
   const load = useCallback(async () => {
     setLoading(true);
-    try { const response = await fetch(`/api/admin/selection?page=${page}`, { cache: "no-store" }); const body = await response.json(); if (!response.ok) throw new Error(body.error || "Data seleksi belum dapat dimuat."); setOverview(body); setCriteria(body.policy?.criteria ?? []); setNotice(""); }
+    try { const response = await fetch(`/api/admin/selection?page=${page}`, { cache: "no-store" }); const body = await response.json().catch(() => null); if (!response.ok) throw new Error(body?.error || "Data seleksi belum dapat dimuat."); setOverview(body); setCriteria(body.policy?.criteria ?? []); setNotice(""); }
     catch (error) { setNotice(error instanceof Error ? error.message : "Data seleksi belum dapat dimuat."); }
     finally { setLoading(false); }
   }, [page]);
@@ -19,7 +19,7 @@ export default function LiveSelectionManagement() {
   async function save(event: FormEvent<HTMLFormElement>) { event.preventDefault(); await action("/api/admin/selection", "PUT", { criteria }); }
   async function action(url: string, method: string, body: unknown) {
     setBusy(true); setNotice("");
-    try { const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const data = await response.json(); if (!response.ok) throw new Error(data.error || "Perubahan gagal disimpan."); await load(); setNotice("Perubahan tersimpan."); }
+    try { const response = await fetch(url, { method, headers: { "Content-Type": "application/json" }, body: JSON.stringify(body) }); const data = await response.json().catch(() => null); if (!response.ok) throw new Error(data?.error || "Perubahan gagal disimpan."); await load(); setNotice("Perubahan tersimpan."); }
     catch (error) { setNotice(error instanceof Error ? error.message : "Perubahan gagal disimpan."); }
     finally { setBusy(false); }
   }
