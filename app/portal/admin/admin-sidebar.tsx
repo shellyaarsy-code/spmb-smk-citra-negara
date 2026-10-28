@@ -63,9 +63,9 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
       items={items}
       support={support}
       logoutHref="/portal/login/admin"
-      logoutLabel="Kembali ke Login"
+      logoutLabel="Keluar"
       logoutIcon={<AdminIcon name="logout" />}
-      logoutClassName="admin-dashboard-logout"
+      logoutClassName="admin-dashboard-logout" logoutMobileInNav
     />
   );
 }
