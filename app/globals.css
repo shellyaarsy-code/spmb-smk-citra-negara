@@ -3026,3 +3026,59 @@ button:disabled { cursor: not-allowed; }
 .principal-dashboard-sidebar .principal-dashboard-access p {
   margin-bottom: 0;
 }
+
+
+/* Cross-role UI audit: keep sidebar controls and access cards aligned. */
+.admin-dashboard-sidebar .admin-dashboard-nav-link,
+.principal-dashboard-sidebar .principal-dashboard-nav a,
+.student-sidebar .student-nav-link {
+  box-sizing: border-box;
+  min-width: 0;
+  line-height: 1.4;
+}
+.admin-dashboard-sidebar .admin-dashboard-nav-link b,
+.principal-dashboard-sidebar .principal-dashboard-nav a b,
+.student-sidebar .student-nav-link b {
+  flex: 0 0 auto;
+  min-width: 22px;
+  margin-inline-start: auto;
+  padding: 2px 6px;
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.35;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+.admin-dashboard-sidebar .admin-dashboard-nav-link:focus-visible,
+.principal-dashboard-sidebar .principal-dashboard-nav a:focus-visible,
+.student-sidebar .student-nav-link:focus-visible {
+  outline: 2px solid #7bc7a0;
+  outline-offset: 2px;
+}
+/* Keep the clickable demo/data-mode cards available on narrow screens too. */
+@media (max-width: 760px) {
+  .admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access,
+  .principal-dashboard-sidebar .principal-dashboard-access {
+    display: block !important;
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px 12px;
+  }
+  .admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access strong,
+  .principal-dashboard-sidebar .principal-dashboard-access strong {
+    font-size: 12px;
+  }
+  .admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access p,
+  .principal-dashboard-sidebar .principal-dashboard-access p {
+    margin-top: 5px;
+    font-size: 12px;
+  }
+}
+@media (max-width: 420px) {
+  .admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access,
+  .principal-dashboard-sidebar .principal-dashboard-access {
+    padding: 9px 10px;
+  }
+}
