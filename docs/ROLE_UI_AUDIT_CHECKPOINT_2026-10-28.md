@@ -99,3 +99,10 @@ Branch kerja: `integration/demo-shared-data`
 - Form sekarang mengisi status dan catatan dari dokumen aktif, dengan perilaku lama untuk status `PENDING` (pilihan awal tindakan tetap “Terverifikasi”). Pesan gagal dimuat memakai `role="alert"`, sedangkan loading dan empty state memakai status aksesibel; empty state tidak menutupi pesan error.
 - Commit: `87a5dc27ad538bd8b4fd3e8035c4279632011b44` — `Initialize document review form from selected document`.
 - Perubahan tidak mengubah endpoint, aturan verifikasi, API, atau izin Admin. Build preview dan pemeriksaan visual setelah autentikasi tetap harus diverifikasi.
+
+
+## Temuan tambahan — empty state pilihan tes pada formulir TKA
+- Form tambah soal sebelumnya menampilkan pilihan tes draft kosong jika belum ada tes berstatus draft; form jadwal juga menampilkan pilihan tes terbit kosong jika belum ada tes berstatus published. Tombol simpan memang sudah dinonaktifkan, tetapi alasan dan langkah berikutnya tidak dijelaskan.
+- Kedua formulir kini menampilkan pesan kontekstual: buat draft tes terlebih dahulu untuk menambah soal, atau terbitkan tes terlebih dahulu untuk membuat jadwal. Kondisi tombol, endpoint, validasi, dan alur TKA tetap dipertahankan.
+- Commit: `77009954dbe43df8b040e8bd54a1786b64809c19` — `Explain empty test choices in TKA admin forms`.
+- Build preview dan pemeriksaan visual setelah autentikasi masih perlu diverifikasi.
