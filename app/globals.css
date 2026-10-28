@@ -3421,3 +3421,29 @@ button:disabled { cursor: not-allowed; }
   flex-wrap: wrap;
   gap: 6px 12px;
 }
+
+
+/* Login feedback: keep the live status area invisible until it contains a message. */
+.admin-login-feedback:empty {
+  display: none;
+}
+.admin-login-feedback:not(:empty) {
+  box-sizing: border-box;
+  min-width: 0;
+  max-width: 100%;
+  margin: 8px 0 0;
+  padding: 10px 12px;
+  border: 1px solid #dce8df;
+  border-radius: 9px;
+  color: #365746;
+  background: #f2f8f3;
+  font-size: 12px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.admin-login-feedback[role="alert"]:not(:empty),
+.admin-login-feedback[data-state="error"]:not(:empty) {
+  border-color: #f0d7d2;
+  color: #8a3d32;
+  background: #fff6f4;
+}
