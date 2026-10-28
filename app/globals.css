@@ -1091,6 +1091,10 @@ a { color: inherit; text-decoration: none; }
 .admin-applicant-program.mplb { color: #4772b7; background: #eaf0fb; }.admin-applicant-program.bdr { color: #a87927; background: #fff3d5; }.admin-applicant-program.pht { color: #675796; background: #f0edfa; }
 .admin-applicant-status { padding: 4px 6px; display: inline-flex; align-items: center; border-radius: 14px; font-size: 12px; font-weight: 700; white-space: nowrap; }
 .admin-applicant-status.verification,.admin-applicant-status.account { color: var(--status-info); background: var(--status-info-bg); }.admin-applicant-status.complete,.admin-applicant-status.verified,.admin-applicant-status.accepted { color: var(--status-success); background: var(--status-success-bg); }.admin-applicant-status.incomplete { color: var(--status-warning-text); background: var(--status-warning-bg); }
+.admin-applicant-status.success { color: var(--status-success); background: var(--status-success-bg); }
+.admin-applicant-status.danger { color: var(--status-danger); background: var(--status-danger-bg); }
+.admin-applicant-status.warning { color: var(--status-warning-text); background: var(--status-warning-bg); }
+.admin-applicant-status.info { color: var(--status-info); background: var(--status-info-bg); }
 .admin-detail-button { padding: 3px 4px; border: 0; color: #26714d; background: transparent; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
 .admin-detail-button:hover { text-decoration: underline; }
 .admin-table-empty { height: 140px !important; color: #7d8a82 !important; text-align: center; }
