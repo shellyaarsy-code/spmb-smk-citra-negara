@@ -168,3 +168,11 @@ Branch kerja: `integration/demo-shared-data`
 - Kini respons draft yang digunakan untuk GET draft, menyimpan draft, dan mengirim aplikasi diperiksa: status harus berupa string, `programChoices` harus berupa array, dan setiap pilihan harus memiliki prioritas numerik serta `studyProgram.code/name` berupa string.
 - Commit: `4d5270073b41f7b2d9d935efcb67d814ecd746df` — `Validate student application draft response`.
 - Ini validasi bentuk respons client-side, bukan pengganti validasi server; aturan seleksi, penyimpanan, autentikasi, dan endpoint tidak diubah.
+
+
+## Temuan tambahan — ketahanan alur unggah dokumen siswa
+- `app/portal/siswa/student-documents-client.ts`: pemuat daftar dokumen dan tipe dokumen sekarang memastikan respons sukses memiliki properti yang diminta berbentuk array; respons HTML/JSON rusak atau bentuk payload salah menghasilkan pesan error, bukan nilai `undefined` yang diteruskan ke UI.
+- `app/portal/siswa/student-documents-form.tsx`: konfigurasi upload sekarang memeriksa status HTTP dan bentuk `enabled`, `allowedMimeTypes`, serta `maxFileSizeBytes`. Bila konfigurasi gagal/tidak valid, upload tetap dinonaktifkan.
+- Commit client daftar dokumen: `69a7299c88aaf81906b3c34dc9b1bc5e7a657786` — `Validate student document list API responses`.
+- Commit form konfigurasi upload: `c52fac6fdb72a4d72333b805ab9b9cc1374b2e11` — `Validate student document upload configuration`.
+- Pemeriksaan server yang dibaca tetap mengandalkan role SISWA, kepemilikan dokumen, tipe/MIME dan signature file, batas ukuran, status aplikasi yang dapat diedit, dan storage privat. Perubahan di atas tidak melonggarkan aturan server tersebut.
