@@ -3542,15 +3542,15 @@ button:disabled { cursor: not-allowed; }
 
 @keyframes spmb-page-enter {
   from { opacity: 0; transform: translateY(5px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: none; }
 }
 @keyframes spmb-notice-enter {
   from { opacity: 0; transform: translateY(3px); }
-  to { opacity: 1; transform: translateY(0); }
+  to { opacity: 1; transform: none; }
 }
 @keyframes spmb-progress-enter {
   from { transform: scaleX(0); }
-  to { transform: scaleX(1); }
+  to { transform: none; }
 }
 
 /* Page entrance: one restrained motion per main view, never a looping animation. */
@@ -3593,10 +3593,8 @@ button:disabled { cursor: not-allowed; }
 /* Only cards that act as links lift slightly; informational panels stay still. */
 a.admin-metric-card,
 a.student-dashboard-card,
-a.principal-metric[href],
 .admin-dashboard-card a.admin-card-link,
-.student-dashboard-card a,
-.principal-panel a {
+.student-dashboard-card a {
   transition:
     border-color var(--motion-standard) var(--motion-easing-standard),
     box-shadow var(--motion-standard) var(--motion-easing-standard),
@@ -3605,10 +3603,8 @@ a.principal-metric[href],
 }
 a.admin-metric-card:hover,
 a.student-dashboard-card:hover,
-a.principal-metric[href]:hover,
 .admin-dashboard-card a.admin-card-link:hover,
-.student-dashboard-card a:hover,
-.principal-panel a:hover {
+.student-dashboard-card a:hover {
   transform: translateY(-2px);
 }
 
