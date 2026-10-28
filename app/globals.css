@@ -3269,3 +3269,42 @@ button:disabled { cursor: not-allowed; }
 .principal-dashboard-sidebar .principal-dashboard-access:focus-visible {
   outline-color: #27845B;
 }
+
+
+/* Cross-role consistency pass v2: shared sizing and responsive support visibility. */
+.admin-dashboard-brand > .cn-brand-logo,
+.principal-dashboard-brand > .cn-brand-logo,
+.student-dashboard-brand > .cn-brand-logo {
+  width: var(--sidebar-brand-size);
+  height: var(--sidebar-brand-size);
+  flex-basis: var(--sidebar-brand-size);
+}
+
+.admin-dashboard-heading h1,
+.admin-dashboard-header h1,
+.principal-dashboard-header h1,
+.student-dashboard-header h1 {
+  font-size: clamp(21px, 1.7vw, 24px);
+  line-height: 1.3;
+  letter-spacing: -0.025em;
+}
+
+.admin-dashboard-heading p,
+.admin-dashboard-header p,
+.principal-dashboard-header p,
+.student-dashboard-header p {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+/* Keep role-specific help/access context available on mobile, like desktop. */
+@media (max-width: 760px) {
+  .admin-dashboard-sidebar .admin-bank-support.admin-dashboard-access,
+  .principal-dashboard-sidebar .principal-dashboard-access,
+  .student-sidebar .student-help-card {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    margin-top: 10px;
+  }
+}
