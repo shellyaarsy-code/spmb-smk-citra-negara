@@ -27,7 +27,35 @@ export default function StudentDocumentsForm() {
   const fileInput = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    fetch("/api/student/document-upload-config", { cache: "no-store" }).then((response) => response.json()).then((data) => setUploadConfig(data)).catch(() => setUploadConfig({ enabled: false, allowedMimeTypes: [], maxFileSizeBytes: null }));
+    let cancelled = false;
+    fetch("/api/student/document-upload-config", { cache: "no-store" })
+      .then(async (response) => {
+        const data: unknown = await response.json().catch(() => null);
+        if (!response.ok) throw new Error("Konfigurasi unggah dokumen belum dapat dimuat.");
+        if (
+          typeof data !== "object" ||
+          data === null ||
+          !("enabled" in data) ||
+          typeof data.enabled !== "boolean" ||
+          !("allowedMimeTypes" in data) ||
+          !Array.isArray(data.allowedMimeTypes) ||
+          !data.allowedMimeTypes.every((type) => typeof type === "string") ||
+          !("maxFileSizeBytes" in data) ||
+          !(data.maxFileSizeBytes === null || (typeof data.maxFileSizeBytes === "number" && Number.isFinite(data.maxFileSizeBytes) && data.maxFileSizeBytes > 0))
+        ) {
+          throw new Error("Konfigurasi unggah dokumen tidak sesuai.");
+        }
+        return {
+          enabled: data.enabled,
+          allowedMimeTypes: data.allowedMimeTypes as string[],
+          maxFileSizeBytes: data.maxFileSizeBytes as number | null,
+        };
+      })
+      .then((config) => { if (!cancelled) setUploadConfig(config); })
+      .catch(() => {
+        if (!cancelled) setUploadConfig({ enabled: false, allowedMimeTypes: [], maxFileSizeBytes: null });
+      });
+    return () => { cancelled = true; };
   }, []);
 
   async function uploadFile(file: File) {
