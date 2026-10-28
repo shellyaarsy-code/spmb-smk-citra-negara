@@ -47,6 +47,7 @@ This checkpoint is a targeted refinement, not a redesign or rebuild.
 - The legacy admin, principal, and student sidebar width aliases now reference the established shared desktop and compact width tokens instead of maintaining separate desktop values.
 - The three role login shells now share a common maximum width, minimum-height strategy, border, radius, and elevation based on existing design tokens. Their role-specific content, panel ratios, forms, and authentication behavior remain separate.
 - Existing mobile full-screen login behavior is preserved by explicitly removing desktop border/radius/elevation on narrow layouts.
+- Authentication heading sizes and input heights have been brought closer together; the existing Plus Jakarta Sans font and role-specific form fields are retained.
 - Plus Jakarta Sans, the existing green palette, page structure, role-specific navigation, and authentication/data flows have not been replaced as part of this refinement.
 - These CSS changes have been committed to `integration/demo-shared-data`. They have not been merged to `master`. A new Preview build and screenshot comparison are still required before treating the visual result as verified.
 
