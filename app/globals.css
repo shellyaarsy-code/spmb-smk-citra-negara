@@ -2065,13 +2065,13 @@ a { color: inherit; text-decoration: none; }
 .principal-grad-demo-groups>small,.principal-weekly-bar>b,.principal-weekly-bar>small,.principal-school-ranking li>span,.principal-school-ranking li>strong,.principal-map-legend { color: #5f6d63; font-size: 12px; }
 /* Shared portal design tokens and interaction baselines. */
 .brand-mark.cn-brand-logo { width: 36px; height: 36px; border-radius: 4px; background: transparent; }
-.registration-brand>.cn-brand-logo { width: 36px; height: 36px; border-radius: 4px; background: #fff; }
-.admin-dashboard-brand>.cn-brand-logo { width: 36px; height: 36px; flex-basis: 36px; border-radius: 4px; background: #fff; }
+.registration-brand>.cn-brand-logo { width: 36px; height: 36px; border-radius: 4px; background: transparent; }
+.admin-dashboard-brand>.cn-brand-logo { width: 36px; height: 36px; flex-basis: 36px; border-radius: 4px; background: transparent; }
 .student-dashboard-brand-mark.cn-brand-logo { width: 28px; height: 28px; flex-basis: 28px; border-radius: 4px; background: transparent; }
 .principal-dashboard-brand>.cn-brand-logo { width: 34px; height: 34px; border-radius: 4px; background: transparent; }
-.principal-login-brand>.cn-brand-logo { width: 30px; height: 30px; border-radius: 4px; background: #fff; }
+.principal-login-brand>.cn-brand-logo { width: 30px; height: 30px; border-radius: 4px; background: transparent; }
 .principal-report-document-header>.cn-brand-logo { width: 72px; height: 72px; flex-basis: 72px; border-radius: 4px; background: transparent; }
-.tka-card-brand>.tka-card-logo.cn-brand-logo { width: 26px; height: 26px; border-radius: 4px; background: #fff; }
+.tka-card-brand>.tka-card-logo.cn-brand-logo { width: 26px; height: 26px; border-radius: 4px; background: transparent; }
 .admin-dashboard-nav-link,.student-nav-link,.principal-dashboard-nav a,.student-dashboard-outer .student-sidebar-nav .student-nav-link { min-height: var(--control-height); gap: var(--space-2); padding-inline: var(--space-3); border-radius: var(--radius-control); font-size: var(--text-sm); line-height: var(--line-height-normal); }
 .button,.admin-bank-button,.admin-detail-button,.admin-export-button,.principal-report-actions button { min-height: var(--control-height); border-radius: var(--radius-control); font-family: var(--font-body); font-size: var(--text-sm); line-height: var(--line-height-normal); }
 body :is(input:not([type="radio"]):not([type="checkbox"]):not([type="file"]),select,textarea) { font-family: var(--font-body); font-size: var(--text-control); line-height: var(--line-height-normal); }
