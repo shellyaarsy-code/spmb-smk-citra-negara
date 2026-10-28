@@ -47,7 +47,7 @@ export default function PrincipalResults({ demo, overview }: { demo: boolean; ov
       <PrincipalSidebar active="testResults" demo={demo} />
       <section className="principal-dashboard-main principal-results-main" aria-label="Hasil tes dan seleksi akademik">
         <header className="principal-dashboard-header"><div><h1>Hasil Tes &amp; Seleksi Akademik</h1><p>Hasil Penilaian Akademik Tertulis (Tes Potensi Akademik) calon peserta didik baru.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />GELOMBANG 1 ACTIVE</span><span className="principal-school-year">▣ &nbsp;Tahun Ajaran 2026/2027</span></div></header>
-        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Nilai dan hasil di halaman ini adalah data contoh, bukan keputusan seleksi sungguhan.</span><Link href="/portal/kepala-sekolah/hasil-seleksi">Tampilan kosong</Link></div>}
+        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Nilai dan hasil di halaman ini adalah data contoh, bukan keputusan seleksi sungguhan.</span><span>Data simulasi</span></div>}
 
         <section className="principal-result-metrics" aria-label="Ringkasan hasil seleksi">
           <ResultMetric icon="star" label="Nilai Tertinggi Terpublikasi" value={demo ? "92.33" : overview?.highestScore?.toLocaleString("id-ID") ?? "—"} note={demo ? "Contoh simulasi" : overview ? `${overview.publishedCount} nilai dipublikasikan` : "Data belum dapat dimuat"} tone="green" />
