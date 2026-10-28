@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import PrincipalSidebar from "./principal-sidebar";
 import { demoPpdbMetrics, demoPpdbPrograms, demoPpdbWeekly, formatPpdbNumber } from "../demo-ppdb-data";
