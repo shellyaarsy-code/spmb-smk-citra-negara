@@ -49,6 +49,7 @@ This checkpoint is a targeted refinement, not a redesign or rebuild.
 - Existing mobile full-screen login behavior is preserved by explicitly removing desktop border/radius/elevation on narrow layouts.
 - Authentication heading sizes and input heights have been brought closer together; the existing Plus Jakarta Sans font and role-specific form fields are retained.
 - The three portal-selection cards now use matching outline SVG icons with a shared 20px icon size instead of unrelated text glyphs.
+- The shared brand-logo component now points to `public/logo-cn-transparent.svg`, which preserves the existing `logo-cn.png` source and applies a narrow green-channel alpha mask to the outside background. This is a reversible presentation-layer workaround; it must be visually checked against light and dark surfaces to ensure no emblem details are lost.
 - Plus Jakarta Sans, the existing green palette, page structure, role-specific navigation, and authentication/data flows have not been replaced as part of this refinement.
 - These CSS changes have been committed to `integration/demo-shared-data`. They have not been merged to `master`. A new Preview build and screenshot comparison are still required before treating the visual result as verified.
 
