@@ -148,3 +148,9 @@ Branch kerja: `integration/demo-shared-data`
 - `app/portal/siswa/student-application-client.ts`: parser bersama kini menolak respons sukses yang kosong atau bukan objek JSON, dan menampilkan pesan yang dapat dipahami alih-alih membiarkan data `null` mengalir ke komponen.
 - Commit: `a9edb795cc8a9ee69d511fe03a03cd6e4e55cd5e`.
 - Cakupan tetap pada validasi bentuk respons sisi klien; endpoint, data pendaftar, aturan submit, dan otorisasi tidak diubah.
+
+
+## Temuan tambahan — validasi daftar program keahlian
+- `app/portal/siswa/student-application-client.ts`: hasil endpoint daftar program sekarang diperiksa agar benar-benar berupa array yang berisi item dengan `code` dan `name` bertipe string sebelum diteruskan ke UI.
+- Commit: `4b54a4f14644b8cf0e1dc8bc6675ee5110dbe9aa`.
+- Tujuan: mengubah respons sukses yang bentuknya keliru menjadi pesan error yang tertangani, bukan membiarkan komponen menerima `undefined` atau data tidak valid. Tidak mengubah daftar jurusan, aturan pemilihan, atau API.
