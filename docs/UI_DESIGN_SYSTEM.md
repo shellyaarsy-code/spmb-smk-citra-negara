@@ -40,6 +40,16 @@ Legacy colors and layout tokens remain in use by older page selectors. Do not re
 
 The application has a large global stylesheet with older local rules. Full conversion to React primitives or CSS modules is not yet complete. Avoid broad selector rewrites until all three roles and all key routes can be checked at desktop, tablet, and phone widths. Auth/session, API authorization, SPMB policy, data model, and persisted behavior are not design-system concerns and must not be changed as part of UI polish.
 
+## Refinement checkpoint (2026-10-28)
+
+This checkpoint is a targeted refinement, not a redesign or rebuild.
+
+- The legacy admin, principal, and student sidebar width aliases now reference the established shared desktop and compact width tokens instead of maintaining separate desktop values.
+- The three role login shells now share a common maximum width, minimum-height strategy, border, radius, and elevation based on existing design tokens. Their role-specific content, panel ratios, forms, and authentication behavior remain separate.
+- Existing mobile full-screen login behavior is preserved by explicitly removing desktop border/radius/elevation on narrow layouts.
+- Plus Jakarta Sans, the existing green palette, page structure, role-specific navigation, and authentication/data flows have not been replaced as part of this refinement.
+- These CSS changes have been committed to `integration/demo-shared-data`. They have not been merged to `master`. A new Preview build and screenshot comparison are still required before treating the visual result as verified.
+
 ## Verification for this audit continuation
 
 - `npm test`: passed, 71 tests.
