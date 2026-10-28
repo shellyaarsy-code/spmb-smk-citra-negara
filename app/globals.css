@@ -3367,3 +3367,57 @@ button:disabled { cursor: not-allowed; }
   min-width: 0;
   overflow-wrap: anywhere;
 }
+
+
+/* UI polish: render feedback messages as intentional notice panels across roles. */
+.principal-dashboard-main > p[role="status"],
+.principal-dashboard-main > p[role="alert"],
+.student-dashboard-main > p[role="status"],
+.student-dashboard-main > p[role="alert"],
+.student-dashboard-main > section > p[role="status"],
+.student-dashboard-main > section > p[role="alert"],
+.tka-result-empty > p[role="status"],
+.tka-result-empty > p[role="alert"],
+.graduation-outcomes > p[role="status"],
+.admin-verification-card > p[role="status"],
+.admin-verification-card > p[role="alert"] {
+  box-sizing: border-box;
+  max-width: 100%;
+  min-width: 0;
+  margin: 12px 0;
+  padding: 12px 14px;
+  border: 1px solid #dce8df;
+  border-radius: 10px;
+  color: #365746;
+  background: #f2f8f3;
+  font-size: 13px;
+  line-height: 1.55;
+  overflow-wrap: anywhere;
+}
+.principal-dashboard-main > p[role="alert"],
+.student-dashboard-main > p[role="alert"],
+.student-dashboard-main > section > p[role="alert"],
+.tka-result-empty > p[role="alert"],
+.admin-verification-card > p[role="alert"] {
+  border-color: #f0d7d2;
+  color: #8a3d32;
+  background: #fff6f4;
+}
+.principal-notification-list li > span,
+.principal-notification-list strong,
+.principal-notification-list small,
+.principal-notification-list time,
+.student-announcement,
+.student-announcement > div,
+.student-announcement p {
+  min-width: 0;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.student-announcement > div {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 6px 12px;
+}
