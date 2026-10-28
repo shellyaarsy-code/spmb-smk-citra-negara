@@ -51,10 +51,10 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
       sidebarClassName="admin-dashboard-sidebar"
       brandClassName="admin-dashboard-brand"
       brandMarkClassName="admin-dashboard-brand-mark"
-      brandHref="/portal/login/admin"
+      brandHref={demo ? "/portal/admin?mode=demo" : "/portal/admin"}
       brandLabel="SPMB CITRA NEGARA"
       brandSubtitle="PORTAL ADMIN"
-      brandAriaLabel="SPMB SMK Citra Negara, kembali ke login admin"
+      brandAriaLabel="SPMB SMK Citra Negara, kembali ke dashboard admin"
       navClassName="admin-dashboard-nav"
       linkClassName="admin-dashboard-nav-link"
       navAriaLabel="Menu admin"
