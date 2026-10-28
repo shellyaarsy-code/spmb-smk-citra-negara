@@ -74,13 +74,38 @@ export default function StudentDashboardPage() {
   ];
   if (documents.length === 0) documentRows.push(["Dokumen", "Belum ada catatan dokumen"]);
   const hasDraft = Object.keys(draftValues).length > 0 || documents.length > 0;
+  const applicationStatusCopy: Record<string, { title: string; detail: string }> = {
+    SUBMITTED: { title: "Pendaftaran berhasil dikirim", detail: "Menunggu proses verifikasi." },
+    WAITING_DOCUMENT_VERIFICATION: { title: "Berkas sedang diverifikasi", detail: "Admin sedang memeriksa dokumen pendaftaran." },
+    DOCUMENT_REVISION_REQUIRED: { title: "Perlu perbaikan dokumen", detail: "Periksa catatan verifikasi dan unggah ulang berkas yang diminta." },
+    DOCUMENT_VERIFIED: { title: "Dokumen terverifikasi", detail: "Tahap verifikasi dokumen selesai." },
+    WAITING_PAYMENT: { title: "Menunggu pembayaran", detail: "Periksa informasi pembayaran pada portal." },
+    PAYMENT_VERIFIED: { title: "Pembayaran terverifikasi", detail: "Pembayaran formulir telah dikonfirmasi." },
+    ELIGIBLE_FOR_TKA: { title: "Siap mengikuti TKA", detail: "Periksa jadwal ujian pada portal." },
+    TKA_STARTED: { title: "Ujian TKA berlangsung", detail: "Selesaikan ujian sesuai instruksi." },
+    TKA_COMPLETED: { title: "Ujian TKA selesai", detail: "Hasil menunggu proses berikutnya." },
+    WAITING_SELECTION: { title: "Menunggu hasil seleksi", detail: "Pantau pengumuman hasil seleksi." },
+    PASSED: { title: "Dinyatakan lulus", detail: "Periksa pengumuman dan informasi berikutnya." },
+    WAITLISTED: { title: "Masuk daftar tunggu", detail: "Pantau informasi lanjutan dari sekolah." },
+    FAILED: { title: "Hasil seleksi tersedia", detail: "Periksa hasil dan informasi resmi pada portal." },
+    REJECTED: { title: "Pendaftaran ditolak", detail: "Periksa status dan informasi yang tersedia pada portal." },
+    CANCELLED: { title: "Pendaftaran dibatalkan", detail: "Hubungi admin sekolah jika status ini tidak sesuai." },
+    WITHDRAWN: { title: "Pendaftaran ditarik", detail: "Status pendaftaran tercatat ditarik." },
+  };
   const activities = application
     ? application.status === "DRAFT"
       ? [["Draft aplikasi tersimpan", "Belum dikirim"]]
-      : [["Pendaftaran berhasil dikirim", application.submittedAt ? `Dikirim ${new Date(application.submittedAt).toLocaleString("id-ID")}` : `Status: ${application.status}`]]
+      : [[
+          applicationStatusCopy[application.status]?.title ?? "Status pendaftaran diperbarui",
+          application.submittedAt
+            ? `${applicationStatusCopy[application.status]?.detail ?? `Status: ${application.status}`} Dikirim ${new Date(application.submittedAt).toLocaleString("id-ID")}`
+            : applicationStatusCopy[application.status]?.detail ?? `Status: ${application.status}`,
+        ]]
     : hasDraft
       ? [["Data aplikasi sementara tersedia", "Belum dikirim ke database aplikasi"]]
       : [["Belum ada aktivitas pendaftaran", "Mulai dengan mengisi formulir siswa"]];
+  const isSubmittedApplication = Boolean(application && application.status !== "DRAFT");
+  const submittedProgress = application ? applicationStatusCopy[application.status] : undefined;
 
   return (
     <main className="student-dashboard-outer">
@@ -114,9 +139,9 @@ export default function StudentDashboardPage() {
                   <Icon name="help" />
                   <h2 id="student-next-step-title">Langkah Anda Selanjutnya</h2>
                 </div>
-                <p>{!formComplete ? "Lengkapi formulir pendaftaran agar ringkasan dapat diperbarui." : !requiredDocsComplete ? "Unggah berkas tersedia pada tahap berikutnya, setelah fitur dokumen diaktifkan." : "Draft aplikasi tersimpan dan belum dikirim."}</p>
-                <div className="student-deadline"><strong>Langkah selanjutnya:</strong><span>{!formComplete ? "Isi formulir pendaftaran" : !requiredDocsComplete ? "Unggah berkas" : "Tinjau draft"}</span></div>
-                <Link className="student-dashboard-action" href={!formComplete ? "/portal/siswa/formulir" : !requiredDocsComplete ? "/portal/siswa/formulir/unggah-berkas" : "/portal/siswa/formulir/review"}>Lanjutkan draft →</Link>
+                <p>{isSubmittedApplication ? submittedProgress?.detail ?? `Status pendaftaran: ${application?.status}` : !formComplete ? "Lengkapi formulir pendaftaran agar ringkasan dapat diperbarui." : !requiredDocsComplete ? "Unggah dokumen yang diperlukan untuk proses verifikasi. Dokumen tidak menghalangi pengiriman aplikasi." : "Draft aplikasi tersimpan dan siap ditinjau sebelum dikirim."}</p>
+                <div className="student-deadline"><strong>{isSubmittedApplication ? "Status saat ini:" : "Langkah selanjutnya:"}</strong><span>{isSubmittedApplication ? submittedProgress?.title ?? application?.status : !formComplete ? "Isi formulir pendaftaran" : !requiredDocsComplete ? "Unggah berkas" : "Tinjau draft"}</span></div>
+                <Link className="student-dashboard-action" href={isSubmittedApplication ? "/portal/siswa/status-pendaftaran" : !formComplete ? "/portal/siswa/formulir" : !requiredDocsComplete ? "/portal/siswa/formulir/unggah-berkas" : "/portal/siswa/formulir/review"}>{isSubmittedApplication ? "Lihat status pendaftaran →" : "Lanjutkan draft →"}</Link>
               </section>
 
               <section className="student-dashboard-card student-documents-card" aria-labelledby="student-documents-title">
