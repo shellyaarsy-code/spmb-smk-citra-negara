@@ -94,7 +94,7 @@ export default function StudentDocumentsForm() {
                     <button type="button" disabled={!uploadConfig.enabled || selectedType !== documentType.code || Boolean(busyType)} onClick={() => fileInput.current?.click()}>{busyType === documentType.code ? "Mengunggah…" : "Pilih file"}</button>
                     {selectedType === documentType.code && <input ref={fileInput} id={`document-${documentType.code}`} type="file" accept={uploadConfig.allowedMimeTypes.join(",")} hidden onChange={(event) => { const file = event.target.files?.[0]; if (file) void uploadFile(file); }} />}
                   </label>
-                  {documentType.required && <span className="student-document-pending">Ditandai wajib</span>}
+                  {documentType.required && <span className="student-document-pending">Wajib untuk verifikasi</span>}
                 </div>
               </div>
             );
