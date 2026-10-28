@@ -3082,3 +3082,43 @@ button:disabled { cursor: not-allowed; }
     padding: 9px 10px;
   }
 }
+
+
+/* Align account chips and demo notices across Admin and Kepala Sekolah headers. */
+.admin-dashboard-account,
+.principal-dashboard-account {
+  min-width: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+.admin-dashboard-account > span,
+.principal-dashboard-account > i {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  display: grid;
+  place-items: center;
+  box-sizing: border-box;
+  border-radius: 50%;
+  font-size: 10px;
+  line-height: 1;
+  font-weight: 800;
+}
+.admin-dashboard-account strong,
+.admin-dashboard-account small,
+.principal-dashboard-account strong,
+.principal-dashboard-account small {
+  display: block;
+  line-height: 1.35;
+}
+.admin-dashboard-account strong,
+.principal-dashboard-account strong { font-size: 12px; }
+.admin-dashboard-account small,
+.principal-dashboard-account small { font-size: 10px; }
+@media (max-width: 420px) {
+  .admin-dashboard-header-actions .admin-dashboard-account { display: inline-flex !important; }
+  .admin-dashboard-header-actions { justify-content: space-between; gap: 8px; flex-wrap: wrap; }
+  .admin-dashboard-account > div { min-width: 0; }
+  .admin-dashboard-account strong { white-space: normal; }
+}
