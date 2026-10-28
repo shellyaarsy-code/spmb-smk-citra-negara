@@ -34,3 +34,10 @@ Branch kerja: `integration/demo-shared-data`
 - Jangan mereset akun, autentikasi, database, atau data demo.
 - Kepala Sekolah harus tetap read-only; perbaikan UI tidak boleh menambah hak edit.
 - Pertahankan alur, konten, dan fitur yang ada; perbaikan adalah penyempurnaan, bukan redesign.
+
+
+## Temuan tambahan — halaman Data Pendaftar Kepala Sekolah
+- Pada halaman live, kolom pencarian sebelumnya tidak menampilkan ikon pencarian, sedangkan halaman demo menggunakan ikon yang sama di dalam kontrol.
+- Perbaikan kecil diterapkan pada `app/portal/kepala-sekolah/live-principal-registrants.tsx`: ikon pencarian disamakan dengan versi demo. Label aksesibel dan perilaku input tetap dipertahankan.
+- Commit: `fcba47d4ef5a2c8171de5f809818ae9867636560` — `Align principal live search field with demo UI`.
+- Status build/deployment untuk commit ini harus dicek terpisah; perubahan belum dinyatakan tervalidasi secara visual.
