@@ -45,7 +45,7 @@ export default function PrincipalDashboard({ demo, summary }: { demo: boolean; s
 
       <section className="principal-dashboard-main" id="overview" aria-label="Monitoring dashboard Kepala Sekolah">
         <header className="principal-dashboard-header"><div><h1>Monitoring Dashboard</h1><p>Ringkasan aplikasi pendaftaran dan dokumen dari data tersimpan.</p></div><div className="principal-dashboard-header-meta"><span className="principal-live"><i />{demo ? "GELOMBANG 1 · SIMULASI" : "DATA TERKINI"}</span><span className="principal-school-year"><Icon name="calendar" />Tahun Ajaran 2026/2027</span></div></header>
-        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka dan notifikasi di halaman ini adalah data contoh, bukan data pendaftar sungguhan.</span><Link href="/portal/kepala-sekolah">Tampilan kosong</Link></div>}
+        {demo && <div className="principal-demo-note" role="note"><strong>Pratinjau simulasi</strong><span>Angka dan notifikasi di halaman ini adalah data contoh, bukan data pendaftar sungguhan.</span><span>Data simulasi</span></div>}
 
         <section className="principal-metrics" aria-label="Ringkasan penerimaan">
           <Metric icon="user" label="Total Aplikasi Terkirim" value={demo ? formatPpdbNumber(demoPpdbMetrics.totalApplicants) : summary?.total.toLocaleString("id-ID") ?? "—"} note={demo ? "Angka simulasi" : summary ? "Data aplikasi persisten" : "Data belum dapat dimuat"} tone="green" />
@@ -64,7 +64,7 @@ export default function PrincipalDashboard({ demo, summary }: { demo: boolean; s
           </section>
 
           <section className="principal-panel principal-notifications-panel" id="seleksi" aria-labelledby="principal-notifications-title">
-            <div className="principal-panel-heading"><h2 id="principal-notifications-title">Notifikasi Pengawasan PPDB</h2>{demo && <span className="principal-notification-count">4 TINDAKAN</span>}</div>
+            <div className="principal-panel-heading"><h2 id="principal-notifications-title">Notifikasi Pengawasan PPDB</h2>{demo && <span className="principal-notification-count">{notifications.length} NOTIFIKASI</span>}</div>
             {demo ? <ul className="principal-notification-list">{notifications.map((item) => <li key={item.title}><i className={item.tone}><Icon name={item.icon} /></i><span><strong>{item.title}</strong><small>{item.detail}</small><time>{item.time}</time></span></li>)}</ul> : <div className="principal-dashboard-empty">Belum ada notifikasi pengawasan.</div>}
           </section>
         </div>
