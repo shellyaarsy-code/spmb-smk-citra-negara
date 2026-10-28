@@ -24,9 +24,37 @@ async function parseResponse<T>(response: Response): Promise<T> {
   return result as T;
 }
 
+function isStudentApplicationDraft(value: unknown): value is StudentApplicationDraft {
+  if (typeof value !== "object" || value === null) return false;
+  if (!("status" in value) || typeof value.status !== "string") return false;
+  if (!("programChoices" in value) || !Array.isArray(value.programChoices)) return false;
+  return value.programChoices.every(
+    (choice) =>
+      typeof choice === "object" &&
+      choice !== null &&
+      "priority" in choice &&
+      typeof choice.priority === "number" &&
+      "studyProgram" in choice &&
+      typeof choice.studyProgram === "object" &&
+      choice.studyProgram !== null &&
+      "code" in choice.studyProgram &&
+      typeof choice.studyProgram.code === "string" &&
+      "name" in choice.studyProgram &&
+      typeof choice.studyProgram.name === "string",
+  );
+}
+
+async function parseDraftResponse(response: Response): Promise<StudentApplicationDraft> {
+  const result = await parseResponse<unknown>(response);
+  if (!isStudentApplicationDraft(result)) {
+    throw new Error("Respons data pendaftaran tidak sesuai. Muat ulang halaman atau coba lagi.");
+  }
+  return result;
+}
+
 export async function fetchCurrentDraftApplication() {
   const response = await fetch("/api/student/application/draft", { cache: "no-store" });
-  return parseResponse<StudentApplicationDraft>(response);
+  return parseDraftResponse(response);
 }
 
 export async function fetchAvailableStudyPrograms() {
@@ -55,7 +83,7 @@ export async function saveCurrentDraftApplication(input: unknown) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(input),
   });
-  return parseResponse<StudentApplicationDraft>(response);
+  return parseDraftResponse(response);
 }
 
 export async function submitCurrentApplication(accepted: boolean) {
@@ -64,7 +92,7 @@ export async function submitCurrentApplication(accepted: boolean) {
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ accepted }),
   });
-  return parseResponse<StudentApplicationDraft>(response);
+  return parseDraftResponse(response);
 }
 
 export function useCurrentDraftApplication() {
