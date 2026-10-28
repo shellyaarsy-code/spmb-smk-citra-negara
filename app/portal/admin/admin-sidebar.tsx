@@ -41,11 +41,10 @@ export default function AdminSidebar({ active, demo }: AdminSidebarProps) {
     { label: "Pembayaran", href: href("/portal/admin/pembayaran"), icon: <AdminIcon name="settings" />, active: active === "payments" },
   ];
   const support = (
-    <section className="admin-bank-support admin-dashboard-access" aria-label="Hak akses dan bantuan admin">
+    <a className="admin-bank-support admin-dashboard-access" aria-label={demo ? "Kembali ke data tersimpan Admin" : "Buka dashboard simulasi Admin"} href={demo ? "/portal/admin" : "/portal/admin?mode=demo"}>
       <strong><AdminIcon name="check" /> HAK AKSES: ADMIN</strong>
       <p>Pengelolaan data sesuai kewenangan admin. Bantuan sistem: Ext. 102.</p>
-      <a className="admin-bank-demo-link principal-dashboard-demo-toggle" href={demo ? "/portal/admin" : "/portal/admin?mode=demo"}>{demo ? "Kembali ke Data Tersimpan" : "Buka Dashboard Simulasi"}</a>
-    </section>
+    </a>
   );
   return (
     <AppSidebar
