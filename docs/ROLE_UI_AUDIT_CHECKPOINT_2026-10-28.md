@@ -92,3 +92,10 @@ Branch kerja: `integration/demo-shared-data`
 - Commit: `c84fdeb07b08e6de97e592c0ec6d0a9835ebd52b` — `Add semantic applicant status badges to principal live table`.
 - Deployment dan pemeriksaan visual sesudah login masih perlu diverifikasi.
 
+
+
+## Temuan tambahan — state formulir verifikasi dokumen
+- Form verifikasi live sebelumnya selalu memulai pilihan status pada “Terverifikasi” dan catatan kosong, meskipun dokumen yang sedang aktif mungkin sudah ditolak atau memerlukan revisi. Ini berisiko membuat nilai formulir tidak mencerminkan status dokumen yang dipilih.
+- Form sekarang mengisi status dan catatan dari dokumen aktif, dengan perilaku lama untuk status `PENDING` (pilihan awal tindakan tetap “Terverifikasi”). Pesan gagal dimuat memakai `role="alert"`, sedangkan loading dan empty state memakai status aksesibel; empty state tidak menutupi pesan error.
+- Commit: `87a5dc27ad538bd8b4fd3e8035c4279632011b44` — `Initialize document review form from selected document`.
+- Perubahan tidak mengubah endpoint, aturan verifikasi, API, atau izin Admin. Build preview dan pemeriksaan visual setelah autentikasi tetap harus diverifikasi.
